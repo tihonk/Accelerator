@@ -1,5 +1,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,18 +17,27 @@
 	<div class="navbar-header">
         <ul class="menu">
 		<a class="navbar-brand" href="/">Accelerator</a>
-          <li><a href=#>My cabinet</a>
-            <ul class="submenu">
-                <li><a href=#>My account</a></li>
-                <li><a href=#>My history</a></li>
-                <c:if test="${not empty name}">
-                    <li><a href=#>Sign out</a></li>
-                </c:if>
-                <c:if test="${empty name}">
-                    <li><a href=#>Sign in</a></li>
-                </c:if>
-            </ul>
-          </li>
+            <c:choose>
+                <c:when test="${empty cookie.name.value}">
+                    <div class="startButtons">
+                        <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
+                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <li><a href=#>My cabinet</a>
+                        <ul class="submenu">
+                            <li><a href=#>My account</a></li>
+                            <li><a href=#>My history</a></li>
+                            <li>
+                                <form:form action="LogoutServlet" method="post">
+                                    <a class="signOutSubmenu" href="${pageContext.request.contextPath}/login">Sign Out</a>
+                                </form:form>
+                            </li>
+                        </ul>
+                    </li>
+                </c:otherwise>
+            </c:choose>
         </ul>
 	</div>
   </div>
@@ -53,6 +63,8 @@
 <%--</div>--%>
  
 <div class="container">
+<%--    Session: ${sessionScope.userId}--%>
+<%--    Cookie: ${cookie.name.value}--%>
   <div class="row">
 	<div class="col-md-4">
 		<h2>Accelerator</h2>

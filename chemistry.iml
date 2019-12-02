@@ -11,7 +11,6 @@
         </webroots>
         <sourceRoots>
           <root url="file://$MODULE_DIR$/src/main/java" />
-          <root url="file://$MODULE_DIR$/src/main/resiurces" />
         </sourceRoots>
       </configuration>
     </facet>
@@ -23,6 +22,7 @@
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
           <factory-entry name="Entities" />
+          <factory-entry name="persistence" />
           <factory-entry name="ru.easyjava.data.jpa.hibernate" />
         </datasource-mapping>
         <naming-strategy-map>

@@ -25,12 +25,7 @@
                     <ul class="submenu">
                         <li><a href=#>My account</a></li>
                         <li><a href=#>My history</a></li>
-                        <c:if test="${not empty name}">
-                            <li><a href=#>Sign out</a></li>
-                        </c:if>
-                        <c:if test="${empty name}">
-                            <li><a href=#>Sign in</a></li>
-                        </c:if>
+                        <li><a href=#>Sign out</a></li>
                     </ul>
                 </li>
             </ul>
