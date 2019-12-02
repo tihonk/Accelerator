@@ -9,6 +9,10 @@
         <webroots>
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/resiurces" />
+        </sourceRoots>
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
@@ -24,7 +28,7 @@
         <naming-strategy-map>
           <unit-entry name="Entities" />
         </naming-strategy-map>
-        <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resiurces/META-INF/persistence.xml" />
+        <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
     </facet>
     <facet type="hibernate" name="Hibernate">
@@ -33,7 +37,7 @@
           <unit-entry name="hibernate.cfg.xml" />
         </datasource-map>
         <naming-strategy-map />
-        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resiurces/hibernate.cfg.xml" />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate.cfg.xml" />
       </configuration>
     </facet>
   </component>
@@ -42,7 +46,7 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resiurces" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
