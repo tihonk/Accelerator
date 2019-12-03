@@ -42,19 +42,19 @@ ul.submenu {
     width: 120px;
     top: 37px;
     left: 0;
-    background-color: white;
+    background-color: rgba(101, 101, 101, 0.2);
     border: 1px solid black;
 }
 ul.submenu > li {
     display: block;
 }
 ul.submenu > li > a {
-    font-size: 13px;
+    font-size: 80%;
     display: block;
     padding: 10px;
-    color: white;
-    background-color: #888888;
+    color: rgb(255, 255, 255);
     text-decoration: none;
+    background-color: rgba(101, 101, 101, 0.2);
 }
 ul.submenu > li > a:hover {
     text-decoration: underline;
@@ -129,6 +129,21 @@ td, th {
     padding: 0 7px 0 7px; /* Поля вокруг текста */
     border: 1px solid #222222;
 }
+
+.signOutSubmenu {
+    font-size: 80%;
+    display: block;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(101, 101, 101, 0.2);
+    text-decoration: none;
+}
+
+.signOutSubmenu:hover {
+    text-decoration: underline;
+    color: rgb(255, 255, 255);
+}
+
 .number1 {
     background: #045FB4;
 }

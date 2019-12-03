@@ -6,7 +6,7 @@
     font-size: 30px ;
 }
 .navbar-cabinet {
-    font-size: 20px;
+    min-width: 20%;
     color: #eeeeee;
 }
 ul {
@@ -42,18 +42,19 @@ ul.submenu {
     width: 120px;
     top: 37px;
     left: 0;
-    background-color: rgba(195, 195, 195, 0.2);
+    background-color: rgba(101, 101, 101, 0.2);
     border: 1px solid black;
 }
 ul.submenu > li {
     display: block;
 }
 ul.submenu > li > a {
-    font-size: 70%;
+    font-size: 80%;
     display: block;
     padding: 10px;
     color: rgb(255, 255, 255);
     text-decoration: none;
+    background-color: rgba(101, 101, 101, 0.2);
 }
 ul.submenu > li > a:hover {
     text-decoration: underline;
@@ -67,17 +68,17 @@ ul.menu > li:hover > ul.submenu {
 
 .startButtons{
     position: absolute;
-    right: 15%;
-    top: 14px;
+    right: 10%;
+    top: 11px;
     bottom: auto;
-    min-width: 15%;
+    min-width: 20%;
 }
 
 .signInButton{
-    font-size: 150%; /*Font size*/
-    font-weight: lighter; /* Bold face */
+    font-size: 130%; /*Font size*/
+    font-weight: normal; /* Bold face */
     text-decoration: none;
-    color: darkgray;
+    color: lightgray;
 }
 
 .signInButton:hover{
@@ -90,11 +91,11 @@ ul.menu > li:hover > ul.submenu {
 }
 
 .signOutSubmenu {
-    font-size: 70%;
+    font-size: 80%;
     display: block;
     padding: 10px;
     color: rgb(255, 255, 255);
-    background-color: rgba(195, 195, 195, 0.2);
+    background-color: rgba(101, 101, 101, 0.2);
     text-decoration: none;
 }
 

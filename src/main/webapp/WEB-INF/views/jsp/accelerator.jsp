@@ -7,6 +7,7 @@
 --%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -25,7 +26,11 @@
                     <ul class="submenu">
                         <li><a href=#>My account</a></li>
                         <li><a href=#>My history</a></li>
-                        <li><a href=#>Sign out</a></li>
+                        <li>
+                            <form:form action="LogoutServlet" method="post">
+                                <a class="signOutSubmenu" href="${pageContext.request.contextPath}/login">Sign Out</a>
+                            </form:form>
+                        </li>
                     </ul>
                 </li>
             </ul>

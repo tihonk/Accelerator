@@ -35,6 +35,7 @@ ul.menu > li > a {
 }
 ul.menu > li > a:hover {
     background-color: black;
+    position: fixed;
 }
 ul.submenu {
     display: none;
@@ -112,6 +113,20 @@ textarea {
     border-radius: 6px;
     border: 3px solid #737373; /* указание этого свойства также удалит обводку в FireFox */
     resize: none;
+}
+
+.signOutSubmenu {
+    font-size: 80%;
+    display: block;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(101, 101, 101, 0.2);
+    text-decoration: none;
+}
+
+.signOutSubmenu:hover {
+    text-decoration: underline;
+    color: rgb(255, 255, 255);
 }
 
 .divTextaria {
