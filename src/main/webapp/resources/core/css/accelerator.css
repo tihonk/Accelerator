@@ -35,7 +35,6 @@ ul.menu > li > a {
 }
 ul.menu > li > a:hover {
     background-color: black;
-    position: fixed;
 }
 ul.submenu {
     display: none;
