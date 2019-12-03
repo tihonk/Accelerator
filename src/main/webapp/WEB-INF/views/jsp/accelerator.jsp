@@ -28,7 +28,7 @@
                         <li><a href=#>My history</a></li>
                         <li>
                             <form:form action="LogoutServlet" method="post">
-                                <a class="signOutSubmenu" href="${pageContext.request.contextPath}/login">Sign Out</a>
+                                <a class="signOutSubmenu" action="LogoutServlet" href="${pageContext.request.contextPath}/LogoutServlet">Sign Out</a>
                             </form:form>
                         </li>
                     </ul>
