@@ -104,13 +104,11 @@ ul.menu > li:hover > ul.submenu {
     color: rgb(255, 255, 255);
 }
 
+
 .successMessage {
     width:100%;
-    margin-top: -6px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    margin-top: -10px;
     background-color: #4cae4c;
     color: white;
-    text-indent: 20%;
-    font-weight: bold;
+    animation-timing-function: linear;
 }
