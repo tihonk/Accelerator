@@ -11,7 +11,7 @@ public class UserService
     public void saveUser(String firstname, String lastname, String email, String passwordOne, String passwortTwo)
     {
         Role role = new Role();
-        role.setTitle("Administrator");
+        role.setTitle("User");
 
         User user = new User();
         user.setFirstName(firstname);

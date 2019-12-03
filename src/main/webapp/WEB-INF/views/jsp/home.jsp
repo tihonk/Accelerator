@@ -31,7 +31,7 @@
                             <li><a href=#>My history</a></li>
                             <li>
                                 <form:form action="LogoutServlet" method="post">
-                                    <a class="signOutSubmenu" href="${pageContext.request.contextPath}/login">Sign Out</a>
+                                    <a class="signOutSubmenu" action="LogoutServlet" href="${pageContext.request.contextPath}/LogoutServlet">Sign Out</a>
                                 </form:form>
                             </li>
                         </ul>
@@ -43,6 +43,11 @@
   </div>
 </nav>
 <p><img src="../../../resources/core/pictures/planet.jpg" width="100%"  alt="planets"></p>
+<c:if test="${empty cookie.name.value}">
+<div class="successMessage">
+    You have successfully logged in.
+</div>
+</c:if>
 <%--<div class="jumbotron">--%>
 <%--  <div class="container">--%>
 <%--	<h1>${title}</h1>--%>
