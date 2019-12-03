@@ -43,9 +43,9 @@
   </div>
 </nav>
 <p><img src="../../../resources/core/pictures/planet.jpg" width="100%"  alt="planets"></p>
-<c:if test="${empty cookie.name.value}">
+<c:if test="${not empty cookie.name.value}">
 <div class="successMessage">
-    You have successfully logged in.
+    <p class="container">You have successfully logged in.</p>
 </div>
 </c:if>
 <%--<div class="jumbotron">--%>
