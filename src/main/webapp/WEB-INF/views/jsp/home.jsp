@@ -88,7 +88,8 @@
             Calculates the content of all amino acids in the
             amino acid sequence of the introduced protein.
             The prevailing amino acid is determined.
-            The result is displayed in the form of a diagram.</p>
+            The result is displayed in the form of a diagram.
+        </p>
         <p>
             <a class="btn btn-default" href="chemistry/counter" role="button">Count up</a>
         </p>
@@ -99,11 +100,24 @@
             Analyzes the entered amino acid sequence.
             Calculates the fidelity of the bonds of the selected
             ligand with the given protein.
-            Indicates hypothetical binding sites and their amino acid composition.</p>
+            Indicates hypothetical binding sites and their amino acid composition.
+        </p>
 		<p>
 			<a class="btn btn-default" href="#" role="button">To analyze</a>
 		</p>
 	</div>
+  </div>
+  <div class="row">
+      <div class="col-md-4">
+          <h2>Mystery</h2>
+          <p>
+              I myself do not yet know what will come of this in the future,
+              but so far the literal lasting is simply converted to amino acid.
+          </p>
+          <p>
+              <a class="btn btn-default" href="chemistry/mystery" role="button">Go to mystery</a>
+          </p>
+      </div>
   </div>
  
  
