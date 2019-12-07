@@ -29,3 +29,13 @@ Z
 *src/main/webapp/WEB-INF/views/jsp/home.jsp,1/c/1c626828401cb21da1e38f59e64e35697c348563
 [
 +src/main/webapp/resources/core/css/home.css,4/7/4714502faef2c8ff71970fa6f9a55c3778d11bce
+u
+Esrc/main/java/com/example/controllerHelper/CountControllerHelper.java,0/2/02eeaf145bfcc789f400a97de6d4c5aee038c543
+c
+3src/main/webapp/resources/core/css/registration.css,6/c/6cd013cf63cace495c9114f6b3a201172d360d1c
+b
+2src/main/java/com/example/service/UserService.java,6/e/6e3d881a37ae89f3419de235980ae95d7d6d2f20
+^
+.src/main/webapp/resources/core/css/counter.css,2/e/2e8b8d71fe20c47095f7c5858102e47e43779ba1
+b
+2src/main/webapp/resources/core/css/accelerator.css,4/e/4e464044861ffd2d33396242c5866242fdb4cdae

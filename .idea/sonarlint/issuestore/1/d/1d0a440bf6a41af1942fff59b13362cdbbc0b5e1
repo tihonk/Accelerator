@@ -1,13 +1,13 @@
 
 =squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
+=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
+=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
+:squid:S1166"%Either log or rethrow this exception.(”ı¾
+:squid:S1166"%Either log or rethrow this exception.(”ı¾
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+:squid:S1166"%Either log or rethrow this exception.(”ı¾
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¦£Ä
 Rsquid:S1068"8Remove this unused "entityManagerFactory" private field.(’Š¾Âüÿÿÿÿ
-=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
-:squid:S1166"%Either log or rethrow this exception.(”ı¾
-=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
-:squid:S1166"%Either log or rethrow this exception.(”ı¾
-:squid:S1166"%Either log or rethrow this exception.(”ı¾
 `squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¦£Ä
-=squid:S2095"Close this "SessionFactory".(®Ã…’ùÿÿÿÿ8Îš¹ì-
-=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
-`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¦£Ä
-=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
