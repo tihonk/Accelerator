@@ -62,7 +62,7 @@
 <div class="container">
     <div class="row">
         <c:forEach items="${aminoAcidList}" var="amonoAcid">
-            ${amonoAcid},
+            ${amonoAcid} —
         </c:forEach>
     </div>
 </div>
