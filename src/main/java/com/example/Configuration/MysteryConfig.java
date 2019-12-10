@@ -1,5 +1,6 @@
 package com.example.Configuration;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,18 +19,18 @@ public class MysteryConfig
         String beforeStarted = "";
         List<String> aminoAcids = new ArrayList<>();
 
-        char [] charArray = charAminoAcids.toCharArray();
-        Character[] newCharArray = IntStream.range(0, charArray.length)
-            .mapToObj(i -> charArray[i])
-            .toArray(Character[]::new);
-        Arrays.sort(newCharArray, Collections.reverseOrder());
+//        char [] charArray = charAminoAcids.toCharArray();
+//        Character[] newCharArray = IntStream.range(0, charArray.length)
+//            .mapToObj(i -> charArray[i])
+//            .toArray(Character[]::new);
+//        Arrays.sort(newCharArray, Collections.reverseOrder());
 
-        List<Character> characters = new ArrayList<>();
-        Collections.addAll(characters, newCharArray);
+        List<Character> characters = convertStringToCharList(charAminoAcids);
 
-        while (!readingStarted || Objects.isNull(characters.get(codonNumber)))
+
+        while (!readingStarted && codonNumber <= (characters.size() -3))
         {
-            while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size()-2)
+            while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size())
             {
                 startCodon += characters.get(codonNumber);
                 beforeStarted += characters.get(codonNumber);
@@ -40,7 +41,7 @@ public class MysteryConfig
             {
                 readingStarted = true;
                 aminoAcids.add(beforeStarted + " —");
-                codonNumber += 3;
+                codonNumber += 2;
             }
             codonNumber -= 2;
             startCodon = "";
@@ -129,7 +130,7 @@ public class MysteryConfig
                     aminoAcids.add("Proline");
                 }
                 else {
-                    aminoAcids.add(aminoAcidEncoding + characters.subList(codonNumber, characters.size()+1));
+                    aminoAcids.add(aminoAcidEncoding + characters.subList(codonNumber, characters.size()));
 
                 }
                 aminoAcidEncoding = "";
@@ -140,5 +141,23 @@ public class MysteryConfig
         }
 
         return  aminoAcids;
+    }
+
+    private List<Character> convertStringToCharList(String charNucleotids)
+    {
+        return new AbstractList<Character>() {
+
+            @Override
+            public Character get(int index)
+            {
+                return charNucleotids.charAt(index);
+            }
+
+            @Override
+            public int size()
+            {
+                return charNucleotids.length();
+            }
+        };
     }
 }
