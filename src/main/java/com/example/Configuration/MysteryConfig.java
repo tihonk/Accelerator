@@ -29,7 +29,7 @@ public class MysteryConfig
 
         while (!readingStarted || Objects.isNull(characters.get(codonNumber)))
         {
-            while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size()+3)
+            while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size()+2)
             {
                 startCodon += characters.get(codonNumber);
                 beforeStarted += characters.get(codonNumber);
