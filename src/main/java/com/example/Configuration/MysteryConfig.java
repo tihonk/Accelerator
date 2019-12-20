@@ -13,11 +13,15 @@ public class MysteryConfig
         boolean readingStarted = false;
         int codonNumber = 0;
         String startCodon = "";
-        String beforeStarted;
+        String beforeStarted = "";
         List<String> aminoAcids = new ArrayList<>();
         List<Character> characters = convertStringToCharList(charAminoAcids);
 
+        return analiseSequence(readingStarted, codonNumber, startCodon, beforeStarted, aminoAcids, characters, charAminoAcids);
+    }
 
+    private List<String> analiseSequence(boolean readingStarted, int codonNumber, String startCodon, String beforeStarted, List<String> aminoAcids, List<Character> characters, String charAminoAcids)
+    {
         while (!readingStarted && codonNumber <= (characters.size() -3))
         {
             while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size())
@@ -116,8 +120,13 @@ public class MysteryConfig
                     aminoAcids.add("Histidine");
                 }
                 else if (aminoAcidEncoding.equals("CCT") || aminoAcidEncoding.equals("CCC")
-                || aminoAcidEncoding.equals("CCA") || aminoAcidEncoding.equals("CCG")){
+                    || aminoAcidEncoding.equals("CCA") || aminoAcidEncoding.equals("CCG")){
                     aminoAcids.add("Proline");
+                }
+                else if (aminoAcidEncoding.equals("TAA") || aminoAcidEncoding.equals("TAG") || aminoAcidEncoding.equals("TGA"))
+                {
+                    aminoAcids.add(aminoAcidEncoding);
+                    analiseSequence(false, codonNumber, startCodon, beforeStarted, aminoAcids, characters, charAminoAcids);
                 }
                 else {
                     aminoAcids.add(aminoAcidEncoding + getAfterString(codonNumber, charAminoAcids));
