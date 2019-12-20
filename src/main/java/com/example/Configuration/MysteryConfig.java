@@ -9,8 +9,7 @@ public class MysteryConfig
 {
     public List<String> getAminoAcids(String charAminoAcids)
     {
-        charAminoAcids.replaceAll("\\s+", "");
-        charAminoAcids.toUpperCase();
+        charAminoAcids = charAminoAcids.toUpperCase().replaceAll("[\\r\\n\\s]", "");
         boolean readingStarted = false;
         int codonNumber = 0;
         String startCodon = "";
