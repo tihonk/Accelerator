@@ -2,29 +2,19 @@ package com.example.Configuration;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 public class MysteryConfig
 {
     public List<String> getAminoAcids(String charAminoAcids)
     {
-        charAminoAcids.replaceAll("[^A-Za-z]", "");
+        charAminoAcids.replaceAll("\\s+", "");
         boolean readingStarted = false;
         int codonNumber = 0;
         String startCodon = "";
-        String beforeStarted = "";
+        String beforeStarted;
         List<String> aminoAcids = new ArrayList<>();
-
-//        char [] charArray = charAminoAcids.toCharArray();
-//        Character[] newCharArray = IntStream.range(0, charArray.length)
-//            .mapToObj(i -> charArray[i])
-//            .toArray(Character[]::new);
-//        Arrays.sort(newCharArray, Collections.reverseOrder());
-
         List<Character> characters = convertStringToCharList(charAminoAcids);
 
 
@@ -33,14 +23,14 @@ public class MysteryConfig
             while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size())
             {
                 startCodon += characters.get(codonNumber);
-                beforeStarted += characters.get(codonNumber);
                 codonNumber ++;
             }
 
-            if ("AUG".equals(startCodon))
+            if ("AUG".equals(startCodon) || "ATG".equals(startCodon))
             {
                 readingStarted = true;
-                aminoAcids.add(beforeStarted + " —");
+                beforeStarted = getBeforestarted(codonNumber, charAminoAcids);
+                aminoAcids.add(beforeStarted);
                 codonNumber += 2;
             }
             codonNumber -= 2;
@@ -58,42 +48,42 @@ public class MysteryConfig
                     codonNumber ++;
                 }
 
-                if (aminoAcidEncoding.equals("GGU") || aminoAcidEncoding.equals("GGC")
+                if (aminoAcidEncoding.equals("GGT") || aminoAcidEncoding.equals("GGC")
                     || aminoAcidEncoding.equals("GGA") || aminoAcidEncoding.equals("GGG")) {
                     aminoAcids.add("Glycine");
                 }
-                else if (aminoAcidEncoding.equals("GCU") || aminoAcidEncoding.equals("GCC")
+                else if (aminoAcidEncoding.equals("GCT") || aminoAcidEncoding.equals("GCC")
                     || aminoAcidEncoding.equals("GCA") || aminoAcidEncoding.equals("GCG")) {
                     aminoAcids.add("Alanine");
                 }
-                else if (aminoAcidEncoding.equals("GUU") || aminoAcidEncoding.equals("GUC")
-                    || aminoAcidEncoding.equals("GUA") || aminoAcidEncoding.equals("GUG")) {
+                else if (aminoAcidEncoding.equals("GTT") || aminoAcidEncoding.equals("GTC")
+                    || aminoAcidEncoding.equals("GTA") || aminoAcidEncoding.equals("GTG")) {
                     aminoAcids.add("Valine");
                 }
-                else if (aminoAcidEncoding.equals("UUA") || aminoAcidEncoding.equals("UUG")
-                    || aminoAcidEncoding.equals("CUU") || aminoAcidEncoding.equals("CUC")
-                    || aminoAcidEncoding.equals("CUA")|| aminoAcidEncoding.equals("CUG")) {
+                else if (aminoAcidEncoding.equals("TTA") || aminoAcidEncoding.equals("TTG")
+                    || aminoAcidEncoding.equals("CTT") || aminoAcidEncoding.equals("CTC")
+                    || aminoAcidEncoding.equals("CTA")|| aminoAcidEncoding.equals("CTG")) {
                     aminoAcids.add("Leucine");
                 }
-                else if (aminoAcidEncoding.equals("AUU") || aminoAcidEncoding.equals("AUC")
-                    || aminoAcidEncoding.equals("AUA")){
+                else if (aminoAcidEncoding.equals("ATT") || aminoAcidEncoding.equals("ATC")
+                    || aminoAcidEncoding.equals("ATA")){
                     aminoAcids.add("Isoleucine");
                 }
-                else if (aminoAcidEncoding.equals("UCU") || aminoAcidEncoding.equals("UCC")
-                    || aminoAcidEncoding.equals("UCA") || aminoAcidEncoding.equals("UCG")){
+                else if (aminoAcidEncoding.equals("TCT") || aminoAcidEncoding.equals("TCC")
+                    || aminoAcidEncoding.equals("TCA") || aminoAcidEncoding.equals("TCG")){
                     aminoAcids.add("Serine");
                 }
-                else if (aminoAcidEncoding.equals("ACU") || aminoAcidEncoding.equals("ACC")
+                else if (aminoAcidEncoding.equals("ACT") || aminoAcidEncoding.equals("ACC")
                     || aminoAcidEncoding.equals("ACA") || aminoAcidEncoding.equals("ACG")){
                     aminoAcids.add("Threonine");
                 }
-                else if (aminoAcidEncoding.equals("GAU") || aminoAcidEncoding.equals("GAC")){
+                else if (aminoAcidEncoding.equals("GAT") || aminoAcidEncoding.equals("GAC")){
                     aminoAcids.add("Aspartic Acid");
                 }
                 else if (aminoAcidEncoding.equals("GAA") || aminoAcidEncoding.equals("GAG")){
                     aminoAcids.add("Glutamic Acid");
                 }
-                else if (aminoAcidEncoding.equals("AAU") || aminoAcidEncoding.equals("AAC")){
+                else if (aminoAcidEncoding.equals("AAT") || aminoAcidEncoding.equals("AAC")){
                     aminoAcids.add("Asparagine");
                 }
                 else if (aminoAcidEncoding.equals("CAA") || aminoAcidEncoding.equals("CAG")){
@@ -102,36 +92,36 @@ public class MysteryConfig
                 else if (aminoAcidEncoding.equals("AAA") || aminoAcidEncoding.equals("AAG")){
                     aminoAcids.add("Lysine");
                 }
-                else if (aminoAcidEncoding.equals("CGU") || aminoAcidEncoding.equals("CGC")
+                else if (aminoAcidEncoding.equals("CGT") || aminoAcidEncoding.equals("CGC")
                     || aminoAcidEncoding.equals("CGA") || aminoAcidEncoding.equals("CGG")
                     || aminoAcidEncoding.equals("AGA") || aminoAcidEncoding.equals("AGG")){
                     aminoAcids.add("Arginine");
                 }
-                else if (aminoAcidEncoding.equals("UGU") || aminoAcidEncoding.equals("UGC")){
+                else if (aminoAcidEncoding.equals("TGT") || aminoAcidEncoding.equals("TGC")){
                     aminoAcids.add("Cysteine");
                 }
-                else if (aminoAcidEncoding.equals("AUG")){
+                else if (aminoAcidEncoding.equals("ATG")){
                     aminoAcids.add("Methionine");
                 }
-                else if (aminoAcidEncoding.equals("UUU") || aminoAcidEncoding.equals("UUC")){
+                else if (aminoAcidEncoding.equals("TTT") || aminoAcidEncoding.equals("TTC")){
                     aminoAcids.add("Phenylalanine");
                 }
-                else if (aminoAcidEncoding.equals("UAU") || aminoAcidEncoding.equals("UAC")){
+                else if (aminoAcidEncoding.equals("TAT") || aminoAcidEncoding.equals("TAC")){
                     aminoAcids.add("Tyrosine");
                 }
-                else if (aminoAcidEncoding.equals("UGG")){
+                else if (aminoAcidEncoding.equals("TGG")){
                     aminoAcids.add("Tryptophan");
                 }
-                else if (aminoAcidEncoding.equals("CAU") || aminoAcidEncoding.equals("CAC")){
+                else if (aminoAcidEncoding.equals("CAT") || aminoAcidEncoding.equals("CAC")){
                     aminoAcids.add("Histidine");
                 }
-                else if (aminoAcidEncoding.equals("CCU") || aminoAcidEncoding.equals("CCC")
+                else if (aminoAcidEncoding.equals("CCT") || aminoAcidEncoding.equals("CCC")
                 || aminoAcidEncoding.equals("CCA") || aminoAcidEncoding.equals("CCG")){
                     aminoAcids.add("Proline");
                 }
                 else {
-                    aminoAcids.add(aminoAcidEncoding + characters.subList(codonNumber, characters.size()));
-
+                    aminoAcids.add(aminoAcidEncoding + getAfterString(codonNumber, charAminoAcids));
+                    return  aminoAcids;
                 }
                 aminoAcidEncoding = "";
             }
@@ -141,6 +131,26 @@ public class MysteryConfig
         }
 
         return  aminoAcids;
+    }
+
+    private String getAfterString(int codonNumber, String charAminoAcids)
+    {
+        String afterString = "";
+        for (; codonNumber < charAminoAcids.toCharArray().length; codonNumber++ )
+        {
+            afterString += charAminoAcids.toCharArray()[codonNumber];
+        }
+        return afterString;
+    }
+
+    private String getBeforestarted(int codonNumber, String charAminoAcids)
+    {
+        String beforeStarted = "";
+        for (int number = 0; number < codonNumber; number++ )
+        {
+            beforeStarted += charAminoAcids.toCharArray()[number];
+        }
+        return beforeStarted;
     }
 
     private List<Character> convertStringToCharList(String charNucleotids)
