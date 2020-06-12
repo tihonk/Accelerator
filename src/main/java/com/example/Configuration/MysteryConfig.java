@@ -11,18 +11,22 @@ public class MysteryConfig
     {
         charAminoAcids = charAminoAcids.toUpperCase().replaceAll("[\\r\\n\\s]", "");
         boolean readingStarted = false;
+        int startCodonNumber = 0;
         int codonNumber = 0;
         String startCodon = "";
         String beforeStarted = "";
         List<String> aminoAcids = new ArrayList<>();
         List<Character> characters = convertStringToCharList(charAminoAcids);
 
-        return analiseSequence(readingStarted, codonNumber, startCodon, beforeStarted, aminoAcids, characters, charAminoAcids);
+        return analiseSequence(readingStarted, startCodonNumber, codonNumber, startCodon,
+            beforeStarted, aminoAcids, characters, charAminoAcids);
     }
 
-    private List<String> analiseSequence(boolean readingStarted, int codonNumber, String startCodon, String beforeStarted, List<String> aminoAcids, List<Character> characters, String charAminoAcids)
+    private List<String> analiseSequence(boolean readingStarted, int srartCodonNumber,
+                                         int codonNumber, String startCodon, String beforeStarted,
+                                         List<String> aminoAcids, List<Character> characters, String charAminoAcids)
     {
-        while (!readingStarted && codonNumber <= (characters.size() -3))
+        while (!readingStarted && codonNumber <= (characters.size() -2))
         {
             while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size())
             {
@@ -33,7 +37,7 @@ public class MysteryConfig
             if ("AUG".equals(startCodon) || "ATG".equals(startCodon))
             {
                 readingStarted = true;
-                beforeStarted = getBeforestarted(codonNumber, charAminoAcids);
+                beforeStarted = getBeforestarted(srartCodonNumber, codonNumber, charAminoAcids);
                 aminoAcids.add(beforeStarted);
                 codonNumber += 2;
             }
@@ -44,9 +48,8 @@ public class MysteryConfig
         if (readingStarted)
         {
             String aminoAcidEncoding = "";
-            while (codonNumber < characters.size()-2)
-            {
-                while(Objects.requireNonNull(aminoAcidEncoding).length() < 3)
+            while (codonNumber < (characters.size()-2)){
+                while(Objects.requireNonNull(aminoAcidEncoding).length() < 3 )
                 {
                     aminoAcidEncoding += characters.get(codonNumber);
                     codonNumber ++;
@@ -74,7 +77,8 @@ public class MysteryConfig
                     aminoAcids.add("Isoleucine");
                 }
                 else if (aminoAcidEncoding.equals("TCT") || aminoAcidEncoding.equals("TCC")
-                    || aminoAcidEncoding.equals("TCA") || aminoAcidEncoding.equals("TCG")){
+                    || aminoAcidEncoding.equals("TCA") || aminoAcidEncoding.equals("TCG")
+                    || aminoAcidEncoding.equals("AGC") || aminoAcidEncoding.equals("AGT")){
                     aminoAcids.add("Serine");
                 }
                 else if (aminoAcidEncoding.equals("ACT") || aminoAcidEncoding.equals("ACC")
@@ -126,7 +130,9 @@ public class MysteryConfig
                 else if (aminoAcidEncoding.equals("TAA") || aminoAcidEncoding.equals("TAG") || aminoAcidEncoding.equals("TGA"))
                 {
                     aminoAcids.add(aminoAcidEncoding);
-                    analiseSequence(false, codonNumber, startCodon, beforeStarted, aminoAcids, characters, charAminoAcids);
+                    return analiseSequence(false, codonNumber, codonNumber, startCodon, beforeStarted,
+                        aminoAcids,
+                        characters, charAminoAcids);
                 }
                 else {
                     aminoAcids.add(aminoAcidEncoding + getAfterString(codonNumber, charAminoAcids));
@@ -134,11 +140,16 @@ public class MysteryConfig
                 }
                 aminoAcidEncoding = "";
             }
+
         }
         else {
             aminoAcids.add("Nucleotide chain not recognized!");
         }
-
+        String afterStarted = "";
+        for (; codonNumber < characters.size(); codonNumber++) {
+            afterStarted += characters.get(codonNumber);
+        }
+        aminoAcids.add(afterStarted);
         return  aminoAcids;
     }
 
@@ -152,12 +163,12 @@ public class MysteryConfig
         return afterString;
     }
 
-    private String getBeforestarted(int codonNumber, String charAminoAcids)
+    private String getBeforestarted(int srartCodonNumber, int codonNumber, String charAminoAcids)
     {
         String beforeStarted = "";
-        for (int number = 0; number < codonNumber; number++ )
+        for (; srartCodonNumber < codonNumber; srartCodonNumber++ )
         {
-            beforeStarted += charAminoAcids.toCharArray()[number];
+            beforeStarted += charAminoAcids.toCharArray()[srartCodonNumber];
         }
         return beforeStarted;
     }
