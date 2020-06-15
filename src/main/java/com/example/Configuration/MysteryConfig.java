@@ -26,7 +26,7 @@ public class MysteryConfig
                                          int codonNumber, String startCodon, String beforeStarted,
                                          List<String> aminoAcids, List<Character> characters, String charAminoAcids)
     {
-        while (!readingStarted && codonNumber <= (characters.size() -2))
+        while (!readingStarted && codonNumber < (characters.size() -2))
         {
             while(Objects.requireNonNull(startCodon).length() < 3 && codonNumber < characters.size())
             {
