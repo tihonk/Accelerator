@@ -57,3 +57,9 @@ k
 .src/main/webapp/resources/core/css/mystery.css,c/3/c386ed6bc057a830fef1aefb1fe6f65801886ff4
 ]
 -src/main/webapp/WEB-INF/views/jsp/mystery.jsp,c/9/c99092b963d6215db3046845c92c8cff22e4ebf4
+w
+G.idea/sonarlint/issuestore/1/d/1d0a440bf6a41af1942fff59b13362cdbbc0b5e1,7/5/7583da9ce4f707cfbec2864da85c6ec65a559357
+\
+,src/main/webapp/resources/core/js/counter.js,6/8/68a6e6de1e3bba7d4dbe3d340fe561d1cd17712a
+b
+2src/main/webapp/resources/core/js/bootstrap.min.js,2/0/2075dd32e1d23fea2c69bf8be4ac1d99031f12bb

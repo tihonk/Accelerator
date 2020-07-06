@@ -38,12 +38,14 @@
 
     <filter-mapping>
         <filter-name>RequestFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+<!--        <url-pattern>/*</url-pattern>-->
+        <url-pattern>/test/*</url-pattern>
         <servlet-name>spring-web</servlet-name>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
-        <url-pattern>/chemistry/*</url-pattern>
+<!--        <url-pattern>/chemistry/*</url-pattern>-->
+        <url-pattern>/test/chemistry/*</url-pattern>
     </filter-mapping>
 </web-app>

@@ -52,7 +52,10 @@
                 </div>
 
                 <div class="col-md-4 divSelect">
-                    <p class="polzun"><input  type="range" min="0" max="10" onchange="document.getElementById('rangeValue').innerHTML = this.value;" ><span id="rangeValue">5</span>Å</p>
+                    <p class="polzun">The maximum distance to the atom:
+                        <input  type="range" min="0" max="10" name="maxCount" onchange="document.getElementById('rangeValue').innerHTML = this.value;" >
+                        <span id="rangeValue">5</span>Å
+                    </p>
                     <p class="selectedDate"><label>
                         <select name="element">
                              <option value="AR">Ar (argon)</option>
@@ -76,8 +79,8 @@
         </div>
     </div>
 </div>
-${text}
-
-
+<div class="container">
+    ${text}
+</div>
 </body>
 </html>
