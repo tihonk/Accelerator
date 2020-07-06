@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.Configuration.AcceleratorConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +19,13 @@ public class AcceleratorController
     }
 
     @RequestMapping(value = "/chemistry/accelerator", method = RequestMethod.POST)
-    public String analis( @RequestParam String text, Map<String, Object> model) {
+    public String analis( @RequestParam String text, @RequestParam String element,
+                          @RequestParam int maxCount, Map<String, Object> model) {
 
+        AcceleratorConfig accelerator = new AcceleratorConfig();
+        String processedPDB = accelerator.processPDB(text, element, maxCount);
 
-        model.put("text", "Nice try, man! =)");
+        model.put("text", processedPDB);
         return "accelerator";
     }
 }
