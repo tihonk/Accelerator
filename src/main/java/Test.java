@@ -7,7 +7,7 @@ import org.hibernate.SessionFactory;
 
 import java.util.List;
 
-
+// Hello
 public class Test
 {
     public static void main(String[] args)
