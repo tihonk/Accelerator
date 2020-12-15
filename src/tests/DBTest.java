@@ -7,11 +7,19 @@ import org.hibernate.SessionFactory;
 
 import java.util.List;
 
-// Hello again
-public class Test
+/**
+/* This test is designed to verify that the database is working.
+/* When executed, all users are taken from the database.
+/*
+*/
+
+public class DBTest
 {
     public static void main(String[] args)
     {
+        /**
+         * Hello world!
+         */
         SessionFactory sessionFactory = com.example.HibernateUtil.getSessionFactory();
         Session session =sessionFactory.openSession();
         List<User> users = null;
