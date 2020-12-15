@@ -13,6 +13,9 @@ import java.util.List;
 /*
 */
 
+/**
+ *  This test is writen by Vadim learning git & gitHub
+ */
 public class DBTest
 {
     public static void main(String[] args)
