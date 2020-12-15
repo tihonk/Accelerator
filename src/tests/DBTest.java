@@ -10,6 +10,7 @@ import java.util.List;
 /**
 /* This test is designed to verify that the database is working.
 /* When executed, all users are taken from the database.
+/*
 */
 
 public class DBTest
