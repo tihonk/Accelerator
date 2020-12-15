@@ -18,7 +18,7 @@ public class DBTest
     public static void main(String[] args)
     {
         /**
-         * Hello world!
+         * Comment
          */
         SessionFactory sessionFactory = com.example.HibernateUtil.getSessionFactory();
         Session session =sessionFactory.openSession();
