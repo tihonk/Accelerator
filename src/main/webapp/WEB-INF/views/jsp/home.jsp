@@ -20,8 +20,11 @@
             <c:choose>
                 <c:when test="${empty cookie.name.value}">
                     <div class="startButtons">
+                        <!--
+                        Commented SIGNIN and REGISTER buttons until their implementation appears
                         <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
                         <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a>
+                        -->
                     </div>
                 </c:when>
                 <c:otherwise>
