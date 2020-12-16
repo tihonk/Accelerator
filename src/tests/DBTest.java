@@ -30,9 +30,7 @@ public class DBTest
             for (User user: users) {
                 System.out.println(user.toString());
             }
-            /**
-             * Third comment
-             */
+
 
 //            Eny code;
 

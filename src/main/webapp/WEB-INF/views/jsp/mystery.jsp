@@ -29,6 +29,8 @@
         <div class="navbar-header">
             <ul class="menu">
                 <a class="navbar-brand" href="/">Accelerator</a>
+                <!-- My cabinet button hided untill implementation of Sign In and Register functionality -->
+                <!--
                 <li><a href=#>My cabinet</a>
                     <ul class="submenu">
                         <li><a href=#>My account</a></li>
@@ -39,6 +41,7 @@
                             </form:form>
                         </li>
                     </ul>
+                    -->
                 </li>
             </ul>
         </div>

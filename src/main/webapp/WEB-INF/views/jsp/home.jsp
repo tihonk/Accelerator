@@ -19,15 +19,19 @@
 		<a class="navbar-brand" href="/">Accelerator</a>
             <c:choose>
                 <c:when test="${empty cookie.name.value}">
-                    <div class="startButtons">
+                     <div class="startButtons">
                         <!--
                         Commented SIGNIN and REGISTER buttons until their implementation appears
-                        <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
-                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a>
                         -->
+                        <!-- <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
+                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a> -->
                     </div>
                 </c:when>
                 <c:otherwise>
+                    <!--
+                    MyCabinet button is hided untill implementation of Register and Sign In functionality
+                    -->
+                    <!--
                     <li><a href=#>My cabinet</a>
                         <ul class="submenu">
                             <li><a href=#>My account</a></li>
@@ -39,6 +43,7 @@
                             </li>
                         </ul>
                     </li>
+                    -->
                 </c:otherwise>
             </c:choose>
         </ul>
