@@ -2,9 +2,7 @@ package com.example.configuration;
 
 import com.example.configuration.AcceleratorConfig;
 import org.junit.Test;
-
 import java.util.ArrayList;
-
 import static org.junit.Assert.*;
 
 public class AcceleratorConfigTest {
