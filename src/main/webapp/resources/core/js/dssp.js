@@ -1,46 +1,56 @@
-var ddup = {
-    // (A) ON PAGE LOAD
-    hzone: null, // HTML upload zone
-    hstat: null, // HTML upload status
-    hform: null, // HTML upload form
-    init : function () {
-        // (A1) GET HTML ELEMENTS
-        ddup.hzone = document.getElementById("upzone");
-        ddup.hstat = document.getElementById("upstat");
-        ddup.hform = document.getElementById("upform");
-
-        // (A2) DRAG-DROP SUPPORTED
-        if (window.File && window.FileReader && window.FileList && window.Blob) {
-            // HIGHLIGHT DROPZONE ON FILE HOVER
-            ddup.hzone.addEventListener("dragenter", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                ddup.hzone.classList.add('highlight');
-            });
-            ddup.hzone.addEventListener("dragleave", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                ddup.hzone.classList.remove('highlight');
-            });
-
-            // DROP TO UPLOAD FILE
-            ddup.hzone.addEventListener("dragover", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            ddup.hzone.addEventListener("drop", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                ddup.hzone.classList.remove('highlight');
-                ddup.queue(e.dataTransfer.files);
-            });
-        }
-
-        // (A3) DRAG-DROP UPLOAD NOT SUPPORTED
-        else {
-            ddup.hzone.style.display = "none";
-            ddup.hform.style.display = "block";
-        }
-    }
+let dropArea = document.getElementById('drop-area')
+;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false)
+})
+function preventDefaults (e) {
+    e.preventDefault()
+    e.stopPropagation()
 }
-window.addEventListener("DOMContentLoaded", ddup.init);
+;['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false)
+})
+;['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false)
+})
+function highlight(e) {
+    dropArea.classList.add('highlight')
+}
+function unhighlight(e) {
+    dropArea.classList.remove('highlight')
+}
+dropArea.addEventListener('drop', handleDrop, false)
+function handleDrop(e) {
+    let dt = e.dataTransfer
+    let files = dt.files
+    handleFiles(files)
+}
+function handleFiles(files) {
+    ([...files]).forEach(uploadFile)
+}
+function uploadFile(file) {
+    let url = 'ВАШ URL ДЛЯ ЗАГРУЗКИ ФАЙЛОВ'
+    let formData = new FormData()
+    formData.append('file', file)
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+        .then(() => { /* Готово. Информируем пользователя */ })
+        .catch(() => { /* Ошибка. Информируем пользователя */ })
+}
+function uploadFile(file) {
+    var url = 'ВАШ URL ДЛЯ ЗАГРУЗКИ ФАЙЛОВ'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.addEventListener('readystatechange', function(e) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            // Готово. Информируем пользователя
+        }
+        else if (xhr.readyState == 4 && xhr.status != 200) {
+            // Ошибка. Информируем пользователя
+        }
+    })
+    formData.append('file', file)
+    xhr.send(formData)
+}

@@ -8,6 +8,7 @@
 <head>
     <spring:url value="/resources/core/css/dssp.css" var="coreCss" />
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
+    <spring:url value="/resources/core/js/dssp.js" var="coreJs" />
     <link href="${bootstrapCss}" rel="stylesheet" />
     <link href="${coreCss}" rel="stylesheet" />
     <!-- Заголовок страницы в браузере -->
@@ -18,29 +19,7 @@
     <!-- Адаптив -->
     <meta name="viewport" content="width=device-width">
 </head>
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <ul class="menu">
-                <a class="navbar-brand" href="/">Accelerator</a>
-                <!-- My cabinet button hided untill implementation of Sign In and Register functionality -->
-                <!--
-                <li><a href=#>My cabinet</a>
-                    <ul class="submenu">
-                        <li><a href=#>My account</a></li>
-                        <li><a href=#>My history</a></li>
-                        <li>
-                            <form:form action="LogoutServlet" method="post">
-                                <a class="signOutSubmenu" action="LogoutServlet" href="${pageContext.request.contextPath}/LogoutServlet">Sign Out</a>
-                            </form:form>
-                        </li>
-                    </ul>
-                    -->
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+
 <!-- Отображаемое тело страницы -->
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -52,46 +31,33 @@
         </div>
     </div>
 </nav>
-<div class="margin-top">
-    <div class="container">
-        <div class="wrapper">
-            <!-- Контент -->
-            <div class="content">
-                <div class="tabs">
-                    <nav class="tabs__items">
-                        <a href="#tab_01" class="tabs__item"><span>Upload</span></a>
-                        <a href="#tab_02" class="tabs__item"><span>Browse</span></a>
-                        <a href="#tab_03" class="tabs__item"><span>URL</span></a>
-                    </nav>
-                    <div class="tabs__body">
-                        <div id="tab_01" class="tabs__block">
-                            <div id="upzone">
-                                Drop Files Here
-                            </div>
+<form class="tabs-wrapper" method="post">
+    <input style="display: none" type="radio" name="radio" id="b1" checked>
+    <input style="display: none" type="radio" name="radio" id="b2">
 
-                            <!-- (C) UPLOAD STATUS -->
-                            <div id="upstat"></div>
-
-                            <!-- (D) FALLBACK -->
-                            <form id="upform" action="dd-upload.php" method="post" enctype="multipart/form-data">
-                                <input type="file" name="upfile" accept="image/*" required>
-                                <input type="submit" value="Upload File">
-                            </form>
-                        </div>
-                        <div id="tab_02" class="tabs__block">
-                            <input type="file">
-                        </div>
-                        <div id="tab_03" class="tabs__block">
-                            <input type="url">
-                        </div>
-                    </div>
-                </div>
-                <div class="text">
-                </div>
+    <label for="b1" class="form-buttons" id="btn-1"></label>
+    <label for="b2" class="form-buttons" id="btn-2"></label>
+    <div class="break"></div> <!-- break new line-->
+    <div class="tabs">
+        <div class="tab tab-1">
+            <span class="header">Upload file of DSSP</span>
+            <div id="drop-area">
+                <form class="my-form">
+                    <p class="description">Choose a PDB file or drop it here</p>
+                    <input type="file" id="fileElem" name="file" multiple onchange="handleFiles(this.files)">
+                    <label class="button" for="fileElem">Select file</label>
+                </form>
             </div>
         </div>
+        <div class="tab tab-2">
+            <span class="header">Text from DSSP</span>
+            <div class="break"></div> <!-- break new line-->
+            <textarea class="text-area" name="text"></textarea>
+        </div>
+        <input type="submit" class="button submit" name="dssp" value="Send">
+
     </div>
-</div>
-<script src="script.js"></script>
+</form>
+<script src="${coreJs}"></script>
 </body>
 </html>

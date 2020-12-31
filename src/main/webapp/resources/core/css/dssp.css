@@ -1,135 +1,118 @@
-.margin-top {
-    margin-top: 0px;
-}
-/*Обнуление*/
-*,
-*:before,
-*:after {
+* {
     padding: 0;
     margin: 0;
-    border: 0;
-    box-sizing: border-box;
 }
-html,
-body {
-    height: 100%;
-    background-color: #666;
-    color: #fff;
-}
-
-.wrapper {
-    min-height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.content {
-    padding: 50px 0;
-    max-width: 1000px;
-    margin: 0px auto;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: large;
-}
-.tabs {
-    margin: 0px 0px 50px 0px;
-}
-.tabs__items {
-    display: flex;
-}
-.tabs__item {
-    flex: 0 1 33.333%;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
-    color: #000;
-    text-decoration: none;
-}
-.tabs__item span {
-    position: relative;
-    z-index: 2;
-}
-
-.tabs__body {
-}
-.tabs__block {
-    position: relative;
-    padding: 20px;
-    font-size: 18px;
-    line-height: 24px;
-    display: none;
-}
-.tabs__block:before {
-    content: "";
-    height: 50px;
-    width: 33.333%;
-    position: absolute;
-    top: -50px;
-}
-
-.tabs__block:nth-child(1) {
-    background-color: #BBB;
-}
-.tabs__block:nth-child(1):before {
-    background-color: #BBB;
-    left: 0;
-}
-.tabs__block:nth-child(2) {
-    background-color: #BBB;
-}
-.tabs__block:nth-child(2):before {
-    background-color: #BBB;
-    left: 33.333%;
-}
-.tabs__block:nth-child(3) {
-    background-color: #BBB;
-}
-.tabs__block:nth-child(3):before {
-    background-color: #bbb;
-    right: 0;
-}
-
-.tabs__block:target {
-    display: block;
-}
-
-.text {
-    font-size: 18px;
-    line-height: 24px;
-}
-
-@media (max-width: 600px) {
-    .tabs__item span {
-        display: block;
-        width: 100px;
-        padding: 0px 5px;
-        white-space: nowrap;
-        text-align: center;
-        overflow: hidden;
-        font-size: 14px;
-        text-overflow: ellipsis;
-    }
-}
-
-.z {
-    z-index: 9999999;
-}
-/*
-    DRAG AND DROP STYLES
-*/
-#upzone {
-    width: 300px;
-    height: 200px;
-    background: none;
-    border: #555 dashed 3px;
+.tabs-wrapper {
     padding: 10px;
+    padding-top: 80px;
+    width: 20%;
+    background-color: #DDD;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
-#upzone.highlight {
-    background: #ff0;
+.form-buttons {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    display: inline-block;
+    border: #999 solid medium;
+    border-radius: 50%;
+    transition: 0.3s;
 }
-
-/* (B) UPLOAD FORM */
-#upform {
+.form-buttons:hover {
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+#b1:checked ~ #btn-1 {
+    background-color: #AAA;
+}
+#b1:checked ~ .tabs .tab-2{
     display: none;
 }
+
+#b2:checked ~ #btn-2 {
+    background-color: #AAA;
+}
+#b2:checked ~ .tabs .tab-1{
+    display: none;
+}
+.break {
+    flex-basis: 100%;
+    height: 0;
+}
+.tab {
+    width: 100%;
+    height: auto;
+    font-family: "Century Gothic";
+    font-weight: bold;
+    font-size: 20px;
+    color: #AAA;
+}
+.header {
+    left: 50%;
+    top: 0;
+}
+.description {
+    color: #999;
+}
+#drop-area {
+    margin-top: 10px;
+    border: 2px dashed #999;
+    width: 100%;
+    font-family: sans-serif;
+}
+#drop-area.highlight {
+    border-color: purple;
+}
+p {
+    margin-top: 0;
+}
+.my-form {
+    margin-bottom: 10px;
+}
+#gallery {
+    margin-top: 10px;
+}
+#gallery img {
+    width: 150px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+.button {
+    display: inline-block;
+    padding: 10px;
+    color: #777;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.button:hover {
+    background-color: #999;
+    color: white;
+}
+#fileElem {
+    display: none;
+}
+.text-area {
+    width: 100%;
+    resize: none;
+}
+.submit {
+    font-family: Bahnschrift;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-left: 50%;
+    width: 80px;
+    color: #777;
+    transform: translate(-50%);
+    transition: 0.3s;
+    border: none;
+}
+.submit:hover {
+    background-color: #999;
+    color: white;
+}
+
+

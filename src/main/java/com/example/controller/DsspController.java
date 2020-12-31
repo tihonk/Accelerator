@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Controller
@@ -20,8 +21,10 @@ public class DsspController
     }
 
     @RequestMapping(value = "/chemistry/dssp", method = RequestMethod.POST)
-    public String getResult(@RequestParam String text, Map<String, Object> model)
+    public String getResult(HttpServletRequest request)
     {
+        String dsspText = request.getParameter("text");
+        System.out.println(dsspText);
         return "dssp";
     }
 }
