@@ -4,23 +4,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html lang="ru">
-<!-- Заголовок страницы, контейнер для других важных данных (не отображается) -->
 <head>
     <spring:url value="/resources/core/css/dssp.css" var="coreCss" />
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
     <spring:url value="/resources/core/js/dssp.js" var="coreJs" />
     <link href="${bootstrapCss}" rel="stylesheet" />
     <link href="${coreCss}" rel="stylesheet" />
-    <!-- Заголовок страницы в браузере -->
-    <title>Табы на CSS</title>
-    <!-- Подключаем CSS -->
-    <!-- Кодировка страницы -->
+    <title>DSSP</title>
     <meta charset="UTF-8">
-    <!-- Адаптив -->
     <meta name="viewport" content="width=device-width">
 </head>
 
-<!-- Отображаемое тело страницы -->
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -54,7 +48,7 @@
             <div class="break"></div> <!-- break new line-->
             <textarea class="text-area" name="text"></textarea>
         </div>
-        <input type="submit" class="button submit" name="dssp" value="Send">
+        <input type="submit" class="submit" name="dssp" value="Send">
 
     </div>
 </form>
