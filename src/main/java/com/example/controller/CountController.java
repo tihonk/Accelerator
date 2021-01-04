@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.Configuration.CountConfig;
+import com.example.configuration.CountConfig;
 import com.example.controllerHelper.CountControllerHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

@@ -42,8 +42,7 @@
                     <form class="my-form">
                         <div class="center back-white pt-4 h-35">
                             <p class="description">Choose a PDB file or drop it here</p>
-                            <input type="file" id="fileElem" name="file" multiple onchange="handleFiles(this.files)">
-                            <label class="button" for="fileElem">Select file</label>
+                            <input type="file" id="fileElem" name="file" multiple onchange="showFile(this)">
                         </div>
                     </form>
                 </div>

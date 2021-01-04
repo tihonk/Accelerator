@@ -1,15 +1,12 @@
 package com.example.controller;
 
-import com.example.Configuration.CountConfig;
-import com.example.controllerHelper.CountControllerHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import java.io.File;
 
 @Controller
 public class DsspController
@@ -25,6 +22,7 @@ public class DsspController
     {
         String dsspText = request.getParameter("text");
         System.out.println(dsspText);
+        File file = (File) request.getAttribute("file");
         return "dssp";
     }
 }

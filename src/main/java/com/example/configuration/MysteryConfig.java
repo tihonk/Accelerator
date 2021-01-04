@@ -1,4 +1,4 @@
-package com.example.Configuration;
+package com.example.configuration;
 
 import java.util.AbstractList;
 import java.util.ArrayList;

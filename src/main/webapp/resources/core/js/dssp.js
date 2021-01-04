@@ -28,17 +28,6 @@ function handleFiles(files) {
     ([...files]).forEach(uploadFile)
 }
 function uploadFile(file) {
-    let url = 'ВАШ URL ДЛЯ ЗАГРУЗКИ ФАЙЛОВ'
-    let formData = new FormData()
-    formData.append('file', file)
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    })
-        .then(() => { /* Готово. Информируем пользователя */ })
-        .catch(() => { /* Ошибка. Информируем пользователя */ })
-}
-function uploadFile(file) {
     var url = 'ВАШ URL ДЛЯ ЗАГРУЗКИ ФАЙЛОВ'
     var xhr = new XMLHttpRequest()
     var formData = new FormData()
@@ -53,4 +42,26 @@ function uploadFile(file) {
     })
     formData.append('file', file)
     xhr.send(formData)
+}
+let fileInput = document.getElementById('fileElem');
+fileInput.addEventListener('change', function (e) {
+    console.log(fileInput.files);
+})
+let textArea = document.getElementsByClassName('text-area')[0];
+let radio2 = document.getElementById('b2');
+function showFile(input) {
+    let file = input.files[0];
+
+    let reader = new FileReader();
+
+    reader.readAsText(file);
+
+    reader.onload = function() {
+        textArea.value = reader.result;
+        radio2.setAttribute('selected');
+    };
+
+    reader.onerror = function() {
+        console.log(reader.error);
+    };
 }
