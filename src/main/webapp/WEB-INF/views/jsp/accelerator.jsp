@@ -51,19 +51,22 @@
             <form method="post">
                 <div class="col-md-4 divTextaria">
                     <label>
-                        <textarea name="text"  rows="12" placeholder="Enter all dates from the PDB file:"></textarea>
+                        <textarea name="text" rows="12" placeholder="Enter all dates from the PDB file:"></textarea>
                     </label>
-                    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-                    <p><button type="submit">Get result</button> <button type="reset">Clean out</button></p>
+                    <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+                    <p>
+                        <button type="submit">Get result</button>
+                        <button type="reset">Clean out</button>
+                    </p>
                 </div>
                 <div class="col-md-3 selectElement">
                     <input type="checkbox" id="selectElement-input">
-                    <label for="selectElement-input" id="lab" >
+                    <label for="selectElement-input" id="lab">
                         <div class="black-btn ">Select Element:</div>
                     </label>
                     <section id="periodic_table">
                         <div>
-                            <div>
+                            <div class="s">
                                 <div>H</div>
                                 <div>Li</div>
                                 <div>Na</div>
@@ -72,7 +75,7 @@
                                 <div>Cs</div>
                                 <div>Fr</div>
                             </div>
-                            <div>
+                            <div class="s">
                                 <div>Be</div>
                                 <div>Mg</div>
                                 <div>Ca</div>
@@ -80,67 +83,67 @@
                                 <div>Ba</div>
                                 <div>Ra</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Sc</div>
                                 <div>Y</div>
-                                <div>X</div>
-                                <div>X</div>
+                                <div>-</div>
+                                <div>-</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Ti</div>
                                 <div>Zr</div>
                                 <div>Hf</div>
                                 <div>Rf</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>V</div>
                                 <div>Nb</div>
                                 <div>Ta</div>
                                 <div>Db</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Cr</div>
                                 <div>Mo</div>
                                 <div>W</div>
                                 <div>Sg</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Mn</div>
                                 <div>Tc</div>
                                 <div>Re</div>
                                 <div>Bh</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Fe</div>
                                 <div>Ru</div>
                                 <div>Os</div>
                                 <div>Hs</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Co</div>
                                 <div>Rh</div>
                                 <div>Ir</div>
                                 <div>Mt</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Ni</div>
                                 <div>Pd</div>
                                 <div>Pt</div>
                                 <div>Ds</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Cu</div>
                                 <div>Ag</div>
                                 <div>Au</div>
                                 <div>Rg</div>
                             </div>
-                            <div>
+                            <div class="d">
                                 <div>Zn</div>
                                 <div>Cd</div>
                                 <div>Hg</div>
                                 <div>Cn</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>B</div>
                                 <div>Al</div>
                                 <div>Ga</div>
@@ -148,7 +151,7 @@
                                 <div>Ti</div>
                                 <div>Uut</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>C</div>
                                 <div>Si</div>
                                 <div>Ge</div>
@@ -156,7 +159,7 @@
                                 <div>Rb</div>
                                 <div>Fl</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>N</div>
                                 <div>P</div>
                                 <div>As</div>
@@ -164,7 +167,7 @@
                                 <div>Bi</div>
                                 <div>Uup</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>O</div>
                                 <div>S</div>
                                 <div>Se</div>
@@ -172,7 +175,7 @@
                                 <div>Po</div>
                                 <div>Lv</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>F</div>
                                 <div>Cl</div>
                                 <div>Br</div>
@@ -180,7 +183,7 @@
                                 <div>At</div>
                                 <div>Uus</div>
                             </div>
-                            <div>
+                            <div class="p">
                                 <div>He</div>
                                 <div>Ne</div>
                                 <div>Ar</div>
@@ -190,7 +193,7 @@
                                 <div>Uuo</div>
                             </div>
                         </div>
-                        <div>
+                        <div class="f">
                             <div>
                                 <div>La</div>
                                 <div>Ac</div>
@@ -253,20 +256,25 @@
                             </div>
                         </div>
                     </section>
-                    <div class="filter"></div>
-                    <input type="text" class="selectedElement" name="element">
+                    <div class="filter" onclick="(function() {selectElementInput.click()})()"></div>
+                    <input type="text" class="selectedElement" name="element" maxlength="3">
                 </div>
-                <div class="col-md-4 divSelect">
-                    <p class="polzun">The maximum distance to the atom:
-                        <input  type="range" min="0" max="10" name="maxCount" onchange="document.getElementById('rangeValue').innerHTML = this.value;" >
-                        <span id="rangeValue">5</span>Å
-                    </p>
+
+
+                <div class="row">
+                    <div class="col-md-4 divSelect">
+                        <p class="polzun">The maximum distance to the atom:
+                            <input type="range" min="0" max="10" name="maxCount"
+                                   onchange="document.getElementById('rangeValue').innerHTML = this.value;">
+                            <span id="rangeValue">5</span>Å
+                        </p>
+                    </div>
                 </div>
             </form>
         </div>
+        <div class="container"></div>
     </div>
 </div>
-<div class="container">
 </div>
     ${text}
 </div>

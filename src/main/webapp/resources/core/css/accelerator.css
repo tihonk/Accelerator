@@ -145,11 +145,10 @@ textarea {
 #periodic_table {
     display: none;
     position: fixed;
-    bottom: 30%;
-    transform: translate(-50%);
+    transform: translate(-50%,-50%);
     left:50%;
+    top: 50%;
     width: 70%;
-    min-width: 600px;
     z-index: 10001;
 }
 
@@ -159,24 +158,26 @@ textarea {
 
 #periodic_table > div > div {
     width: 5.5%;
+    height: 0;
     display: inline-block;
     margin-right: -7px;
 }
 
 #periodic_table > div > div > div {
+    cursor: pointer;
+    line-height: 100%;
+    color: black;
     border: 3px solid black;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     text-align: center;
     font-weight: bold;
-    font-size: 150%;
-    background: #BBB;
+    font-family: "Arial Black";
     margin-top: -3px;
-    padding: 10% 10%;
+    width: 100%;
+    height: 0;
+    padding: 40% 0 54% 0;
 }
 #periodic_table > div > div > div:hover {
-    background-color: #777;
+    filter: brightness(0.8);
 }
 .selectElement {
     user-select: none;
@@ -218,6 +219,14 @@ textarea {
         opacity: 50%;
     }
 }
+@keyframes disappear {
+    from {
+        opacity: 100%;
+    }
+    to {
+        opacity: 0;
+    }
+}
 .filter {
     display: none;
     position: fixed;
@@ -236,10 +245,13 @@ textarea {
     height: 35px;
     font-family: "Arial Black";
     font-size: 15px;
+    text-align: center;
+    outline: none;
+    border-width: 0;
 }
 .black-btn {
+    cursor: pointer;
     display: inline-block;
-    font-family: arial,sans-serif;
     font-size: 16px;
     color: rgb(205,216,228);
     text-shadow: 0 -1px rgb(46,53,58);
@@ -253,6 +265,27 @@ textarea {
     background: rgb(81,92,102) linear-gradient(rgb(81,92,102), rgb(69,78,87));
     box-shadow: inset 0 1px rgba(101,114,126,1), inset 0 0 1px rgba(140,150,170,.8), 0 1px rgb(83,94,104), 0 0 1px rgb(86,96,106);
 }
+.s > div {
+    background-color: #b99;
+}
+.p > div {
+    background-color: #bb9;
+}
+.d > div {
+    background-color: #99c;
+}
+.f > div > div {
+    background-color: #9c9;
+}
+.vertical-align {
+    vertical-align: middle;
+}
 
+@media screen and (max-width: 800px) {
+    #periodic_table {
+        width: 100%;
+        margin-left: 5%;
+    }
+}
 
 
