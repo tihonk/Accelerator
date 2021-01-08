@@ -21,8 +21,6 @@ public class DsspController
     public String getResult(HttpServletRequest request)
     {
         String dsspText = request.getParameter("text");
-        System.out.println(dsspText);
-        File file = (File) request.getAttribute("file");
         return "dssp";
     }
 }

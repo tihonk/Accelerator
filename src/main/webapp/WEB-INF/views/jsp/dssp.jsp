@@ -29,12 +29,12 @@
     </nav>
 <div class="jumbotron h-100">
     <form class="tabs-wrapper" method="post">
-        <input style="display: none" type="radio" name="radio" id="b1" checked>
-        <input style="display: none" type="radio" name="radio" id="b2">
+        <input class="hidden" type="radio" name="radio" id="b1" checked>
+        <input class="hidden" type="radio" name="radio" id="b2">
 
         <label for="b1" class="form-buttons" id="btn-1"></label>
         <label for="b2" class="form-buttons" id="btn-2"></label>
-        <div class="break"></div> <!-- break new line-->
+        <div class="break"></div>
         <div class="tabs">
             <div class="tab tab-1">
                 <span>Upload file of DSSP</span>
@@ -42,14 +42,14 @@
                     <form class="my-form">
                         <div class="center back-white pt-4 h-35">
                             <p class="description">Choose a PDB file or drop it here</p>
-                            <input type="file" id="fileElem" name="file" multiple onchange="showFile(this)">
+                            <input type="file" id="fileElem" name="file" onchange="showFile(this)">
                         </div>
                     </form>
                 </div>
             </div>
             <div class="tab tab-2">
                 <span class="header">Text from DSSP</span>
-                <div class="break"></div> <!-- break new line-->
+                <div class="break"></div>
                 <textarea class="text-area" name="text"></textarea>
             </div>
             <p class="center pt-1">
