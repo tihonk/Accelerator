@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <html lang="ru">
 <head>
     <spring:url value="/resources/core/css/dssp.css" var="coreCss" />
@@ -31,7 +30,6 @@
     <form class="tabs-wrapper" method="post">
         <input class="hidden" type="radio" name="radio" id="b1" checked>
         <input class="hidden" type="radio" name="radio" id="b2">
-
         <label for="b1" class="form-buttons" id="btn-1"></label>
         <label for="b2" class="form-buttons" id="btn-2"></label>
         <div class="break"></div>
@@ -57,7 +55,6 @@
                 <button type="submit">Get result</button>
                 <button type="reset">Clean out</button>
             </p>
-
         </div>
     </form>
     <script src="${coreJs}"></script>
