@@ -126,6 +126,16 @@
               <a class="btn btn-default" href="chemistry/mystery" role="button">Go to mystery</a>
           </p>
       </div>
+      <div class="col-md-4">
+          <h2>DSSP</h2>
+          <p>
+              Designed to standardize secondary structure assignment
+              and computation of DSSP records from PDB records
+          </p>
+          <p>
+              <a class="btn btn-default" href="chemistry/dssp" role="button">Go to DSSP</a>
+          </p>
+      </div>
   </div>
  
  

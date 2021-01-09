@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.Configuration.AcceleratorConfig;
+import com.example.configuration.AcceleratorConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;

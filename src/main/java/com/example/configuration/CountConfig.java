@@ -1,4 +1,4 @@
-package com.example.Configuration;
+package com.example.configuration;
 
 public class CountConfig {
     int g;
