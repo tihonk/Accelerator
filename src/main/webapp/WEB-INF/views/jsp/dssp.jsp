@@ -1,63 +1,71 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html lang="ru">
+<!doctype html>
+<html lang="en">
 <head>
-    <spring:url value="/resources/core/css/dssp.css" var="coreCss" />
-    <spring:url value="/resources/core/css/main.css" var="mainCss" />
-    <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
-    <spring:url value="/resources/core/js/dssp.js" var="coreJs" />
-    <link href="${bootstrapCss}" rel="stylesheet" />
-    <link href="${coreCss}" rel="stylesheet" />
-    <link href="${mainCss}" rel="stylesheet" />
-    <title>DSSP</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/css/core.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/css/dssp.css">
+    <title>Dssp</title>
 </head>
-
+<nav>
+    <div class="nav-wrap grey darken-4">
+        <a href="#" class="logo">Accelerator</a>
+    </div>
+</nav>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <ul class="menu">
-                    <a class="navbar-brand" href="/">Accelerator</a>
+
+<div class="bg-img"></div>
+<div class="wrapper">
+    <form class="" method="post">
+        <div class="container z-depth-3 container-main relative">
+            <div class="row">
+                <ul class="tabs row tabs-center col s12 m6 push-m3">
+                    <li class="tab col s6 tab-btn"><a class="active white-text" href="#tab-1">Upload</a></li>
+                    <li class="tab col s6 tab-btn"><a class="white-text" href="#tab-2">Text</a></li>
                 </ul>
             </div>
-        </div>
-    </nav>
-<div class="jumbotron h-100">
-    <form class="tabs-wrapper" method="post">
-        <input class="hidden" type="radio" name="radio" id="b1" checked>
-        <input class="hidden" type="radio" name="radio" id="b2">
-        <label for="b1" class="form-buttons" id="btn-1"></label>
-        <label for="b2" class="form-buttons" id="btn-2"></label>
-        <div class="break"></div>
-        <div class="tabs">
-            <div class="tab tab-1">
-                <span>Upload file of DSSP</span>
-                <div id="drop-area">
-                    <form class="my-form">
-                        <div class="center back-white pt-4 h-35">
-                            <p class="description">Choose a PDB file or drop it here</p>
-                            <input type="file" id="fileElem" name="file" onchange="showFile(this)">
+            <div class="mt-3">
+                <div id="tab-1">
+                    <div class="textarea z-depth-1 textarea-custom dashed-border" id="dropArea">
+                        <p class="description white-text text-main">Choose a PDB file or drop it here</p>
+                        <div class="row">
+                            <div class="file-field input-field col s12 m4 push-m4">
+                                <div class="btn purple darken-1">
+                                    <span>File</span>
+                                    <input type="file" id="fileElem" accept=".pdb, .txt"
+                                           onchange="showFile(this.files[0]); droppedFileName.style.display = 'none';">
+                                    <button type="reset" hidden id="clearForm"></button>
+                                </div>
+                                <div class="file-path-wrapper relative">
+                                    <span class="dropped-file-name">Hello</span>
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+                </div>
+                <div id="tab-2">
+                    <textarea class="textarea z-depth-1 textarea-custom" id="textarea" name="text"
+                              placeholder="Put it here"></textarea>
+                </div>
+                <div class="buttons center">
+                    <button type="button" class="btn purple darken-1 btn-primary"
+                            onclick="return getDsspResult(this.id, 'handler-url');">Get result
+                    </button>
+                    <button type="reset" class="btn purple darken-1 btn-primary">Clean out</button>
                 </div>
             </div>
-            <div class="tab tab-2">
-                <span class="header">Text from DSSP</span>
-                <div class="break"></div>
-                <textarea class="text-area" name="text"></textarea>
+            <div class="container z-depth-3 result-container hidden">
+                <div class="result-header">Result for <span id="result-header__fileName"></span></div>
+                <div class="close-result">&#9932;</div>
+                <textarea class="textarea result-content"></textarea>
             </div>
-            <p class="center pt-1">
-                <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-                <button type="submit">Get result</button>
-                <button type="reset">Clean out</button>
-            </p>
         </div>
     </form>
-    <script src="${coreJs}"></script>
+    <script src="${pageContext.request.contextPath}/resources/core/materialize/js/materialize.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/core/js/dssp.js"></script>
 </div>
 </body>
-</html>

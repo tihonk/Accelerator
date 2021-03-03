@@ -1,155 +1,74 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<title>Chemistry</title>
- 
-<spring:url value="/resources/core/css/home.css" var="coreCss" />
-<spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
-<link href="${bootstrapCss}" rel="stylesheet" />
-<link href="${coreCss}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/css/core.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/core/css/home.css">
 </head>
- 
-<nav class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container">
-	<div class="navbar-header">
-        <ul class="menu">
-		<a class="navbar-brand" href="/">Accelerator</a>
-            <c:choose>
-                <c:when test="${empty cookie.name.value}">
-                     <div class="startButtons">
-                        <!--
-                        Commented SIGNIN and REGISTER buttons until their implementation appears
-                        -->
-                        <!-- <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
-                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a> -->
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <!--
-                    MyCabinet button is hided untill implementation of Register and Sign In functionality
-                    -->
-                    <!--
-                    <li><a href=#>My cabinet</a>
-                        <ul class="submenu">
-                            <li><a href=#>My account</a></li>
-                            <li><a href=#>My history</a></li>
-                            <li>
-                                <form:form action="LogoutServlet" method="post">
-                                    <a class="signOutSubmenu" action="LogoutServlet" href="${pageContext.request.contextPath}/LogoutServlet">Sign Out</a>
-                                </form:form>
-                            </li>
-                        </ul>
-                    </li>
-                    -->
-                </c:otherwise>
-            </c:choose>
-        </ul>
-	</div>
-  </div>
-</nav>
-<p><img src="../../../resources/core/pictures/planet.jpg" width="100%"  alt="planets"></p>
-<c:if test="${not empty cookie.name.value}">
-<div class="successMessage">
-    <p class="container">You have successfully logged in.</p>
-</div>
-</c:if>
-<%--<div class="jumbotron">--%>
-<%--  <div class="container">--%>
-<%--	<h1>${title}</h1>--%>
-<%--	<p class="buttons">--%>
-<%--		<c:if test="${not empty name}">--%>
-<%--			Hello ${name}--%>
-<%--		</c:if>--%>
-<%-- --%>
-<%--		<c:if test="${empty name}">--%>
-<%--            Welcome to the chemical calculation accelerator!--%>
-<%--            <p class="buttons">--%>
-<%--                <a class="btn btn-info btn-lg signin" href="login" role="button">Sign in</a>--%>
-<%--                <a class="btn btn-info btn-lg signup" href="registration" role="button">Sign up</a>--%>
-<%--            </p>--%>
-<%--		</c:if>--%>
-<%--    </p>--%>
-<%--	</div>--%>
-<%--</div>--%>
- 
-<div class="container">
-<%--    Session: ${sessionScope.userId}--%>
-<%--    Cookie: ${cookie.name.value}--%>
-  <div class="row">
-	<div class="col-md-4">
-		<h2>Accelerator</h2>
-		<p>
-           Increases the speed of processing PDB files.
-           It computes the length between the desired ligand and the nearest atom. 
-           As a result, we have a list of binding sites and long links.
-        </p>
-		<p>
-			<a class="btn btn-default" href="chemistry/accelerator" role="button">Accelerate up</a>
-		</p>
-	</div>
-    <div class="col-md-4">
-        <h2>Counter</h2>
-        <p>
-            Calculates the content of all amino acids in the
-            amino acid sequence of the introduced protein.
-            The prevailing amino acid is determined.
-            The result is displayed in the form of a diagram.
-        </p>
-        <p>
-            <a class="btn btn-default" href="chemistry/counter" role="button">Count up</a>
-        </p>
-    </div>
-	<div class="col-md-4">
-		<h2>Analyzer</h2>
-		<p>
-            Analyzes the entered amino acid sequence.
-            Calculates the fidelity of the bonds of the selected
-            ligand with the given protein.
-            Indicates hypothetical binding sites and their amino acid composition.
-        </p>
-		<p>
-			<a class="btn btn-default" href="#" role="button">To analyze</a>
-		</p>
-	</div>
-  </div>
-  <div class="row">
-      <div class="col-md-4">
-          <h2>Mystery</h2>
-          <p>
-              I myself do not yet know what will come of this in the future,
-              but so far the literal lasting is simply converted to amino acid.
-          </p>
-          <p>
-              <a class="btn btn-default" href="chemistry/mystery" role="button">Go to mystery</a>
-          </p>
-      </div>
-      <div class="col-md-4">
-          <h2>DSSP</h2>
-          <p>
-              Designed to standardize secondary structure assignment
-              and computation of DSSP records from PDB records
-          </p>
-          <p>
-              <a class="btn btn-default" href="chemistry/dssp" role="button">Go to DSSP</a>
-          </p>
-      </div>
-  </div>
- 
- 
-  <hr>
-  <footer>
-      <p>&#9400; &#9413; Product created by @ Khrustalev & Kasko, 2019</p>
-  </footer>
-</div>
- 
-<spring:url value="/resources/core/css/hello.js" var="coreJs" />
-<spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />
- 
-<script src="${coreJs}"></script>
-<script src="${bootstrapJs}"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
+<nav>
+    <div class="nav-wrap grey darken-4">
+        <a href="#" class="logo">Accelerator</a>
+    </div>
+</nav>
+
+<body>
+<div class="bg-img"></div>
+<div class="row cards">
+    <div class="col s12 m6">
+        <div class="card grey darken-2">
+            <div class="card-content white-text">
+                <span class="card-title center-align">Accelerator</span>
+                <p>I am a very simple card. I am good at containing small bits of information.
+                    I am convenient because I require little markup to use effectively.</p>
+            </div>
+            <div class="card-action">
+                <a href="${pageContext.request.contextPath}/chemistry/accelerator">Accelerate up!</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s12 m6">
+        <div class="card grey darken-2">
+            <div class="card-content white-text">
+                <span class="card-title center-align">Counter</span>
+                <p>I am a very simple card. I am good at containing small bits of information.
+                    I am convenient because I require little markup to use effectively.</p>
+            </div>
+            <div class="card-action">
+                <a href="${pageContext.request.contextPath}/chemistry/counter">Count up!</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s12 m6">
+        <div class="card grey darken-2">
+            <div class="card-content white-text">
+                <span class="card-title center-align">Dssp</span>
+                <p>I am a very simple card. I am good at containing small bits of information.
+                    I am convenient because I require little markup to use effectively.</p>
+            </div>
+            <div class="card-action">
+                <a href="${pageContext.request.contextPath}/chemistry/dssp">Go to DSSP</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s12 m6">
+        <div class="card grey darken-2">
+            <div class="card-content white-text">
+                <span class="card-title center-align">Mystery</span>
+                <p>I am a very simple card. I am good at containing small bits of information.
+                    I am convenient because I require little markup to use effectively.</p>
+            </div>
+            <div class="card-action">
+                <a href="${pageContext.request.contextPath}/chemistry/mystery">Go to Mystery</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${pageContext.request.contextPath}/resources/core/materialize/js/materialize.min.js"></script>
+</body>
 </html>

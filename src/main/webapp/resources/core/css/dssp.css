@@ -1,16 +1,9 @@
-.tabs-wrapper {
-    margin-left: 50%;
-    padding: 2%;
-    transform: translate(-50%);
-    background-color: #DDD;
-}
-
 .form-buttons {
     width: 40px;
     height: 40px;
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0);
     display: inline-block;
-    border: #999 solid medium;
+    border: indigo solid medium;
     border-radius: 50%;
     transition: 0.3s;
 }
@@ -21,42 +14,37 @@
 }
 
 #b1:checked ~ #btn-1 {
-    background-color: #AAA;
+    background-color: indigo;
 }
 
-#b1:checked ~ .tabs .tab-2{
+#b1:checked ~ .tabs .tab-2 {
     -webkit-animation: disappear 0.5s 1 linear;
     -o-animation: disappear 0.5s 1 linear;
     animation: disappear 0.5s 1 linear;
     display: none;
 }
 
-#b1:checked ~ .tabs .tab-1{
+#b1:checked ~ .tabs .tab-1 {
     -webkit-animation: appear 0.5s 1 linear;
     -o-animation: appear 0.5s 1 linear;
     animation: appear 0.5s 1 linear;
 }
 
 #b2:checked ~ #btn-2 {
-    background-color: #AAA;
+    background-color: indigo;
 }
 
-#b2:checked ~ .tabs .tab-1{
+#b2:checked ~ .tabs .tab-1 {
     -webkit-animation: disappear 0.5s 1 linear;
     -o-animation: disappear 0.5s 1 linear;
     animation: disappear 0.5s 1 linear;
     display: none;
 }
 
-#b2:checked ~ .tabs .tab-2{
+#b2:checked ~ .tabs .tab-2 {
     -webkit-animation: appear 0.5s 1 linear;
     -o-animation: appear 0.5s 1 linear;
     animation: appear 0.5s 1 linear;
-}
-
-.break {
-    flex-basis: 100%;
-    height: 0;
 }
 
 .tab {
@@ -107,4 +95,96 @@
     to {
         opacity: 0;
     }
+}
+
+.tabs {
+    height: 80%;
+    background-color: transparent;
+}
+
+.buttons {
+    margin: 10px;
+}
+
+.tab-btn {
+    background-color: rgba(142, 36, 170, 1);
+    font-family: sinkin, Verdana, "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Gargi, Kalimati, Garuda, Gargi, "Mukti Narrow", Malayalam, "Myriad Pro", Tahoma, Verdana, Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+.textarea-custom {
+    height: 90%;
+}
+
+.dashed-border {
+    border: 3px dashed white;
+}
+
+.custom-file-input {
+    position: relative;
+}
+
+.dropped-file-name {
+    display: none;
+    position: absolute;
+    top: 12px;
+    color: #000;
+}
+
+.result-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+    background: #91175a;
+    transition: opacity 0.2s;
+    opacity: 0;
+}
+
+.result-container.visible {
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.close-result {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.5rem;
+}
+
+.result-content {
+    position: absolute;
+    margin: 35px 0;
+    width: calc(100%);
+    height: calc(100% - 70px);
+    top: 0;
+    left: 0;
+    border-radius: 0;
+}
+
+.result-header {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#result-header__fileName {
+    color: #fff;
+}
+
+#dropArea.highlight {
+    filter: glow(1);
 }
