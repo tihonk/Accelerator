@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/views/jsp/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mystery.jsp/login.mystery.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request,
