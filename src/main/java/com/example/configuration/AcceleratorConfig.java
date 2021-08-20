@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class AcceleratorConfig {
+//    Test commit
 
     private ArrayList<Double> distance000 = new ArrayList<>();
     private ArrayList<Double> coordinats = new ArrayList<>();
