@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class HelloController {
-
+	//some changes
 //    private UserServiceImpl userService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
