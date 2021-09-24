@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
-  com.example.dto.User: t.kasko
+  com.accelerator.dto.User: t.kasko
   Date: 3.6.19
   Time: 17.34
   To change this template use File | Settings | File Templates.
@@ -26,7 +26,7 @@
     <div class="container">
         <div class="navbar-header">
             <ul class="menu">
-                <a class="navbar-brand" href="/">Accelerator</a>
+                <a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
             </ul>
         </div>
     </div>

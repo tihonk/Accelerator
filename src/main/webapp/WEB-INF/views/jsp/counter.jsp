@@ -110,7 +110,7 @@
     <div class="container">
         <div class="navbar-header">
             <ul class="menu">
-                <a class="navbar-brand" href="/">Accelerator</a>
+                <a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
                 <!--
                    MyCabinet button is hided untill implementation of Register and Sign In functionality
                   -->
