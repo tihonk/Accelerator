@@ -16,7 +16,7 @@
   <div class="container">
 	<div class="navbar-header">
         <ul class="menu">
-		<a class="navbar-brand" href="/">Accelerator</a>
+		<a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
             <c:choose>
                 <c:when test="${empty cookie.name.value}">
                      <div class="startButtons">
@@ -80,7 +80,7 @@
 <%--    Cookie: ${cookie.name.value}--%>
   <div class="row">
 	<div class="col-md-4">
-		<h2>Accelerator</h2>
+		<h2>com.accelerator.Accelerator</h2>
 		<p>
            Increases the speed of processing PDB files.
            It computes the length between the desired ligand and the nearest atom. 

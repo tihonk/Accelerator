@@ -1,6 +1,6 @@
 
 
-import com.example.dto.User;
+import com.accelerator.dto.User;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,7 +17,7 @@ public class DBTest
 {
     public static void main(String[] args)
     {
-        SessionFactory sessionFactory = com.example.HibernateUtil.getSessionFactory();
+        SessionFactory sessionFactory = com.accelerator.HibernateUtil.getSessionFactory();
         Session session =sessionFactory.openSession();
         List<User> users = null;
 
