@@ -4,7 +4,7 @@ public class Ligand {
 
     private String ligandName;
     private Double maxAcceptableDistance;
-    private String PDBFile;
+    private String pdbFile;
 
     public String getLigandName() {
         return ligandName;
@@ -23,10 +23,10 @@ public class Ligand {
     }
 
     public String getPDBFile() {
-        return PDBFile;
+        return pdbFile;
     }
 
-    public void setPDBFile(String PDBFile) {
-        this.PDBFile = PDBFile;
+    public void setPdbFile(String PDBFile) {
+        this.pdbFile = PDBFile;
     }
 }

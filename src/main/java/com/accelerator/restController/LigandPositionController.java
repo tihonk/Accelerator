@@ -7,10 +7,7 @@ import com.accelerator.service.LigandPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,8 +25,8 @@ public class LigandPositionController {
         return new RestResponse(HttpStatus.OK.value(), OK_MESSAGE);
     }
 
-    @PostMapping(value = "/ligand-position")
-    public List<AminoAcid> postCountLigandPosition(Ligand ligand) throws JsonParseException {
+    @PostMapping(value = "/ligand-position",  consumes = "application/json")
+    public List<AminoAcid> postCountLigandPosition(@RequestBody Ligand ligand) throws JsonParseException {
         List<AminoAcid> relatedAminoAcids = ligandPositionService.getRelatedAminoAcids(ligand);
         return relatedAminoAcids;
     }
