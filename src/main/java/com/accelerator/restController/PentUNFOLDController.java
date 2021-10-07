@@ -5,8 +5,11 @@ import com.accelerator.json.util.RestResponse;
 import com.accelerator.service.PentUNFOLDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,8 +27,10 @@ public class PentUNFOLDController {
         return new RestResponse(OK.value(), OK_MESSAGE);
     }
 
-    @PostMapping(value = "/pent-un-fold")
-    public PentUNFOLDModel postPentUnFOLDAlgorithm(@RequestParam("pdbFile") MultipartFile pdbFile) throws JsonParseException {
+    @PostMapping(value = "/pent-un-fold",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public PentUNFOLDModel postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile) throws JsonParseException, IOException {
         PentUNFOLDModel pentUNFOLDModel = pentINFOLDService.fillXlsxData(pdbFile);
         return pentUNFOLDModel;
     }
