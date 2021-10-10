@@ -1,4 +1,4 @@
-package com.accelerator.service;
+package com.accelerator.services;
 
 import com.accelerator.dao.UserDAO;
 import com.accelerator.dto.Role;

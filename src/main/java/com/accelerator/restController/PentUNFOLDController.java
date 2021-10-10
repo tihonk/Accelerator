@@ -1,8 +1,9 @@
 package com.accelerator.restController;
 
 import com.accelerator.dto.PentUNFOLDModel;
+import com.accelerator.facades.implementations.PentUNFOLDFacadeImpl;
 import com.accelerator.json.util.RestResponse;
-import com.accelerator.service.PentUNFOLDService;
+import com.accelerator.facades.PentUNFOLDFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.MediaType;
@@ -18,7 +19,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class PentUNFOLDController {
 
     @Autowired
-    PentUNFOLDService pentINFOLDService;
+    PentUNFOLDFacade pentUNFOLDFacade;
 
     private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
 
@@ -31,7 +32,7 @@ public class PentUNFOLDController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public PentUNFOLDModel postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile) throws JsonParseException, IOException {
-        PentUNFOLDModel pentUNFOLDModel = pentINFOLDService.fillXlsxData(pdbFile);
+        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
         return pentUNFOLDModel;
     }
 }

@@ -3,7 +3,7 @@ package com.accelerator.restController;
 import com.accelerator.dto.AminoAcid;
 import com.accelerator.dto.Ligand;
 import com.accelerator.json.util.RestResponse;
-import com.accelerator.service.LigandPositionService;
+import com.accelerator.services.LigandPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.accelerator.controller;
 
-import com.accelerator.service.UserService;
+import com.accelerator.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;

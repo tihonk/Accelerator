@@ -1,8 +1,8 @@
-package com.accelerator.service.implementation;
+package com.accelerator.services.implementations;
 
 import com.accelerator.dto.AminoAcid;
 import com.accelerator.dto.Ligand;
-import com.accelerator.service.LigandPositionService;
+import com.accelerator.services.LigandPositionService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.accelerator.filters;
 
 import com.accelerator.dto.User;
-import com.accelerator.service.AuthenticationService;
+import com.accelerator.services.AuthenticationService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
