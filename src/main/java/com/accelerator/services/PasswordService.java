@@ -1,4 +1,4 @@
-package com.accelerator.service;
+package com.accelerator.services;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

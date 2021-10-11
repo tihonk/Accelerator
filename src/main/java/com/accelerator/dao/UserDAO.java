@@ -3,7 +3,7 @@ package com.accelerator.dao;
 import com.accelerator.HibernateUtil;
 import com.accelerator.dto.Role;
 import com.accelerator.dto.User;
-import com.accelerator.service.PasswordService;
+import com.accelerator.services.PasswordService;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
