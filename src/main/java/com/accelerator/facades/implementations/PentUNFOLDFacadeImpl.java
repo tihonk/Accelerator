@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 
 @Service("pentUNFOLDFacade")
 public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
@@ -24,14 +25,16 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
 
     @Override
     public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile) throws IOException {
-        String dsspContext = dsspThirdPartyService.getDsspContext(pdbFile);
-        String picContext = picThirdPartyService.getPicContext(pdbFile);
-        String pdbContext = pdbContextService.getPdbContext(pdbFile);
+        List<String> dsspContext = dsspThirdPartyService.getDsspContext(pdbFile);
+        List<String> picContext = picThirdPartyService.getPicContext(pdbFile);
+        List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
         PentUNFOLDModel pentUNFOLDModel = preparePentUNFOLDModel(dsspContext, picContext, pdbContext);
         return pentUNFOLDModel;
     }
 
-    private PentUNFOLDModel preparePentUNFOLDModel(String dsspContext, String picContext, String pdbContext) {
+    private PentUNFOLDModel preparePentUNFOLDModel(List<String> dsspContext,
+                                                   List<String> picContext,
+                                                   List<String> pdbContext) {
         PentUNFOLDModel pentUNFOLDModel = new PentUNFOLDModel();
         pentUNFOLDModel.setDssp(dsspContext);
         pentUNFOLDModel.setPic(picContext);

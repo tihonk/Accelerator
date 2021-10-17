@@ -3,17 +3,12 @@ package com.accelerator.restController;
 import com.accelerator.dto.PentUNFOLDModel;
 import com.accelerator.json.util.RestResponse;
 import com.accelerator.facades.PentUNFOLDFacade;
-import com.accelerator.services.XlsxFileFillingService;
 import com.accelerator.facades.XlsxFillingFacade;
-import com.accelerator.facades.XlsxFillingFacade;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -21,10 +16,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/chemistry")
 public class PentUNFOLDController {
 
+    private static final String FILE_2D_PATH = "src/main/resources/test1.xlsx";
+
     @Resource
     PentUNFOLDFacade pentUNFOLDFacade;
-    @Resource
-    XlsxFileFillingService xlsxFileFillingService;
     @Resource
     XlsxFillingFacade xlsxFillingFacade;
 
@@ -38,9 +33,11 @@ public class PentUNFOLDController {
     @PostMapping(value = "/pent-un-fold",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public PentUNFOLDModel postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile) throws JsonParseException, IOException, InvalidFormatException {
+    public PentUNFOLDModel postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile)
+            throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
-        xlsxFileFillingService.fillFile(pentUNFOLDModel);
+        xlsxFillingFacade.processOneSheet(pentUNFOLDModel.getPdb(), 1, FILE_2D_PATH);
+        xlsxFillingFacade.processOneSheet(pentUNFOLDModel.getDssp(), 2, FILE_2D_PATH);
         return pentUNFOLDModel;
     }
 }

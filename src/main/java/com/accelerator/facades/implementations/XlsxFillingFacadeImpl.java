@@ -32,7 +32,6 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     @Resource
     XlsxService xlsxService;
 
-    private static final String FILE_2D_PATH = "src/main/resources/test1.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
 
