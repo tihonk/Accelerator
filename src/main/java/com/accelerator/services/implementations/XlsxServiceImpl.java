@@ -43,11 +43,11 @@ public class XlsxServiceImpl implements XlsxService {
     }
 
     private void fillNewRows(List<String> values) throws XMLStreamException {
-        for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+        for (String value : values) {
             writer.add(newStartElement(ROW_ELEMENT, null));
             writer.add(newStartElement(CELL_ELEMENT, getAttributeIterator()));
             writer.add(newStartElement(VALUE_ELEMENT, null));
-            writer.add(getValueToFill(values.get(valueIndex)));
+            writer.add(getValueToFill(value));
             writer.add(newEndElement(ROW_ELEMENT));
             writer.add(newEndElement(CELL_ELEMENT));
             writer.add(newEndElement(VALUE_ELEMENT));
@@ -74,6 +74,4 @@ public class XlsxServiceImpl implements XlsxService {
         List attributeList = Collections.singletonList(attribute);
         return attributeList.iterator();
     }
-
-
 }

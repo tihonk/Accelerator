@@ -4,7 +4,8 @@ import com.accelerator.dto.PentUNFOLDModel;
 import com.accelerator.json.util.RestResponse;
 import com.accelerator.facades.PentUNFOLDFacade;
 import com.accelerator.services.XlsxFileFillingService;
-import com.accelerator.services.XlsxFillingFacade;
+import com.accelerator.facades.XlsxFillingFacade;
+import com.accelerator.facades.XlsxFillingFacade;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.MediaType;
@@ -31,7 +32,6 @@ public class PentUNFOLDController {
 
     @GetMapping(value = "/pent-unfold")
     public RestResponse getPentUnFOLDAlgorithm() throws Exception {
-        xlsxFillingFacade.test();
         return new RestResponse(OK.value(), OK_MESSAGE);
     }
 
