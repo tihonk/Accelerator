@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class PentUNFOLDController {
 
     private static final String FILE_2D_PATH = "src/main/resources/PentUNFOLD.xlsx";
-    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
 
     @Resource
     PentUNFOLDFacade pentUNFOLDFacade;
