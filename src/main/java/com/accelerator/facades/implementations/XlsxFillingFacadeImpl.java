@@ -1,5 +1,6 @@
 package com.accelerator.facades.implementations;
 
+import com.accelerator.dto.PentUNFOLDModel;
 import com.accelerator.facades.XlsxFillingFacade;
 import com.accelerator.services.XlsxService;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -32,6 +33,8 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     @Resource
     XlsxService xlsxService;
 
+    private static final String FILE_2D_PATH = "src/main/resources/PentUNFOLD.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
 
@@ -42,6 +45,11 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private int rowsCount;
 
     @Override
+    public void fill2DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception {
+        processOneSheet(pentUNFOLDModel.getPdb(), 1, FILE_2D_PATH);
+        processOneSheet(pentUNFOLDModel.getDssp(), 2, FILE_2D_PATH);
+    }
+
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
         OPCPackage opcpackage = OPCPackage.open(filePath);
         XMLEventReader reader = startFillingProcess(opcpackage, sheet);

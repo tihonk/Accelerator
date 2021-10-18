@@ -1,8 +1,10 @@
 package com.accelerator.facades;
 
+import com.accelerator.dto.PentUNFOLDModel;
+
 import java.util.List;
 
 public interface XlsxFillingFacade {
 
-    void processOneSheet(List<String> values, int sheet, String filePath) throws Exception;
+    void fill2DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception;
 }
