@@ -34,7 +34,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     XlsxService xlsxService;
 
     private static final String FILE_2D_PATH = "src/main/resources/PentUNFOLD.xlsx";
-    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
 
@@ -48,6 +48,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception {
         processOneSheet(pentUNFOLDModel.getPdb(), 1, FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getDssp(), 2, FILE_2D_PATH);
+    }
+
+    @Override
+    public void fill3DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception {
+        processOneSheet(pentUNFOLDModel.getPdb(), 1, FILE_3D_PATH);
+        processOneSheet(pentUNFOLDModel.getDssp(), 2, FILE_3D_PATH);
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {

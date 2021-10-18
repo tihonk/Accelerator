@@ -7,4 +7,6 @@ import java.util.List;
 public interface XlsxFillingFacade {
 
     void fill2DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception;
+
+    void fill3DFile(PentUNFOLDModel pentUNFOLDModel) throws Exception;
 }
