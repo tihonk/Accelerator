@@ -53,7 +53,7 @@ public class PentUNFOLDController {
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
         xlsxFillingFacade.fill2DFile(pentUNFOLDModel);
-        return generateId();
+        return "testId";
     }
 
     @GetMapping(value = "/pent-un-fold/{id}")
@@ -67,11 +67,5 @@ public class PentUNFOLDController {
                 .contentType(mediaType)
                 .contentLength(file.length())
                 .body(resource);
-    }
-
-    private String generateId() {
-        byte[] array = new byte[10];
-        new Random().nextBytes(array);
-        return new String(array, StandardCharsets.UTF_8);
     }
 }
