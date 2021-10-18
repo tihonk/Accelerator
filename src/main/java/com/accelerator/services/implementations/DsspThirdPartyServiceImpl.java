@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.http.entity.ContentType.create;
@@ -51,14 +53,13 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String FILE_KAY = "file_";
 
     @Override
-    public String getDsspContext(MultipartFile pdbFile) throws IOException {
+    public List<String> getDsspContext(MultipartFile pdbFile) throws IOException {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
         resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile);
         String dsspContext = getRequestGetDsspContext();
         httpClient.close();
-
-        return dsspContext;
+        return convertToList(dsspContext);
     }
 
     private String getRequestGetCsrfToken() throws IOException {
@@ -151,5 +152,11 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private String getResultWithoutHeader(String fullResult) {
         int resNumIndex = fullResult.indexOf(RESNUM);
         return fullResult.substring(resNumIndex + START_DSSP_CONTEXT);
+    }
+
+    private List<String> convertToList(String dsspContext) {
+        String[] arrayDsspContent;
+        arrayDsspContent = dsspContext.split("\\n");
+        return Arrays.asList(arrayDsspContent);
     }
 }

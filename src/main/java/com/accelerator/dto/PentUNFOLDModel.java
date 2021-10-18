@@ -1,35 +1,37 @@
 package com.accelerator.dto;
 
+import java.util.List;
+
 public class PentUNFOLDModel {
 
-    private String pdb;
-    private String dssp;
-    private String pic;
+    private List<String> pdb;
+    private List<String> dssp;
+    private List<String> pic;
 
     public PentUNFOLDModel() {
     }
 
-    public String getPdb() {
+    public List<String> getPdb() {
         return pdb;
     }
 
-    public void setPdb(String pdb) {
+    public void setPdb(List<String> pdb) {
         this.pdb = pdb;
     }
 
-    public String getDssp() {
+    public List<String> getDssp() {
         return dssp;
     }
 
-    public void setDssp(String dssp) {
+    public void setDssp(List<String> dssp) {
         this.dssp = dssp;
     }
 
-    public String getPic() {
+    public List<String> getPic() {
         return pic;
     }
 
-    public void setPic(String pic) {
+    public void setPic(List<String> pic) {
         this.pic = pic;
     }
 }

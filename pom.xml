@@ -102,7 +102,27 @@
             <artifactId>json</artifactId>
             <version>20210307</version>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!--        Xlsx files processing    -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+
+
+        <!--        <dependency>-->
 <!--            <groupId>junit</groupId>-->
 <!--            <artifactId>junit</artifactId>-->
 <!--            <version>4.12</version>-->
@@ -199,7 +219,24 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-			
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <mainClass>com.baeldung.heap.HeapSizeDemoApplication</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>true</executable>
+                    <jvmArguments>
+                        -Xms1g
+                        -Xmx2g
+                    </jvmArguments>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
