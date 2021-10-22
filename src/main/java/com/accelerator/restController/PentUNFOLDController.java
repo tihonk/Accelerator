@@ -17,15 +17,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/chemistry")
 public class PentUNFOLDController {
 
-    private static final String FILE_2D_PATH = "src/main/resources/PentUNFOLD.xlsx";
-    private static final String FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
+    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
 
     @Resource
     PentUNFOLDFacade pentUNFOLDFacade;
@@ -45,21 +47,22 @@ public class PentUNFOLDController {
     public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include3d)
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
-        xlsxFillingFacade.fill2DFile(pentUNFOLDModel);
+        String fileName = UUID.randomUUID().toString();
+        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
         if (include3d) {
-            xlsxFillingFacade.fill3DFile(pentUNFOLDModel);
+            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
         }
-        return "testId";
+        return fileName;
     }
 
     @GetMapping(value = "/pent-un-fold/{id}")
     public ResponseEntity<InputStreamResource> downloadXlsxFile(@PathVariable("id") String fileId) throws IOException {
-        return getXlsxFile(FILE_2D_PATH);
+        return getXlsxFile(format(FILE_2D_PATH, fileId));
     }
 
     @GetMapping(value = "/pent-un-fold/3d/{id}")
     public ResponseEntity<InputStreamResource> download3dXlsxFile(@PathVariable("id") String fileId) throws IOException {
-        return getXlsxFile(FILE_3D_PATH);
+        return getXlsxFile(format(FILE_3D_PATH, fileId));
     }
 
     private ResponseEntity<InputStreamResource> getXlsxFile(String filePath) throws FileNotFoundException {
