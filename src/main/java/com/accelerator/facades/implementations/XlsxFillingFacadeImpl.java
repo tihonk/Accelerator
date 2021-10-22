@@ -56,6 +56,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_2D_PATH, fileName));
+        fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
 
@@ -64,6 +65,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
+        fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
