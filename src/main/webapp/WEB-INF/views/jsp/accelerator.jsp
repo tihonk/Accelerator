@@ -11,7 +11,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Accelerator</title>
+    <title>com.accelerator.Accelerator</title>
     <spring:url value="/resources/core/css/accelerator.css" var="coreCss" />
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
     <link href="${bootstrapCss}" rel="stylesheet" />
@@ -21,7 +21,11 @@
     <div class="container">
         <div class="navbar-header">
             <ul class="menu">
-                <a class="navbar-brand" href="/">Accelerator</a>
+                <a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
+                <!--
+                   MyCabinet button is hided untill implementation of Register and Sign In functionality
+                  -->
+                <!--
                 <li><a href=#>My cabinet</a>
                     <ul class="submenu">
                         <li><a href=#>My account</a></li>
@@ -33,6 +37,7 @@
                         </li>
                     </ul>
                 </li>
+                -->
             </ul>
         </div>
     </div>

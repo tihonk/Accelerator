@@ -16,15 +16,22 @@
   <div class="container">
 	<div class="navbar-header">
         <ul class="menu">
-		<a class="navbar-brand" href="/">Accelerator</a>
+		<a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
             <c:choose>
                 <c:when test="${empty cookie.name.value}">
-                    <div class="startButtons">
-                        <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
-                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a>
+                     <div class="startButtons">
+                        <!--
+                        Commented SIGNIN and REGISTER buttons until their implementation appears
+                        -->
+                        <!-- <a class="signInButton increaseDistance" href="${pageContext.request.contextPath}/login">Sign In</a>
+                        <a class="signInButton" href="${pageContext.request.contextPath}/registration">Register</a> -->
                     </div>
                 </c:when>
                 <c:otherwise>
+                    <!--
+                    MyCabinet button is hided untill implementation of Register and Sign In functionality
+                    -->
+                    <!--
                     <li><a href=#>My cabinet</a>
                         <ul class="submenu">
                             <li><a href=#>My account</a></li>
@@ -36,6 +43,7 @@
                             </li>
                         </ul>
                     </li>
+                    -->
                 </c:otherwise>
             </c:choose>
         </ul>
@@ -72,7 +80,7 @@
 <%--    Cookie: ${cookie.name.value}--%>
   <div class="row">
 	<div class="col-md-4">
-		<h2>Accelerator</h2>
+		<h2>com.accelerator.Accelerator</h2>
 		<p>
            Increases the speed of processing PDB files.
            It computes the length between the desired ligand and the nearest atom. 
@@ -116,6 +124,16 @@
           </p>
           <p>
               <a class="btn btn-default" href="chemistry/mystery" role="button">Go to mystery</a>
+          </p>
+      </div>
+      <div class="col-md-4">
+          <h2>DSSP</h2>
+          <p>
+              Designed to standardize secondary structure assignment
+              and computation of DSSP records from PDB records
+          </p>
+          <p>
+              <a class="btn btn-default" href="chemistry/dssp" role="button">Go to DSSP</a>
           </p>
       </div>
   </div>

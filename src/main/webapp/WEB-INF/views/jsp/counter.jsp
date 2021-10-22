@@ -110,7 +110,11 @@
     <div class="container">
         <div class="navbar-header">
             <ul class="menu">
-                <a class="navbar-brand" href="/">Accelerator</a>
+                <a class="navbar-brand" href="/">com.accelerator.Accelerator</a>
+                <!--
+                   MyCabinet button is hided untill implementation of Register and Sign In functionality
+                  -->
+                <!--
                 <li><a href=#>My cabinet</a>
                     <ul class="submenu">
                         <li><a href=#>My account</a></li>
@@ -122,6 +126,7 @@
                         </li>
                     </ul>
                 </li>
+                -->
             </ul>
         </div>
     </div>

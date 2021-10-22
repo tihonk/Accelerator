@@ -16,6 +16,6 @@
 
         <mapping resource="mapping/user.hbm.xml" />
         <mapping resource="mapping/role.hbm.xml" />
-        <mapping class="com.example.dto.User"/>
+        <mapping class="com.accelerator.dto.User"/>
     </session-factory>
 </hibernate-configuration>
