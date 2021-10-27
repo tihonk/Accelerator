@@ -60,7 +60,6 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
-
     @Override
     public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
