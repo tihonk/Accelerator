@@ -72,9 +72,9 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         OPCPackage opcpackage = OPCPackage.open(filePath);
         XMLEventReader reader = startFillingProcess(opcpackage, sheet);
 
-        while(reader.hasNext() && values.size() > rowsCount - 2){
+        while(reader.hasNext()){
             XMLEvent event = (XMLEvent)reader.next();
-            if(event.isStartElement()) {
+            if(event.isStartElement() && values.size() >= rowsCount - 1) {
                 event = putNewValuesInOldRows(reader, event, values);
             }
             writer.add(event);
