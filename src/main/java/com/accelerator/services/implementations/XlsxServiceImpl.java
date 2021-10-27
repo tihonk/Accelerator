@@ -36,6 +36,22 @@ public class XlsxServiceImpl implements XlsxService {
         return this.writer;
     }
 
+    @Override
+    public XMLEventWriter writeValueInNewCell(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable,
+                                              XMLEventWriter writer, String value) throws XMLStreamException {
+        declarePrivateFields(eventFactory, sharedstringstable, writer);
+        fillNewCell(value);
+        return this.writer;
+    }
+
+    @Override
+    public XMLEvent prepareFillingValueEvent(XMLEventFactory eventFactory,
+                                             SharedStringsTable sharedstringstable, String value) {
+        declarePrivateFields(eventFactory, sharedstringstable, null);
+        return prepareValueToFill(value);
+    }
+
+
     private void declarePrivateFields(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable, XMLEventWriter writer) {
         this.eventFactory = eventFactory;
         this.sharedstringstable = sharedstringstable;
@@ -45,13 +61,17 @@ public class XlsxServiceImpl implements XlsxService {
     private void fillNewRows(List<String> values) throws XMLStreamException {
         for (String value : values) {
             writer.add(newStartElement(ROW_ELEMENT, null));
-            writer.add(newStartElement(CELL_ELEMENT, getAttributeIterator()));
-            writer.add(newStartElement(VALUE_ELEMENT, null));
-            writer.add(getValueToFill(value));
+            fillNewCell(value);
             writer.add(newEndElement(ROW_ELEMENT));
-            writer.add(newEndElement(CELL_ELEMENT));
-            writer.add(newEndElement(VALUE_ELEMENT));
         }
+    }
+
+    private void fillNewCell(String value) throws XMLStreamException {
+        writer.add(newStartElement(CELL_ELEMENT, getAttributeIterator()));
+        writer.add(newStartElement(VALUE_ELEMENT, null));
+        writer.add(prepareValueToFill(value));
+        writer.add(newEndElement(VALUE_ELEMENT));
+        writer.add(newEndElement(CELL_ELEMENT));
     }
 
     private StartElement newStartElement(String elementName, Iterator iterator) {
@@ -62,10 +82,10 @@ public class XlsxServiceImpl implements XlsxService {
         return eventFactory.createEndElement(new QName(elementName), null);
     }
 
-    private XMLEvent getValueToFill(String value) {
-        CTRst ctstr = CTRst.Factory.newInstance();
-        ctstr.setT(value);
-        int sRef = sharedstringstable.addEntry(ctstr);
+    private XMLEvent prepareValueToFill(String value) {
+        CTRst ctrst = CTRst.Factory.newInstance();
+        ctrst.setT(value);
+        int sRef = sharedstringstable.addEntry(ctrst);
         return eventFactory.createCharacters(Integer.toString(sRef));
     }
 

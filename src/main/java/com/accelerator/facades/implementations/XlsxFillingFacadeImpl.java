@@ -19,7 +19,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -44,18 +43,20 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private static final String MOTHER_FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
+    private static final String CELL_ELEMENT = "c";
 
     private XMLEventFactory eventFactory;
     private SharedStringsTable sharedstringstable;
     private PackagePart sharedStringsTablePart;
     private XMLEventWriter writer;
     private int rowsCount;
+    private int columnCount;
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
-        processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_2D_PATH, fileName));
+        processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
@@ -72,7 +73,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         OPCPackage opcpackage = OPCPackage.open(filePath);
         XMLEventReader reader = startFillingProcess(opcpackage, sheet);
 
-        while(reader.hasNext()){
+        while(reader.hasNext() && values.size() > rowsCount - 2){
             XMLEvent event = (XMLEvent)reader.next();
             if(event.isStartElement()) {
                 event = putNewValuesInOldRows(reader, event, values);
@@ -96,6 +97,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         writer = XMLOutputFactory.newInstance().createXMLEventWriter(sheetpart.getOutputStream());
         eventFactory = XMLEventFactory.newInstance();
         rowsCount = 0;
+        columnCount = 0;
         return reader;
     }
 
@@ -111,10 +113,28 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         QName startElementName = startElement.getName();
         if(startElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT)) {
             rowsCount++;
-        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1) {
-            event = putValuesInOld(reader, values, event);
+            columnCount = 1;
+        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 1) {
+            event = replaceOldValue(reader, values, event);
+            columnCount++;
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT) && noValue(reader) && rowsCount > 1 && columnCount == 1) {
+            event = putValueInEmptyCell(reader, values);
+            columnCount++;
         }
         return event;
+    }
+
+    private XMLEvent putValueInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+        String value = values.get(rowsCount - 2);
+        writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, value);
+        reader.next();
+        return (XMLEvent)reader.next();
+    }
+
+    private boolean noValue(XMLEventReader reader) throws XMLStreamException {
+        XMLEvent nextElement = (XMLEvent)reader.peek();
+        QName nextElementName = defineNextElementName(nextElement);
+        return !nextElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT);
     }
 
     private void putOtherValuesToNewRows(XMLEventReader reader, XMLEvent event, List<String> values)
@@ -135,21 +155,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         }
     }
 
-    private XMLEvent putValuesInOld(XMLEventReader reader, List<String> values, XMLEvent event) throws XMLStreamException {
-        CTRst ctstr = CTRst.Factory.newInstance();
-        if(rowsCount <= values.size() + 1){
-            ctstr.setT(values.get(rowsCount - 2));
-        } else {
-            ctstr.setT(null);
-        }
-        int sRef = sharedstringstable.addSharedStringItem(new XSSFRichTextString(ctstr));
-        if (reader.hasNext()) {
-            writer.add(event);
-            event = (XMLEvent)reader.next();
-            if (event.isCharacters()) {
-                Characters value = eventFactory.createCharacters(Integer.toString(sRef));
-                event = value;
-            }
+    private XMLEvent replaceOldValue(XMLEventReader reader, List<String> values, XMLEvent event) throws XMLStreamException {
+        writer.add(event);
+        event = (XMLEvent)reader.next();
+        if (event.isCharacters()) {
+            String value = values.get(rowsCount - 2);
+            event = xlsxService.prepareFillingValueEvent(eventFactory, sharedstringstable, value);
         }
         return event;
     }
