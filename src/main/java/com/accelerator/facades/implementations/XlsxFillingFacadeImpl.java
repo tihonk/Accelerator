@@ -52,19 +52,15 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private int rowsCount;
     private int columnCount;
     private boolean fillChain = false;
+    private boolean is3dChainFilling = false;
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName, String chain) throws Exception {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
-        fillChain(chain, 4, format(FILE_2D_PATH, fileName));
+        fillChain(chain, 4, false, format(FILE_2D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
-    }
-
-    private void fillChain(String chain, int sheet, String path) throws Exception {
-        fillChain = true;
-        processOneSheet(Collections.singletonList(chain), sheet, path);
     }
 
     @Override
@@ -73,7 +69,15 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
+        fillChain(chain, 4, true, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
+    }
+
+    private void fillChain(String chain, int sheet, boolean is3d, String path) throws Exception {
+        fillChain = true;
+        is3dChainFilling = is3d;
+        processOneSheet(Collections.singletonList(chain), sheet, path);
+        fillChain = false;
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
@@ -120,18 +124,22 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         QName startElementName = startElement.getName();
         if(startElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT)) {
             rowsCount++;
-            columnCount = 1;
-        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT) && noValue(reader) && rowsCount > 1 && columnCount == 1 ) {
-            if (!fillChain) {
-                event = putValueInEmptyCell(reader, values);
-            }
+            columnCount = 0;
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT)) {
             columnCount++;
-        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 1 && !fillChain) {
+            event = fillCellIfNeeded(reader, event, values);
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedFirstValueFilling()) {
             event = replaceOldValue(reader, values, event);
-            columnCount++;
-        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 2 && fillChain) {
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedSecondValueFilling()) {
             event = replaceOldValue(reader, values, event);
-            columnCount++;
+        }
+        return event;
+    }
+
+    private XMLEvent fillCellIfNeeded(XMLEventReader reader, XMLEvent event,
+                                      List<String> values) throws XMLStreamException {
+        if (isNeedCellFilling(reader)) {
+            return putValueInEmptyCell(reader, values);
         }
         return event;
     }
@@ -141,12 +149,6 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, value);
         reader.next();
         return (XMLEvent)reader.next();
-    }
-
-    private boolean noValue(XMLEventReader reader) throws XMLStreamException {
-        XMLEvent nextElement = (XMLEvent)reader.peek();
-        QName nextElementName = defineNextElementName(nextElement);
-        return !nextElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT);
     }
 
     private void putOtherValuesToNewRows(XMLEventReader reader, XMLEvent event, List<String> values)
@@ -184,5 +186,24 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
             return  ((EndElement)nextElement).getName();
         }
         return null;
+    }
+
+    private boolean isNeedFirstValueFilling() {
+        return  rowsCount > 1 && columnCount == 1 && !fillChain;
+    }
+
+    private boolean isNeedSecondValueFilling() {
+        int neededColumn = is3dChainFilling ? 1 : 2;
+        return  rowsCount > 1 && columnCount == neededColumn && fillChain;
+    }
+
+    private boolean isNeedCellFilling(XMLEventReader reader) throws XMLStreamException {
+        return !fillChain && noValue(reader) && rowsCount > 1 && columnCount == 1;
+    }
+
+    private boolean noValue(XMLEventReader reader) throws XMLStreamException {
+        XMLEvent nextElement = (XMLEvent)reader.peek();
+        QName nextElementName = defineNextElementName(nextElement);
+        return !nextElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT);
     }
 }
