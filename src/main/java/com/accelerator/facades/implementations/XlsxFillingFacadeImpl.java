@@ -7,8 +7,6 @@ import com.accelerator.services.XlsxService;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTRst;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +22,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -51,17 +51,25 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private XMLEventWriter writer;
     private int rowsCount;
     private int columnCount;
+    private boolean fillChain = false;
 
     @Override
-    public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+    public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName, String chain) throws Exception {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
+        fillChain(chain, 4, format(FILE_2D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
+    private void fillChain(String chain, int sheet, String path) throws Exception {
+        fillChain = true;
+        processOneSheet(Collections.singletonList(chain), sheet, path);
+    }
+
     @Override
-    public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+    public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName,
+                           ArrayList<String> picResult, String chain) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
@@ -113,11 +121,16 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         if(startElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT)) {
             rowsCount++;
             columnCount = 1;
-        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 1) {
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT) && noValue(reader) && rowsCount > 1 && columnCount == 1 ) {
+            if (!fillChain) {
+                event = putValueInEmptyCell(reader, values);
+            }
+            columnCount++;
+        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 1 && !fillChain) {
             event = replaceOldValue(reader, values, event);
             columnCount++;
-        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT) && noValue(reader) && rowsCount > 1 && columnCount == 1) {
-            event = putValueInEmptyCell(reader, values);
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1 && columnCount == 2 && fillChain) {
+            event = replaceOldValue(reader, values, event);
             columnCount++;
         }
         return event;

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -37,20 +38,21 @@ public class PentUNFOLDController {
     private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
 
     @GetMapping(value = "/pent-un-fold")
-    public RestResponse getPentUnFOLDAlgorithm() throws Exception {
+    public RestResponse getPentUnFOLDAlgorithm() {
         return new RestResponse(OK.value(), OK_MESSAGE);
     }
 
     @PostMapping(value = "/pent-un-fold",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include3d)
+    public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include3d,
+                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain)
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
         String fileName = UUID.randomUUID().toString();
-        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName, chain);
         if (include3d) {
-            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName, picResult, chain);
         }
         return fileName;
     }
