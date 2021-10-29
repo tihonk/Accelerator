@@ -52,6 +52,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private int rowsCount;
     private int columnCount;
     private boolean fillChain = false;
+    private boolean fillPic = false;
     private boolean is3dChainFilling = false;
 
     @Override
@@ -70,6 +71,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
         fillChain(chain, 4, true, format(FILE_3D_PATH, fileName));
+        fillPic(picResult, 3, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
     }
 
@@ -78,6 +80,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         is3dChainFilling = is3d;
         processOneSheet(Collections.singletonList(chain), sheet, path);
         fillChain = false;
+    }
+
+    private void fillPic(List<String> values, int sheet, String filePath) throws Exception {
+        fillPic = true;
+        processOneSheet(values, sheet, filePath);
+        fillPic = false;
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
@@ -139,13 +147,35 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private XMLEvent fillCellIfNeeded(XMLEventReader reader, XMLEvent event,
                                       List<String> values) throws XMLStreamException {
         if (isNeedCellFilling(reader)) {
-            return putValueInEmptyCell(reader, values);
+            return putValueInEmptyCell(reader, values.get(rowsCount - 2));
+        } else if (fillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 2) {
+            return putPicValues(reader, event, values);
         }
         return event;
     }
 
-    private XMLEvent putValueInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
-        String value = values.get(rowsCount - 2);
+    private XMLEvent putPicValues(XMLEventReader reader, XMLEvent event, List<String> values) throws XMLStreamException {
+        if(columnCount == 1) {
+            return putPicInEmptyCell(reader, values);
+        }
+        return event;
+    }
+
+    private XMLEvent putPicInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+        int picPairNumber = rowsCount - 1;
+        if(columnCount == 1) {
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 2));
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 1));
+        }
+        while (!isNextRow(reader)) {
+            reader.next();
+        }
+        return (XMLEvent)reader.next();
+    }
+
+    private XMLEvent putValueInEmptyCell(XMLEventReader reader, String value) throws XMLStreamException {
         writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, value);
         reader.next();
         return (XMLEvent)reader.next();
@@ -189,21 +219,37 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     }
 
     private boolean isNeedFirstValueFilling() {
-        return  rowsCount > 1 && columnCount == 1 && !fillChain;
+        return  rowsCount > 1
+                && columnCount == 1
+                && !fillChain
+                && !fillPic;
     }
 
     private boolean isNeedSecondValueFilling() {
         int neededColumn = is3dChainFilling ? 1 : 2;
-        return  rowsCount > 1 && columnCount == neededColumn && fillChain;
+        return  rowsCount > 1
+                && columnCount == neededColumn
+                && fillChain
+                && !fillPic;
     }
 
     private boolean isNeedCellFilling(XMLEventReader reader) throws XMLStreamException {
-        return !fillChain && noValue(reader) && rowsCount > 1 && columnCount == 1;
+        return rowsCount > 1
+                && columnCount == 1
+                && !fillChain
+                && !fillPic
+                && noValue(reader);
     }
 
     private boolean noValue(XMLEventReader reader) throws XMLStreamException {
         XMLEvent nextElement = (XMLEvent)reader.peek();
         QName nextElementName = defineNextElementName(nextElement);
         return !nextElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT);
+    }
+
+    private boolean isNextRow(XMLEventReader reader) throws XMLStreamException {
+        XMLEvent nextElement = (XMLEvent)reader.peek();
+        QName nextElementName = defineNextElementName(nextElement);
+        return nextElementName != null && nextElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT);
     }
 }
