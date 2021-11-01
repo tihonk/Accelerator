@@ -1,4 +1,4 @@
-Maven - Accelerator Release 1.0.0
+Maven - Accelerator Release 1.0.1
 ===============================
 Template for Spring 5 MVC + React app, using Maven build tool.
 
@@ -9,10 +9,10 @@ Template for Spring 5 MVC + React app, using Maven build tool.
 
 ###2. To Run this project locally
 ```shell
-$ git clone https://github.com/tihonk/Accelerato
+$ git clone https://github.com/tihonk/Accelerator
 $ mvn spring-boot:run
 ```
-Access ```http://localhost:8080/spring3```
+Access ```http://localhost:8080/chemistry```
 
 ###3. To import this project into Eclipse IDE
 1. ```$ mvn eclipse:eclipse```

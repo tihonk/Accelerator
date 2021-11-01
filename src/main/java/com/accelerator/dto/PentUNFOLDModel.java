@@ -7,6 +7,7 @@ public class PentUNFOLDModel {
     private List<String> pdb;
     private List<String> dssp;
     private List<String> pic;
+    private String chain;
 
     public PentUNFOLDModel() {
     }
@@ -33,5 +34,13 @@ public class PentUNFOLDModel {
 
     public void setPic(List<String> pic) {
         this.pic = pic;
+    }
+
+    public String getChain() {
+        return chain;
+    }
+
+    public void setChain(String chain) {
+        this.chain = chain;
     }
 }

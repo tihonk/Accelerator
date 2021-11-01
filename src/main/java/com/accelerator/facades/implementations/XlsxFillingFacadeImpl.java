@@ -7,8 +7,6 @@ import com.accelerator.services.XlsxService;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTRst;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,12 +17,12 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -44,26 +42,48 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private static final String MOTHER_FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
+    private static final String CELL_ELEMENT = "c";
 
     private XMLEventFactory eventFactory;
     private SharedStringsTable sharedstringstable;
     private PackagePart sharedStringsTablePart;
     private XMLEventWriter writer;
     private int rowsCount;
+    private int columnCount;
+    private boolean fillChain = false;
+    private boolean fillPic = false;
+    private boolean is3dChainFilling = false;
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
-        processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_2D_PATH, fileName));
+        processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
+        fillChain(pentUNFOLDModel.getChain(), 4, false, format(FILE_2D_PATH, fileName));
+        fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
-
 
     @Override
     public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
+        fillChain(pentUNFOLDModel.getChain(), 4, true, format(FILE_3D_PATH, fileName));
+        fillPic(pentUNFOLDModel.getPic(), 3, format(FILE_3D_PATH, fileName));
+        fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
+    }
+
+    private void fillChain(String chain, int sheet, boolean is3d, String path) throws Exception {
+        fillChain = true;
+        is3dChainFilling = is3d;
+        processOneSheet(Collections.singletonList(chain), sheet, path);
+        fillChain = false;
+    }
+
+    private void fillPic(List<String> values, int sheet, String filePath) throws Exception {
+        fillPic = true;
+        processOneSheet(values, sheet, filePath);
+        fillPic = false;
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
@@ -72,7 +92,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
 
         while(reader.hasNext()){
             XMLEvent event = (XMLEvent)reader.next();
-            if(event.isStartElement()) {
+            if(event.isStartElement() && values.size() >= rowsCount - 1) {
                 event = putNewValuesInOldRows(reader, event, values);
             }
             writer.add(event);
@@ -94,6 +114,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         writer = XMLOutputFactory.newInstance().createXMLEventWriter(sheetpart.getOutputStream());
         eventFactory = XMLEventFactory.newInstance();
         rowsCount = 0;
+        columnCount = 0;
         return reader;
     }
 
@@ -109,10 +130,53 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         QName startElementName = startElement.getName();
         if(startElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT)) {
             rowsCount++;
-        }  else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && rowsCount > 1) {
-            event = putValuesInOld(reader, values, event);
+            columnCount = 0;
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(CELL_ELEMENT)) {
+            columnCount++;
+            event = fillCellIfNeeded(reader, event, values);
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedFirstValueFilling()) {
+            event = replaceOldValue(reader, values, event);
+        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedSecondValueFilling()) {
+            event = replaceOldValue(reader, values, event);
         }
         return event;
+    }
+
+    private XMLEvent fillCellIfNeeded(XMLEventReader reader, XMLEvent event,
+                                      List<String> values) throws XMLStreamException {
+        if (isNeedCellFilling(reader)) {
+            return putValueInEmptyCell(reader, values.get(rowsCount - 2));
+        } else if (fillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 2) {
+            return putPicValues(reader, event, values);
+        }
+        return event;
+    }
+
+    private XMLEvent putPicValues(XMLEventReader reader, XMLEvent event, List<String> values) throws XMLStreamException {
+        if(columnCount == 1) {
+            return putPicInEmptyCell(reader, values);
+        }
+        return event;
+    }
+
+    private XMLEvent putPicInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+        int picPairNumber = rowsCount - 1;
+        if(columnCount == 1) {
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 2));
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 1));
+        }
+        while (!isNextRow(reader)) {
+            reader.next();
+        }
+        return (XMLEvent)reader.next();
+    }
+
+    private XMLEvent putValueInEmptyCell(XMLEventReader reader, String value) throws XMLStreamException {
+        writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, value);
+        reader.next();
+        return (XMLEvent)reader.next();
     }
 
     private void putOtherValuesToNewRows(XMLEventReader reader, XMLEvent event, List<String> values)
@@ -133,21 +197,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         }
     }
 
-    private XMLEvent putValuesInOld(XMLEventReader reader, List<String> values, XMLEvent event) throws XMLStreamException {
-        CTRst ctstr = CTRst.Factory.newInstance();
-        if(rowsCount <= values.size() + 1){
-            ctstr.setT(values.get(rowsCount - 2));
-        } else {
-            ctstr.setT(null);
-        }
-        int sRef = sharedstringstable.addSharedStringItem(new XSSFRichTextString(ctstr));
-        if (reader.hasNext()) {
-            writer.add(event);
-            event = (XMLEvent)reader.next();
-            if (event.isCharacters()) {
-                Characters value = eventFactory.createCharacters(Integer.toString(sRef));
-                event = value;
-            }
+    private XMLEvent replaceOldValue(XMLEventReader reader, List<String> values, XMLEvent event) throws XMLStreamException {
+        writer.add(event);
+        event = (XMLEvent)reader.next();
+        if (event.isCharacters()) {
+            String value = values.get(rowsCount - 2);
+            event = xlsxService.prepareFillingValueEvent(eventFactory, sharedstringstable, value);
         }
         return event;
     }
@@ -159,5 +214,40 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
             return  ((EndElement)nextElement).getName();
         }
         return null;
+    }
+
+    private boolean isNeedFirstValueFilling() {
+        return  rowsCount > 1
+                && columnCount == 1
+                && !fillChain
+                && !fillPic;
+    }
+
+    private boolean isNeedSecondValueFilling() {
+        int neededColumn = is3dChainFilling ? 1 : 2;
+        return  rowsCount > 1
+                && columnCount == neededColumn
+                && fillChain
+                && !fillPic;
+    }
+
+    private boolean isNeedCellFilling(XMLEventReader reader) throws XMLStreamException {
+        return rowsCount > 1
+                && columnCount == 1
+                && !fillChain
+                && !fillPic
+                && noValue(reader);
+    }
+
+    private boolean noValue(XMLEventReader reader) throws XMLStreamException {
+        XMLEvent nextElement = (XMLEvent)reader.peek();
+        QName nextElementName = defineNextElementName(nextElement);
+        return !nextElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT);
+    }
+
+    private boolean isNextRow(XMLEventReader reader) throws XMLStreamException {
+        XMLEvent nextElement = (XMLEvent)reader.peek();
+        QName nextElementName = defineNextElementName(nextElement);
+        return nextElementName != null && nextElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT);
     }
 }
