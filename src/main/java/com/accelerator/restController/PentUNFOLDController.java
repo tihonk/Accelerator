@@ -48,11 +48,11 @@ public class PentUNFOLDController {
     public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include3d,
                                           @RequestParam ArrayList<String> picResult, @RequestParam String chain)
             throws Exception {
-        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile);
+        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain);
         String fileName = UUID.randomUUID().toString();
-        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName, chain);
+        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
         if (include3d) {
-            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName, picResult, chain);
+            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
         }
         return fileName;
     }

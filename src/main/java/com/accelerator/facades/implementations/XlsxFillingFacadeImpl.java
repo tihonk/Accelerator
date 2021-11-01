@@ -22,7 +22,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -56,22 +55,21 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private boolean is3dChainFilling = false;
 
     @Override
-    public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName, String chain) throws Exception {
+    public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
-        fillChain(chain, 4, false, format(FILE_2D_PATH, fileName));
+        fillChain(pentUNFOLDModel.getChain(), 4, false, format(FILE_2D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
     @Override
-    public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName,
-                           ArrayList<String> picResult, String chain) throws Exception {
+    public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
-        fillChain(chain, 4, true, format(FILE_3D_PATH, fileName));
-        fillPic(picResult, 3, format(FILE_3D_PATH, fileName));
+        fillChain(pentUNFOLDModel.getChain(), 4, true, format(FILE_3D_PATH, fileName));
+        fillPic(pentUNFOLDModel.getPic(), 3, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
     }
 
