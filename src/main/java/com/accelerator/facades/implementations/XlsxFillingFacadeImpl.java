@@ -59,7 +59,6 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
-        fillChain(pentUNFOLDModel.getChain(), 4, false, format(FILE_2D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
@@ -68,16 +67,8 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
         processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
         processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
-        fillChain(pentUNFOLDModel.getChain(), 4, true, format(FILE_3D_PATH, fileName));
         fillPic(pentUNFOLDModel.getPic(), 3, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
-    }
-
-    private void fillChain(String chain, int sheet, boolean is3d, String path) throws Exception {
-        fillChain = true;
-        is3dChainFilling = is3d;
-        processOneSheet(Collections.singletonList(chain), sheet, path);
-        fillChain = false;
     }
 
     private void fillPic(List<String> values, int sheet, String filePath) throws Exception {
