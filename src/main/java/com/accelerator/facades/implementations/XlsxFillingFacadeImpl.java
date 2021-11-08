@@ -50,9 +50,7 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private XMLEventWriter writer;
     private int rowsCount;
     private int columnCount;
-    private boolean fillChain = false;
     private boolean fillPic = false;
-    private boolean is3dChainFilling = false;
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
@@ -126,8 +124,6 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
             columnCount++;
             event = fillCellIfNeeded(reader, event, values);
         } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedFirstValueFilling()) {
-            event = replaceOldValue(reader, values, event);
-        } else if (startElementName.getLocalPart().equalsIgnoreCase(VALUE_ELEMENT) && isNeedSecondValueFilling()) {
             event = replaceOldValue(reader, values, event);
         }
         return event;
@@ -210,22 +206,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private boolean isNeedFirstValueFilling() {
         return  rowsCount > 1
                 && columnCount == 1
-                && !fillChain
-                && !fillPic;
-    }
-
-    private boolean isNeedSecondValueFilling() {
-        int neededColumn = is3dChainFilling ? 1 : 2;
-        return  rowsCount > 1
-                && columnCount == neededColumn
-                && fillChain
                 && !fillPic;
     }
 
     private boolean isNeedCellFilling(XMLEventReader reader) throws XMLStreamException {
         return rowsCount > 1
                 && columnCount == 1
-                && !fillChain
                 && !fillPic
                 && noValue(reader);
     }
