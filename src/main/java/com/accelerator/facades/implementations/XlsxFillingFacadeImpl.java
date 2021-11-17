@@ -50,7 +50,9 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private XMLEventWriter writer;
     private int rowsCount;
     private int columnCount;
-    private boolean fillPic = false;
+    private boolean isFillPic = false;
+    private boolean isFillPdb = false;
+    private boolean isFillDssp = false;
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
@@ -63,16 +65,28 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     @Override
     public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
-        processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_3D_PATH, fileName));
-        processOneSheet(pentUNFOLDModel.getDssp(), 2, format(FILE_3D_PATH, fileName));
-        fillPic(pentUNFOLDModel.getPic(), 3, format(FILE_3D_PATH, fileName));
+        fillPdb(pentUNFOLDModel, fileName);
+        fillDssp(pentUNFOLDModel, fileName);
+        fillPic(pentUNFOLDModel.getPic(), 4, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
     }
 
+    private void fillPdb(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+        isFillPdb = true;
+        fillPic(pentUNFOLDModel.getPdb(), 2, format(FILE_3D_PATH, fileName));
+        isFillPdb = false;
+    }
+
+    private void fillDssp(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+        isFillDssp = true;
+        fillPic(pentUNFOLDModel.getDssp(), 3, format(FILE_3D_PATH, fileName));
+        isFillDssp = false;
+    }
+
     private void fillPic(List<String> values, int sheet, String filePath) throws Exception {
-        fillPic = true;
+        isFillPic = true;
         processOneSheet(values, sheet, filePath);
-        fillPic = false;
+        isFillPic = false;
     }
 
     public void processOneSheet(List<String> values, int sheet, String filePath) throws Exception {
@@ -133,8 +147,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
                                       List<String> values) throws XMLStreamException {
         if (isNeedCellFilling(reader)) {
             return putValueInEmptyCell(reader, values.get(rowsCount - 2));
-        } else if (fillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 2) {
+        } else if (isFillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 2 && !isFillDssp && !isFillPdb) {
             return putPicValues(reader, event, values);
+        } else if (isFillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 2 && isFillPdb) {
+            return putPdbValues(reader, event, values);
+        } else if (isFillPic && rowsCount > 1 && values.size() >= (rowsCount - 1) * 3 && isFillDssp) {
+            return putDsspValues(reader, event, values);
         }
         return event;
     }
@@ -146,12 +164,24 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         return event;
     }
 
-    private XMLEvent putPicInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+    private XMLEvent putPdbValues(XMLEventReader reader, XMLEvent event, List<String> values) throws XMLStreamException {
+        if(columnCount == 1) {
+            return putPdbInEmptyCell(reader, values);
+        }
+        return event;
+    }
+
+    private XMLEvent putDsspValues(XMLEventReader reader, XMLEvent event, List<String> values) throws XMLStreamException {
+        if(columnCount == 1) {
+            return putDsspInEmptyCell(reader, values);
+        }
+        return event;
+    }
+
+    private XMLEvent putPdbInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
         int picPairNumber = rowsCount - 1;
         if(columnCount == 1) {
             writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 2));
-            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
-            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
             writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 1));
         }
         while (!isNextRow(reader)) {
@@ -159,6 +189,36 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         }
         return (XMLEvent)reader.next();
     }
+
+    private XMLEvent putPicInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+        int picPairNumber = rowsCount - 1;
+        if(columnCount == 1) {
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 2));
+            if(!isFillPdb){
+                writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+                writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, null);
+            }
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 2 - 1));
+        }
+        while (!isNextRow(reader)) {
+            reader.next();
+        }
+        return (XMLEvent)reader.next();
+    }
+
+    private XMLEvent putDsspInEmptyCell(XMLEventReader reader, List<String> values) throws XMLStreamException {
+        int picPairNumber = rowsCount - 1;
+        if(columnCount == 1) {
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 3 - 3));
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 3 - 2));
+            writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, values.get(picPairNumber * 3 - 1));
+        }
+        while (!isNextRow(reader)) {
+            reader.next();
+        }
+        return (XMLEvent)reader.next();
+    }
+
 
     private XMLEvent putValueInEmptyCell(XMLEventReader reader, String value) throws XMLStreamException {
         writer = xlsxService.writeValueInNewCell(eventFactory, sharedstringstable, writer, value);
@@ -179,8 +239,19 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         XMLEvent nextElement = (XMLEvent)reader.peek();
         QName nextElementName = defineNextElementName(nextElement);
         if(!nextElementName.getLocalPart().equalsIgnoreCase(ROW_ELEMENT)) {
-            List<String> residueValues = values.subList(rowsCount - 1, values.size());
-            writer = xlsxService.writeValuesInNewRows(eventFactory, sharedstringstable, writer, residueValues);
+            if(isFillPic && !isFillDssp && !isFillPdb) {
+                List<String> residueValues = values.subList(rowsCount * 2 - 2, values.size());
+                writer = xlsxService.writePicInNewRows(eventFactory, sharedstringstable, writer, residueValues);
+            } else if(isFillDssp) {
+                List<String> residueValues = values.subList(rowsCount * 3 - 3, values.size());
+                writer = xlsxService.writeDsspInNewRows(eventFactory, sharedstringstable, writer, residueValues);
+            } else if(isFillPdb) {
+                List<String> residueValues = values.subList(rowsCount * 2 - 2, values.size());
+                writer = xlsxService.writePdbInNewRows(eventFactory, sharedstringstable, writer, residueValues);
+            } else {
+                List<String> residueValues = values.subList(rowsCount - 1, values.size());
+                writer = xlsxService.writeValuesInNewRows(eventFactory, sharedstringstable, writer, residueValues);
+            }
         }
     }
 
@@ -206,13 +277,14 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     private boolean isNeedFirstValueFilling() {
         return  rowsCount > 1
                 && columnCount == 1
-                && !fillPic;
+                && !isFillPic;
     }
 
     private boolean isNeedCellFilling(XMLEventReader reader) throws XMLStreamException {
         return rowsCount > 1
                 && columnCount == 1
-                && !fillPic
+                && !isFillPic
+                && !isFillDssp
                 && noValue(reader);
     }
 
