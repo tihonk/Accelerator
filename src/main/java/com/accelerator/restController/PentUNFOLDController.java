@@ -50,7 +50,7 @@ public class PentUNFOLDController {
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain);
         String fileName = UUID.randomUUID().toString();
-        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+//        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
         if (include3d) {
             xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
         }
