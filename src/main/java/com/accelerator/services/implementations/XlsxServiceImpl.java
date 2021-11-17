@@ -37,6 +37,29 @@ public class XlsxServiceImpl implements XlsxService {
     }
 
     @Override
+    public XMLEventWriter writeDsspInNewRows(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable,
+                                             XMLEventWriter writer, List<String> values) throws XMLStreamException {
+        declarePrivateFields(eventFactory, sharedstringstable, writer);
+        fillNewRowsWithDsspElements(values);
+        return this.writer;
+    }
+
+    @Override
+    public XMLEventWriter writePicInNewRows(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable,
+                                            XMLEventWriter writer, List<String> values) throws XMLStreamException {
+        declarePrivateFields(eventFactory, sharedstringstable, writer);
+        fillNewRowsWithPicElements(values);
+        return this.writer;
+    }
+
+    @Override
+    public XMLEventWriter writePdbInNewRows(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable, XMLEventWriter writer, List<String> values) throws XMLStreamException {
+        declarePrivateFields(eventFactory, sharedstringstable, writer);
+        fillNewRowsWithPdbElements(values);
+        return this.writer;
+    }
+
+    @Override
     public XMLEventWriter writeValueInNewCell(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable,
                                               XMLEventWriter writer, String value) throws XMLStreamException {
         declarePrivateFields(eventFactory, sharedstringstable, writer);
@@ -51,7 +74,6 @@ public class XlsxServiceImpl implements XlsxService {
         return prepareValueToFill(value);
     }
 
-
     private void declarePrivateFields(XMLEventFactory eventFactory, SharedStringsTable sharedstringstable, XMLEventWriter writer) {
         this.eventFactory = eventFactory;
         this.sharedstringstable = sharedstringstable;
@@ -62,6 +84,37 @@ public class XlsxServiceImpl implements XlsxService {
         for (String value : values) {
             writer.add(newStartElement(ROW_ELEMENT, null));
             fillNewCell(value);
+            fillNewCell(value);
+            writer.add(newEndElement(ROW_ELEMENT));
+        }
+    }
+
+    private void fillNewRowsWithDsspElements(List<String> values) throws XMLStreamException {
+        for (int i = 1; i * 3 <= values.size(); i++) {
+            writer.add(newStartElement(ROW_ELEMENT, null));
+            fillNewCell(values.get(i * 3 - 3));
+            fillNewCell(values.get(i * 3 - 2));
+            fillNewCell(values.get(i * 3 - 1));
+            writer.add(newEndElement(ROW_ELEMENT));
+        }
+    }
+
+    private void fillNewRowsWithPicElements(List<String> values) throws XMLStreamException {
+        for (int i = 1; i * 2 <= values.size(); i++) {
+            writer.add(newStartElement(ROW_ELEMENT, null));
+            fillNewCell(values.get(i * 2 - 2));
+            fillNewCell(null);
+            fillNewCell(null);
+            fillNewCell(values.get(i * 2 - 1));
+            writer.add(newEndElement(ROW_ELEMENT));
+        }
+    }
+
+    private void fillNewRowsWithPdbElements(List<String> values) throws XMLStreamException {
+        for (int i = 1; i * 2 <= values.size(); i++) {
+            writer.add(newStartElement(ROW_ELEMENT, null));
+            fillNewCell(values.get(i * 2 - 2));
+            fillNewCell(values.get(i * 2 - 1));
             writer.add(newEndElement(ROW_ELEMENT));
         }
     }
@@ -83,8 +136,9 @@ public class XlsxServiceImpl implements XlsxService {
     }
 
     private XMLEvent prepareValueToFill(String value) {
+        boolean isValueInt = isCanBeParseInt(value);
         CTRst ctrst = CTRst.Factory.newInstance();
-        ctrst.setT(value);
+        ctrst.setT(isValueInt ? value : value);
         int sRef = sharedstringstable.addEntry(ctrst);
         return eventFactory.createCharacters(Integer.toString(sRef));
     }
@@ -93,5 +147,18 @@ public class XlsxServiceImpl implements XlsxService {
         Attribute attribute = eventFactory.createAttribute("t", "s");
         List attributeList = Collections.singletonList(attribute);
         return attributeList.iterator();
+    }
+
+    private boolean isCanBeParseInt(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch( Exception e ) {
+            return false;
+        }
+    }
+
+    private String getFormulaToParseInt(String value) {
+        return "=(" + value + "*1)";
     }
 }

@@ -10,17 +10,30 @@ import java.util.List;
 
 public interface XlsxService {
 
-    XMLEventWriter writeValuesInNewRows(XMLEventFactory eventFactory,
-                                        SharedStringsTable sharedstringstable,
-                                        XMLEventWriter writer,
-                                        List<String> values) throws XMLStreamException;
+    XMLEvent prepareFillingValueEvent(XMLEventFactory eventFactory,
+                                      SharedStringsTable sharedstringstable,
+                                      String value);
 
     XMLEventWriter writeValueInNewCell(XMLEventFactory eventFactory,
                                        SharedStringsTable sharedstringstable,
                                        XMLEventWriter writer,
                                        String value) throws XMLStreamException;
 
-    XMLEvent prepareFillingValueEvent(XMLEventFactory eventFactory,
+    XMLEventWriter writeValuesInNewRows(XMLEventFactory eventFactory,
+                                        SharedStringsTable sharedstringstable,
+                                        XMLEventWriter writer,
+                                        List<String> values) throws XMLStreamException;
+
+    XMLEventWriter writeDsspInNewRows(XMLEventFactory eventFactory,
                                       SharedStringsTable sharedstringstable,
-                                      String value);
+                                      XMLEventWriter writer,
+                                      List<String> values) throws XMLStreamException;
+
+    XMLEventWriter writePicInNewRows(XMLEventFactory eventFactory,
+                                     SharedStringsTable sharedstringstable,
+                                     XMLEventWriter writer, List<String> values) throws XMLStreamException;
+
+    XMLEventWriter writePdbInNewRows(XMLEventFactory eventFactory,
+                                     SharedStringsTable sharedstringstable,
+                                     XMLEventWriter writer, List<String> values) throws XMLStreamException;
 }
