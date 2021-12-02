@@ -22,12 +22,13 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
-    List<String> dsspContent = new ArrayList<>();
-    List<String> pdbContent = new ArrayList<>();
+    List<String> dsspContent;
+    List<String> pdbContent;
     String aminoAcidSequence = "";
 
     @Override
     public List<String> filterDssp(List<String> dsspContext, String chainContext) {
+        dsspContent = new ArrayList<>();
         dsspContext.stream()
                 .filter(dsspString -> dsspString.indexOf(format(DSSP_CHAIN_MATCHING, chainContext)) > 0)
                 .forEach(this::addSpacesToString);
@@ -36,6 +37,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
 
     @Override
     public List<String> filterPdb(List<String> pdbContext, String chainContext) {
+        pdbContent = new ArrayList<>();
         pdbContext.stream()
                 .filter(pdbString -> pdbString.matches(format(PDB_CHAIN_REGEX, chainContext)))
                 .forEach(this::addNumberAndAminoAcid);
