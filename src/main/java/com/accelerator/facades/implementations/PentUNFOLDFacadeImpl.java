@@ -37,6 +37,7 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
         PentUNFOLDModel pentUNFOLDModel = new PentUNFOLDModel();
         pentUNFOLDModel.setDssp(pentUNFOLDFilterService.filterDssp(dsspContext, chainContext));
         pentUNFOLDModel.setPdb(pentUNFOLDFilterService.filterPdb(pdbContext, chainContext));
+        pentUNFOLDModel.setSequence(pentUNFOLDFilterService.getSequence());
         pentUNFOLDModel.setPic(picContext);
         pentUNFOLDModel.setChain(chainContext);
         return pentUNFOLDModel;
