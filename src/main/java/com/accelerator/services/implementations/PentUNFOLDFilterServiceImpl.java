@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 @Service("pentUNFOLDFilterService")
 public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
@@ -25,6 +24,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
     List<String> dsspContent;
     List<String> pdbContent;
+    String aminoAcidSequence = "";
 
     @Override
     public List<String> filterDssp(List<String> dsspContext, String chainContext) {
@@ -42,6 +42,14 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
                 .filter(pdbString -> pdbString.matches(format(PDB_CHAIN_REGEX, chainContext)))
                 .forEach(this::addNumberAndAminoAcid);
         return pdbContent;
+    }
+
+    @Override
+    public String getSequence() {
+        String aminoAcidSequenceToReturn = this.aminoAcidSequence;
+        this.aminoAcidSequence = "";
+        System.out.println(aminoAcidSequenceToReturn);
+        return aminoAcidSequenceToReturn;
     }
 
     private void addSpacesToString(String dsspString){
@@ -76,7 +84,9 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
             String number = numberMatcher.group(1).trim();
             if(!pdbContent.contains(number)) {
                 pdbContent.add(number);
-                pdbContent.add(getAminoAcid(generalString));
+                String aminoAcid = getAminoAcid(generalString);
+                pdbContent.add(aminoAcid);
+                aminoAcidSequence += aminoAcid;
             }
         }
     }
