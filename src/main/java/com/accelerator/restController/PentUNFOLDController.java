@@ -27,6 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/chemistry")
 public class PentUNFOLDController {
 
+    private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
     private static final String FILE_2D_PATH = "src/main/resources/user-files/%s.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
 
@@ -45,12 +46,18 @@ public class PentUNFOLDController {
     @PostMapping(value = "/pent-un-fold",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include3d,
+    public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
+                                          @RequestParam boolean include2d, @RequestParam boolean include3d,
                                           @RequestParam ArrayList<String> picResult, @RequestParam String chain)
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain);
         String fileName = UUID.randomUUID().toString();
-//        xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+        if (include1d) {
+            xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
+        }
+        if (include2d) {
+//            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+        }
         if (include3d) {
             xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
         }
@@ -65,6 +72,11 @@ public class PentUNFOLDController {
     @GetMapping(value = "/pent-un-fold/3d/{id}")
     public ResponseEntity<InputStreamResource> download3dXlsxFile(@PathVariable("id") String fileId) throws IOException {
         return getXlsxFile(format(FILE_3D_PATH, fileId));
+    }
+
+    @GetMapping(value = "/pent-un-fold/1d/{id}")
+    public ResponseEntity<InputStreamResource> download1dXlsxFile(@PathVariable("id") String fileId) throws IOException {
+        return getXlsxFile(format(FILE_1D_PATH, fileId));
     }
 
     private ResponseEntity<InputStreamResource> getXlsxFile(String filePath) throws FileNotFoundException {
