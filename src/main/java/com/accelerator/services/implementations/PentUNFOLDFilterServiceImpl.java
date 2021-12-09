@@ -48,7 +48,6 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     public String getSequence() {
         String aminoAcidSequenceToReturn = this.aminoAcidSequence;
         this.aminoAcidSequence = "";
-        System.out.println(aminoAcidSequenceToReturn);
         return aminoAcidSequenceToReturn;
     }
 

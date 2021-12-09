@@ -28,7 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class PentUNFOLDController {
 
     private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
-    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s.xlsx";
+    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
 
     @Resource
@@ -51,12 +51,12 @@ public class PentUNFOLDController {
                                           @RequestParam ArrayList<String> picResult, @RequestParam String chain)
             throws Exception {
         PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain);
-        String fileName = UUID.randomUUID().toString();
+        String fileName = generateUniqueFileName(pdbFile.getOriginalFilename());
         if (include1d) {
             xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
         }
         if (include2d) {
-//            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
         }
         if (include3d) {
             xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
@@ -64,7 +64,7 @@ public class PentUNFOLDController {
         return fileName;
     }
 
-    @GetMapping(value = "/pent-un-fold/{id}")
+    @GetMapping(value = "/pent-un-fold/2d/{id}")
     public ResponseEntity<InputStreamResource> downloadXlsxFile(@PathVariable("id") String fileId) throws IOException {
         return getXlsxFile(format(FILE_2D_PATH, fileId));
     }
@@ -89,5 +89,12 @@ public class PentUNFOLDController {
                 .contentType(mediaType)
                 .contentLength(file.length())
                 .body(resource);
+    }
+
+    private String generateUniqueFileName(String originalFilename) {
+        String fileNameFormatter = "%s-(%s)-";
+        String id = UUID.randomUUID().toString().substring(0, 8);
+        String fileName = originalFilename.substring(0, 4);
+        return format(fileNameFormatter, fileName, id);
     }
 }
