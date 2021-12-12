@@ -37,10 +37,10 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     FileProcessingService fileProcessingService;
 
     private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
-    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s.xlsx";
+    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
     private static final String MOTHER_FILE_1D_PATH = "src/main/resources/PentUNFOLD1D.xlsx";
-    private static final String MOTHER_FILE_2D_PATH = "src/main/resources/PentUNFOLD.xlsx";
+    private static final String MOTHER_FILE_2D_PATH = "src/main/resources/PentUNFOLD2D.xlsx";
     private static final String MOTHER_FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
@@ -66,17 +66,17 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
-        fileProcessingService.copyFile(fileName, MOTHER_FILE_2D_PATH);
-        processOneSheet(pentUNFOLDModel.getPdb(), 1, format(FILE_2D_PATH, fileName));
-        processOneSheet(pentUNFOLDModel.getDssp(), 3, format(FILE_2D_PATH, fileName));
+        fileProcessingService.copyFile(fileName + "2D", MOTHER_FILE_2D_PATH);
+        fillPdb(pentUNFOLDModel, fileName, FILE_2D_PATH);
+        fillDssp(pentUNFOLDModel, fileName, FILE_2D_PATH);
         fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
     }
 
     @Override
     public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
-        fillPdb(pentUNFOLDModel, fileName);
-        fillDssp(pentUNFOLDModel, fileName);
+        fillPdb(pentUNFOLDModel, fileName, FILE_3D_PATH);
+        fillDssp(pentUNFOLDModel, fileName, FILE_3D_PATH);
         fillPic(pentUNFOLDModel.getPic(), 4, format(FILE_3D_PATH, fileName));
         fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
     }
@@ -87,15 +87,15 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
         isFillSequence = false;
     }
 
-    private void fillPdb(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+    private void fillPdb(PentUNFOLDModel pentUNFOLDModel, String fileName, String path) throws Exception {
         isFillPdb = true;
-        fillPic(pentUNFOLDModel.getPdb(), 2, format(FILE_3D_PATH, fileName));
+        fillPic(pentUNFOLDModel.getPdb(), 2, format(path, fileName));
         isFillPdb = false;
     }
 
-    private void fillDssp(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
+    private void fillDssp(PentUNFOLDModel pentUNFOLDModel, String fileName, String path) throws Exception {
         isFillDssp = true;
-        fillPic(pentUNFOLDModel.getDssp(), 3, format(FILE_3D_PATH, fileName));
+        fillPic(pentUNFOLDModel.getDssp(), 3, format(path, fileName));
         isFillDssp = false;
     }
 
