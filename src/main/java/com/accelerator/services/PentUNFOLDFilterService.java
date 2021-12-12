@@ -9,4 +9,6 @@ public interface PentUNFOLDFilterService {
     List<String> filterPdb(List<String> pdbContext, String chainContext);
 
     String getSequence();
+
+    String filterSequence(String sequence);
 }

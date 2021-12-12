@@ -22,6 +22,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
+    private static final String AMINO_ACIDS = "[^GLYSEQDNFAKRHCVPWIMT]";
     List<String> dsspContent;
     List<String> pdbContent;
     String aminoAcidSequence = "";
@@ -49,6 +50,11 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
         String aminoAcidSequenceToReturn = this.aminoAcidSequence;
         this.aminoAcidSequence = "";
         return aminoAcidSequenceToReturn;
+    }
+
+    @Override
+    public String filterSequence(String sequence) {
+        return sequence.replaceAll(AMINO_ACIDS, "");
     }
 
     private void addSpacesToString(String dsspString){

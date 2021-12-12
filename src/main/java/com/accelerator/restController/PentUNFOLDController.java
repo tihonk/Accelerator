@@ -64,6 +64,17 @@ public class PentUNFOLDController {
         return fileName;
     }
 
+    @PostMapping(value = "/pent-un-fold/sequence",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public String postPentUnFOLD1dSequence(@RequestParam String sequence)
+            throws Exception {
+        String fileName = generateUniqueFileName("sequ");
+        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fill1dSequenceData(sequence);
+        xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
+        return fileName;
+    }
+
     @GetMapping(value = "/pent-un-fold/2d/{id}")
     public ResponseEntity<InputStreamResource> downloadXlsxFile(@PathVariable("id") String fileId) throws IOException {
         return getXlsxFile(format(FILE_2D_PATH, fileId));
@@ -92,7 +103,7 @@ public class PentUNFOLDController {
     }
 
     private String generateUniqueFileName(String originalFilename) {
-        String fileNameFormatter = "%s-(%s)-";
+        String fileNameFormatter = "%s_(%s)";
         String id = UUID.randomUUID().toString().substring(0, 8);
         String fileName = originalFilename.substring(0, 4);
         return format(fileNameFormatter, fileName, id);
