@@ -30,6 +30,13 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
         return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
     }
 
+    @Override
+    public PentUNFOLDModel fill1dSequenceData(String sequence) {
+        PentUNFOLDModel pentUNFOLDModel = new PentUNFOLDModel();
+        pentUNFOLDModel.setSequence(pentUNFOLDFilterService.filterSequence(sequence));
+        return pentUNFOLDModel;
+    }
+
     private PentUNFOLDModel preparePentUNFOLDModel(List<String> dsspContext,
                                                    List<String> pdbContext,
                                                    List<String> picContext,
