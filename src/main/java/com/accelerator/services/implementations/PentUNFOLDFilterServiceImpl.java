@@ -18,7 +18,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     @Resource
     AminoAcidConvertor aminoAcidConvertor;
 
-    private static final String PDB_CHAIN_REGEX = "ATOM(.*)\\s[A-Z]{3}\\s%s\\s*(.*)";
+    private static final String PDB_CHAIN_REGEX = "ATOM(.*)[A-Z]{3}\\s%s\\s*(.*)";
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
@@ -79,7 +79,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private void addNumberAndAminoAcid(String pdbString) {
-        Pattern generalPattern = Pattern.compile("(\\s[A-Z]{3}\\s\\w\\s*\\d+\\s)");
+        Pattern generalPattern = Pattern.compile("([A-Z]{3}\\s\\w\\s*\\d+\\s)");
         Pattern numberPattern = Pattern.compile("(\\s*\\d+\\s)");
         Matcher generalMatcher = generalPattern.matcher(pdbString);
         if(generalMatcher.find()) {
@@ -97,7 +97,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private String getAminoAcid(String generalString) {
-        String aminoAcid = generalString.substring(1, 4);
+        String aminoAcid = generalString.substring(0, 3);
         return aminoAcidConvertor.convertToShort(aminoAcid);
     }
 
