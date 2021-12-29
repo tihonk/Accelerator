@@ -1,4 +1,4 @@
-Maven - Accelerator Release 1.0.4
+Maven - Accelerator Release 1.0.5
 ===============================
 Template for Spring 5 MVC + React app, using Maven build tool.
 
@@ -20,4 +20,4 @@ Access ```http://localhost:8080/chemistry```
 3. Done.
 
 ###4. Project Demo
-Please refer to this article [Maven - Spring 5 MVC Accelerator ](http://13.58.120.143//)
+Please refer to this article [Maven - Spring 5 MVC Accelerator ](http://3.17.12.213/)
