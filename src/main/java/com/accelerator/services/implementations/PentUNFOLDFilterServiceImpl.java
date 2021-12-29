@@ -18,7 +18,9 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     @Resource
     AminoAcidConvertor aminoAcidConvertor;
 
-    private static final String PDB_CHAIN_REGEX = "ATOM(.*)[A-Z]{3}\\s%s\\s*(.*)";
+    private boolean isTerminatedChain = false;
+
+    private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}\\d+(.*)";
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
@@ -40,7 +42,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     public List<String> filterPdb(List<String> pdbContext, String chainContext) {
         pdbContent = new ArrayList<>();
         pdbContext.stream()
-                .filter(pdbString -> pdbString.matches(format(PDB_CHAIN_REGEX, chainContext)))
+                .filter(pdbString -> filterPdbStream(pdbString, chainContext))
                 .forEach(this::addNumberAndAminoAcid);
         return pdbContent;
     }
@@ -69,6 +71,15 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
         dsspContent.add(getDsspNumber(dsspString));
     }
 
+    private boolean filterPdbStream(String pdbString, String chainContext) {
+        boolean isTermResidue = pdbString.startsWith("TER");
+        boolean isTargetChain = pdbString.matches(format(PDB_CHAIN_REGEX, chainContext));
+        if (isTermResidue && isTargetChain) {
+            isTerminatedChain = true;
+        }
+        return !isTerminatedChain && isTargetChain;
+    }
+
     private String addSpaces(String dsspString, int numbers) {
         int neededSpaces = MAX_DSSP_NEEDED_SPACES - numbers;
         StringBuilder spaces = new StringBuilder();
@@ -79,8 +90,8 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private void addNumberAndAminoAcid(String pdbString) {
-        Pattern generalPattern = Pattern.compile("([A-Z]{3}\\s\\w\\s*\\d+\\s)");
-        Pattern numberPattern = Pattern.compile("(\\s*\\d+\\s)");
+        Pattern generalPattern = Pattern.compile("([A-Z]{3}\\s\\w\\s*\\d+[A-Z]?\\s)");
+        Pattern numberPattern = Pattern.compile("(\\s*\\d+[A-Z]?\\s)");
         Matcher generalMatcher = generalPattern.matcher(pdbString);
         if(generalMatcher.find()) {
             String generalString = generalMatcher.group(1);
@@ -88,10 +99,12 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
             numberMatcher.find();
             String number = numberMatcher.group(1).trim();
             if(!pdbContent.contains(number)) {
-                pdbContent.add(number);
                 String aminoAcid = getAminoAcid(generalString);
-                pdbContent.add(aminoAcid);
-                aminoAcidSequence += aminoAcid;
+                if (aminoAcid != null) {
+                    pdbContent.add(aminoAcid);
+                    pdbContent.add(number);
+                    aminoAcidSequence += aminoAcid;
+                }
             }
         }
     }
@@ -102,7 +115,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private String getDsspNumber(String dsspString) {
-        Pattern numberPattern = Pattern.compile("\\s+\\d+\\s+(\\d+)\\s+");
+        Pattern numberPattern = Pattern.compile("\\s+\\d+\\s+(\\d+[A-Z]?)\\s*");
         Matcher generalMatcher = numberPattern.matcher(dsspString);
         generalMatcher.find();
         return generalMatcher.group(1);

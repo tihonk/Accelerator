@@ -14,7 +14,7 @@ public class AminoAcidConvertorImpl implements AminoAcidConvertor {
             return "I";
         } else if(longName.equalsIgnoreCase("LEU")) {
             return "L";
-        } else if(longName.equalsIgnoreCase("MET")) {
+        } else if(longName.equalsIgnoreCase("MET") || longName.equalsIgnoreCase("MSE")) {
             return "M";
         } else if(longName.equalsIgnoreCase("VAL")) {
             return "V";
@@ -26,7 +26,7 @@ public class AminoAcidConvertorImpl implements AminoAcidConvertor {
             return "Y";
         } else if(longName.equalsIgnoreCase("ASN")) {
             return "N";
-        } else if(longName.equalsIgnoreCase("CYS")) {
+        } else if(longName.equalsIgnoreCase("CYS") || longName.equalsIgnoreCase("CSO")) {
             return "C";
         } else if(longName.equalsIgnoreCase("GLN")) {
             return "Q";
