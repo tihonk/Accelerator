@@ -18,8 +18,6 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     @Resource
     AminoAcidConvertor aminoAcidConvertor;
 
-    private boolean isTerminatedChain = false;
-
     private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}\\d+(.*)";
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
@@ -28,6 +26,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     List<String> dsspContent;
     List<String> pdbContent;
     String aminoAcidSequence = "";
+    boolean isTerminatedChain;
 
     @Override
     public List<String> filterDssp(List<String> dsspContext, String chainContext) {
@@ -41,6 +40,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     @Override
     public List<String> filterPdb(List<String> pdbContext, String chainContext) {
         pdbContent = new ArrayList<>();
+        isTerminatedChain = false;
         pdbContext.stream()
                 .filter(pdbString -> filterPdbStream(pdbString, chainContext))
                 .forEach(this::addNumberAndAminoAcid);
