@@ -1,6 +1,7 @@
 package com.accelerator.services.implementations;
 
 import com.accelerator.convertors.AminoAcidConvertor;
+import com.accelerator.convertors.SubNumberConvertor;
 import com.accelerator.services.PentUNFOLDFilterService;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
 
     @Resource
     AminoAcidConvertor aminoAcidConvertor;
+
+    @Resource
+    SubNumberConvertor subNumberConvertor;
 
     private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}\\d+(.*)";
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
@@ -97,7 +101,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
             String generalString = generalMatcher.group(1);
             Matcher numberMatcher = numberPattern.matcher(generalString);
             numberMatcher.find();
-            String number = numberMatcher.group(1).trim();
+            String number = replaceLitersToPointDigit(numberMatcher.group(1).trim());
             if(!pdbContent.contains(number)) {
                 String aminoAcid = getAminoAcid(generalString);
                 if (aminoAcid != null) {
@@ -118,6 +122,18 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
         Pattern numberPattern = Pattern.compile("\\s+\\d+\\s+(\\d+[A-Z]?)\\s*");
         Matcher generalMatcher = numberPattern.matcher(dsspString);
         generalMatcher.find();
-        return generalMatcher.group(1);
+        return replaceLitersToPointDigit(generalMatcher.group(1));
+    }
+
+    private String replaceLitersToPointDigit(String fullNumber) {
+        String finalNumber = null;
+        Pattern subNumberPattern = Pattern.compile("\\d+([A-Z])");
+        Matcher numberMatcher = subNumberPattern.matcher(fullNumber);
+        if(numberMatcher.find()) {
+            String subNumber = numberMatcher.group(1);
+            String pointDigit = subNumberConvertor.convertToPointDigit(subNumber);
+            finalNumber = fullNumber.replace(subNumber, pointDigit);
+        }
+        return finalNumber != null ? finalNumber : fullNumber;
     }
 }
