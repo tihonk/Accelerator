@@ -105,8 +105,8 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
             if(!pdbContent.contains(number)) {
                 String aminoAcid = getAminoAcid(generalString);
                 if (aminoAcid != null) {
-                    pdbContent.add(aminoAcid);
                     pdbContent.add(number);
+                    pdbContent.add(aminoAcid);
                     aminoAcidSequence += aminoAcid;
                 }
             }
