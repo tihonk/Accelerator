@@ -94,7 +94,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private void addNumberAndAminoAcid(String pdbString) {
-        Pattern generalPattern = Pattern.compile("([A-Z]{3}\\s\\w\\s*\\d+[A-Z]?\\s)");
+        Pattern generalPattern = Pattern.compile("\\d+\\s*[A-Z]+\\s*([A-Z]{3}\\s\\w\\s*\\d+[A-Z]?\\s)");
         Pattern numberPattern = Pattern.compile("(\\s*\\d+[A-Z]?\\s)");
         Matcher generalMatcher = generalPattern.matcher(pdbString);
         if(generalMatcher.find()) {
