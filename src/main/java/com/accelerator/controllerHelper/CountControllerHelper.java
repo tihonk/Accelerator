@@ -110,10 +110,6 @@ public class CountControllerHelper
                 break;
             }
         }
-
-//        System.out.println(testEntryList.get(19).getKey());
-
-
         return model;
     }
 }
