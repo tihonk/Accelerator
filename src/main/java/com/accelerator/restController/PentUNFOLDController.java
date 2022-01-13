@@ -4,6 +4,8 @@ import com.accelerator.dto.PentUNFOLDModel;
 import com.accelerator.json.util.RestResponse;
 import com.accelerator.facades.PentUNFOLDFacade;
 import com.accelerator.facades.XlsxFillingFacade;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,12 +23,14 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/chemistry")
 public class PentUNFOLDController {
 
+    private static final Logger rootLogger = LogManager.getRootLogger();
     private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
     private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
@@ -48,18 +52,13 @@ public class PentUNFOLDController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
                                           @RequestParam boolean include2d, @RequestParam boolean include3d,
-                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain)
-            throws Exception {
-        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain);
-        String fileName = generateUniqueFileName(pdbFile.getOriginalFilename());
-        if (include1d) {
-            xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
-        }
-        if (include2d) {
-            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
-        }
-        if (include3d) {
-            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain){
+        String fileName = generateUniqueFileName(requireNonNull(pdbFile.getOriginalFilename()));
+        try {
+            fillNecessaryFiles(include1d, include2d, include3d, picResult, chain, fileName, pdbFile);
+        } catch (Exception exception) {
+            rootLogger.error(exception.getMessage());
+            return null;
         }
         return fileName;
     }
@@ -107,5 +106,20 @@ public class PentUNFOLDController {
         String id = UUID.randomUUID().toString().substring(0, 8);
         String fileName = originalFilename.substring(0, 4);
         return format(fileNameFormatter, fileName, id);
+    }
+
+    private void fillNecessaryFiles(boolean include1d, boolean include2d, boolean include3d,
+                                    ArrayList<String> picResult, String chain, String fileName,
+                                    MultipartFile pdbFile) throws Exception {
+        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d);
+        if (include1d) {
+            xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
+        }
+        if (include2d) {
+            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+        }
+        if (include3d) {
+            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+        }
     }
 }

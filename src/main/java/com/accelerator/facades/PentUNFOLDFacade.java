@@ -8,7 +8,11 @@ import java.util.ArrayList;
 
 public interface PentUNFOLDFacade {
 
-    PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult, String chain) throws IOException;
+    PentUNFOLDModel fillXlsxData(MultipartFile pdbFile,
+                                 ArrayList<String> picResult,
+                                 String chain,
+                                 boolean include2d,
+                                 boolean include3d) throws IOException;
 
     PentUNFOLDModel fill1dSequenceData(String sequence);
 }

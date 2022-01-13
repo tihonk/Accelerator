@@ -27,9 +27,10 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
     PentUNFOLDUsageCounterService pentUNFOLDUsageCounterService;
 
     @Override
-    public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult, String chain) throws IOException {
+    public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult,
+                                        String chain, boolean include2d, boolean include3d) throws IOException {
         pentUNFOLDUsageCounterService.incrementCounter();
-        List<String> dsspContext = dsspThirdPartyService.getDsspContext(pdbFile);
+        List<String> dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile) : new ArrayList<>();
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
         return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
     }

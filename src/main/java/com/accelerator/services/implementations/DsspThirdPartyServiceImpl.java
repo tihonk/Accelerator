@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,8 +33,10 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String DSSP_RESULT_URL =  "https://www3.cmbi.umcn.nl/xssp/api/result/pdb_file/dssp/%s/";
     private static final String CONTENT_TYPE_PDB_FILE =  "chemical/x-pdb";
     private static final String PDB_CONTENT_FILE_PATH = "src/main/resources/pdbContext.txt";
+    private static final String DSSP_FAILURE_MESSAGE = "Dssp server is not working properly. It is not possible to get a result.";
     private static final String LOCATION = "Location";
     private static final String SUCCESS_STATUS = "SUCCESS";
+    private static final String FAILURE_STATUS = "FAILURE";
     private static final String STATUS_JSON_PARAM = "status";
     private static final String RESULT_JSON_PARAM = "result";
     private static final String RESNUM = "RESNUM";
@@ -137,6 +138,9 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
             String jsonString = EntityUtils.toString(response.getEntity());
             JSONObject json = new JSONObject(jsonString);
             status = json.getString(STATUS_JSON_PARAM);
+            if (FAILURE_STATUS.equals(status)) {
+                throw new RuntimeException(DSSP_FAILURE_MESSAGE);
+            }
         } while (!SUCCESS_STATUS.equals(status));
     }
 
