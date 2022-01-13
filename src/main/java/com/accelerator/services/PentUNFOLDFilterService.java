@@ -1,12 +1,15 @@
 package com.accelerator.services;
 
 import java.util.List;
+import java.util.SortedMap;
 
 public interface PentUNFOLDFilterService {
 
     List<String> filterDssp(List<String> dsspContext, String chainContext);
 
     List<String> filterPdb(List<String> pdbContext, String chainContext);
+
+    SortedMap<Double, List<String[]>> filterPdbToDssp(List<String> pdbContext, String chainContext);
 
     String getSequence();
 

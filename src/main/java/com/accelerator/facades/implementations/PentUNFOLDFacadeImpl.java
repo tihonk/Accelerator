@@ -2,6 +2,7 @@ package com.accelerator.facades.implementations;
 
 import com.accelerator.dto.PentUNFOLDModel;
 import com.accelerator.facades.PentUNFOLDFacade;
+import com.accelerator.services.DsspService;
 import com.accelerator.services.DsspThirdPartyService;
 import com.accelerator.services.PdbContextService;
 import com.accelerator.services.PentUNFOLDFilterService;
@@ -13,12 +14,15 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 
 @Service("pentUNFOLDFacade")
 public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
 
     @Resource
     DsspThirdPartyService dsspThirdPartyService;
+    @Resource
+    DsspService dsspService;
     @Resource
     PdbContextService pdbContextService;
     @Resource
@@ -30,9 +34,10 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
     public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult,
                                         String chain, boolean include2d, boolean include3d) throws IOException {
         pentUNFOLDUsageCounterService.incrementCounter();
-        List<String> dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile) : new ArrayList<>();
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
-        return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
+        SortedMap<Double, Character> dsspContext = include2d || include3d ? dsspService.getDsspContext(pdbContext, chain) : null;
+//        List<String> dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile) : new ArrayList<>();
+        return preparePentUNFOLDModel(new ArrayList<>(), pdbContext, picResult, chain);
     }
 
     @Override
