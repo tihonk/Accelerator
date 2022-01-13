@@ -5,6 +5,7 @@ import com.accelerator.facades.PentUNFOLDFacade;
 import com.accelerator.services.DsspThirdPartyService;
 import com.accelerator.services.PdbContextService;
 import com.accelerator.services.PentUNFOLDFilterService;
+import com.accelerator.services.PentUNFOLDUsageCounterService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,9 +23,12 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
     PdbContextService pdbContextService;
     @Resource
     PentUNFOLDFilterService pentUNFOLDFilterService;
+    @Resource
+    PentUNFOLDUsageCounterService pentUNFOLDUsageCounterService;
 
     @Override
     public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult, String chain) throws IOException {
+        pentUNFOLDUsageCounterService.incrementCounter();
         List<String> dsspContext = dsspThirdPartyService.getDsspContext(pdbFile);
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
         return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
