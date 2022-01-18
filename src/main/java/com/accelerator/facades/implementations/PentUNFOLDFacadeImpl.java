@@ -32,7 +32,7 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
         pentUNFOLDUsageCounterService.incrementCounter();
         List<String> dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile,isFileNeeded) : new ArrayList<>();
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
-        return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
+        return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain, isFileNeeded);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
     private PentUNFOLDModel preparePentUNFOLDModel(List<String> dsspContext,
                                                    List<String> pdbContext,
                                                    List<String> picContext,
-                                                   String chainContext) {
+                                                   String chainContext, boolean isFileNeeded) {
         PentUNFOLDModel pentUNFOLDModel = new PentUNFOLDModel();
-        pentUNFOLDModel.setDssp(pentUNFOLDFilterService.filterDssp(dsspContext, chainContext));
+        pentUNFOLDModel.setDssp(pentUNFOLDFilterService.filterDssp(dsspContext, chainContext, isFileNeeded));
         pentUNFOLDModel.setPdb(pentUNFOLDFilterService.filterPdb(pdbContext, chainContext));
         pentUNFOLDModel.setSequence(pentUNFOLDFilterService.getSequence());
         pentUNFOLDModel.setPic(picContext);
