@@ -115,7 +115,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody(OUTPUT_TYPE_KAY, OUTPUT_TYPE_VALUE);
         builder.addTextBody(INPUT_TYPE_KAY, INPUT_TYPE_VALUE_ID);
-        builder.addTextBody(INPUT_TYPE_VALUE_ID, "1s0c");
+        builder.addTextBody(INPUT_TYPE_VALUE_ID, fileId);
         builder.addTextBody(CSRF_TOKEN_KAY, csrfToken);
         return builder.build();
     }
