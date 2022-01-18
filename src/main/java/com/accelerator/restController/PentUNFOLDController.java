@@ -52,10 +52,11 @@ public class PentUNFOLDController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
                                           @RequestParam boolean include2d, @RequestParam boolean include3d,
-                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain){
+                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain,
+                                          @RequestParam boolean isFileNeeded){
         String fileName = generateUniqueFileName(requireNonNull(pdbFile.getOriginalFilename()));
         try {
-            fillNecessaryFiles(include1d, include2d, include3d, picResult, chain, fileName, pdbFile);
+            fillNecessaryFiles(include1d, include2d, include3d, isFileNeeded, picResult, chain, fileName, pdbFile);
         } catch (Exception exception) {
             rootLogger.error(exception.getMessage());
             return null;
@@ -108,10 +109,11 @@ public class PentUNFOLDController {
         return format(fileNameFormatter, fileName, id);
     }
 
-    private void fillNecessaryFiles(boolean include1d, boolean include2d, boolean include3d,
+    private void fillNecessaryFiles(boolean include1d, boolean include2d, boolean include3d, boolean isFileNeeded,
                                     ArrayList<String> picResult, String chain, String fileName,
                                     MultipartFile pdbFile) throws Exception {
-        PentUNFOLDModel pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d);
+        PentUNFOLDModel pentUNFOLDModel
+                = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, isFileNeeded);
         if (include1d) {
             xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
         }

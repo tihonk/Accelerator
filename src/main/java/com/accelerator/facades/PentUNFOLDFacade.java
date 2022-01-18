@@ -12,7 +12,8 @@ public interface PentUNFOLDFacade {
                                  ArrayList<String> picResult,
                                  String chain,
                                  boolean include2d,
-                                 boolean include3d) throws IOException;
+                                 boolean include3d,
+                                 boolean isFileNeeded) throws IOException;
 
     PentUNFOLDModel fill1dSequenceData(String sequence);
 }
