@@ -1,4 +1,4 @@
-Maven - Accelerator Release 1.0.5
+Maven - Accelerator Release 1.0.6
 ===============================
 Template for Spring 5 MVC + React app, using Maven build tool.
 

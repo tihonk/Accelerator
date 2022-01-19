@@ -5,7 +5,7 @@ import java.util.SortedMap;
 
 public interface PentUNFOLDFilterService {
 
-    List<String> filterDssp(List<String> dsspContext, String chainContext);
+    List<String> filterDssp(List<String> dsspContext, String chainContext, boolean isFileNeeded);
 
     List<String> filterPdb(List<String> pdbContext, String chainContext);
 

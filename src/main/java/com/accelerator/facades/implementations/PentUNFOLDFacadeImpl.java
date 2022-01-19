@@ -32,12 +32,12 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
 
     @Override
     public PentUNFOLDModel fillXlsxData(MultipartFile pdbFile, ArrayList<String> picResult,
-                                        String chain, boolean include2d, boolean include3d) throws IOException {
+                                        String chain, boolean include2d, boolean include3d, boolean isFileNeeded) throws IOException {
         pentUNFOLDUsageCounterService.incrementCounter();
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
         List<String> dsspContext = include2d || include3d ? dsspService.getDsspContext(pdbContext, chain) : null;
 //        List<String> dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile) : new ArrayList<>();
-        return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain);
+        return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain, isFileNeeded);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
     private PentUNFOLDModel preparePentUNFOLDModel(List<String> dsspContext,
                                                    List<String> pdbContext,
                                                    List<String> picContext,
-                                                   String chainContext) {
+                                                   String chainContext, boolean isFileNeeded) {
         PentUNFOLDModel pentUNFOLDModel = new PentUNFOLDModel();
         pentUNFOLDModel.setDssp(dsspContext);
         pentUNFOLDModel.setPdb(pentUNFOLDFilterService.filterPdb(pdbContext, chainContext));

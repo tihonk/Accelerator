@@ -31,6 +31,8 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String DSSP_SERVER_URL =  "https://www3.cmbi.umcn.nl/xssp/";
     private static final String DSSP_STATUS_URL =  "https://www3.cmbi.umcn.nl/xssp/api/status/pdb_file/dssp/%s/";
     private static final String DSSP_RESULT_URL =  "https://www3.cmbi.umcn.nl/xssp/api/result/pdb_file/dssp/%s/";
+    private static final String DSSP_STATUS_URL_ID =  "https://www3.cmbi.umcn.nl/xssp/api/status/pdb_id/dssp/%s/";
+    private static final String DSSP_RESULT_URL_ID =  "https://www3.cmbi.umcn.nl/xssp/api/result/pdb_id/dssp/%s/";
     private static final String CONTENT_TYPE_PDB_FILE =  "chemical/x-pdb";
     private static final String PDB_CONTENT_FILE_PATH = "src/main/resources/pdbContext.txt";
     private static final String DSSP_FAILURE_MESSAGE = "Dssp server is not working properly. It is not possible to get a result.";
@@ -44,21 +46,23 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final Integer CSRF_TOKEN_START_INDEX = 55;
     private static final Integer REDIRECT_STATUS = 302;
     private static final Integer REDIRECT_URL_LENGTH = 51;
+    private static final Integer REDIRECT_URL_LENGTH_ID = 49;
     private static final Integer START_DSSP_CONTEXT = 77;
 
     private static final String OUTPUT_TYPE_KAY = "output_type";
     private static final String OUTPUT_TYPE_VALUE = "dssp";
     private static final String INPUT_TYPE_KAY = "input_type";
-    private static final String INPUT_TYPE_VALUE = "pdb_file";
+    private static final String INPUT_TYPE_VALUE_FILE = "pdb_file";
+    private static final String INPUT_TYPE_VALUE_ID = "pdb_id";
     private static final String CSRF_TOKEN_KAY = "csrf_token";
     private static final String FILE_KAY = "file_";
 
     @Override
-    public List<String> getDsspContext(MultipartFile pdbFile) throws IOException {
+    public List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
-        resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile);
-        String dsspContext = getRequestGetDsspContext();
+        resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile, isFileNeeded);
+        String dsspContext = getRequestGetDsspContext(isFileNeeded);
         httpClient.close();
         return convertToList(dsspContext);
     }
@@ -77,17 +81,23 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         return startCSRFTokenSubstring.substring(0, endCSRFToken);
     }
 
-    private String postRequestGetDsspContextUrl(String csrfToken, MultipartFile pdbFile) throws IOException {
+    private String postRequestGetDsspContextUrl(String csrfToken, MultipartFile pdbFile, boolean isFileNeeded) throws IOException {
         HttpPost request = new HttpPost(DSSP_SERVER_URL);
-        HttpResponse response = httpClient.execute(preparePostRequest(request, csrfToken, pdbFile));
+        HttpResponse response = httpClient.execute(preparePostRequest(request, csrfToken, pdbFile, isFileNeeded));
         if (REDIRECT_STATUS == response.getStatusLine().getStatusCode()) {
-            return getRedirectedResultId(response);
+            return getRedirectedResultId(response, isFileNeeded);
         }
         return null;
     }
 
-    private HttpPost preparePostRequest(HttpPost request, String csrfToken, MultipartFile pdbFile) throws IOException {
-        HttpEntity multipartEntity = getHttpEntity(csrfToken, pdbFile);
+    private HttpPost preparePostRequest(HttpPost request, String csrfToken, MultipartFile pdbFile, boolean isFileNeeded)
+            throws IOException {
+        HttpEntity multipartEntity;
+        if(isFileNeeded) {
+            multipartEntity = getHttpEntity(csrfToken, pdbFile);
+        } else {
+            multipartEntity = getHttpEntity(csrfToken, pdbFile.getOriginalFilename().substring(0,4));
+        }
         request.setEntity(multipartEntity);
         return request;
     }
@@ -95,9 +105,18 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private HttpEntity getHttpEntity(String csrfToken, MultipartFile pdbFile) throws IOException {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody(OUTPUT_TYPE_KAY, OUTPUT_TYPE_VALUE);
-        builder.addTextBody(INPUT_TYPE_KAY, INPUT_TYPE_VALUE);
+        builder.addTextBody(INPUT_TYPE_KAY, INPUT_TYPE_VALUE_FILE);
         builder.addTextBody(CSRF_TOKEN_KAY, csrfToken);
         setPdbFileToBuilder(builder, pdbFile);
+        return builder.build();
+    }
+
+    private HttpEntity getHttpEntity(String csrfToken, String fileId) throws IOException {
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.addTextBody(OUTPUT_TYPE_KAY, OUTPUT_TYPE_VALUE);
+        builder.addTextBody(INPUT_TYPE_KAY, INPUT_TYPE_VALUE_ID);
+        builder.addTextBody(INPUT_TYPE_VALUE_ID, fileId);
+        builder.addTextBody(CSRF_TOKEN_KAY, csrfToken);
         return builder.build();
     }
 
@@ -119,20 +138,20 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         return file;
     }
 
-    private String getRedirectedResultId(HttpResponse response) {
+    private String getRedirectedResultId(HttpResponse response, boolean isFileNeeded) {
         HeaderElement[] headerLocationElements = response.getFirstHeader(LOCATION).getElements();
         String redirectedUrl = Arrays.stream(headerLocationElements).findFirst().get().getName();
-        return redirectedUrl.substring(REDIRECT_URL_LENGTH);
+        return redirectedUrl.substring(isFileNeeded ? REDIRECT_URL_LENGTH : REDIRECT_URL_LENGTH_ID);
     }
 
-    private String getRequestGetDsspContext() throws IOException {
-        chekDsspResultStatus();
-        return getDsspResult();
+    private String getRequestGetDsspContext(boolean isFileNeeded) throws IOException {
+        chekDsspResultStatus(isFileNeeded);
+        return getDsspResult(isFileNeeded);
     }
 
-    private void chekDsspResultStatus() throws IOException {
+    private void chekDsspResultStatus(boolean isFileNeeded) throws IOException {
         String status = "";
-        HttpGet request = new HttpGet(format(DSSP_STATUS_URL, resultId));
+        HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_STATUS_URL : DSSP_STATUS_URL_ID, resultId));
         do {
             HttpResponse response = httpClient.execute(request);
             String jsonString = EntityUtils.toString(response.getEntity());
@@ -144,8 +163,8 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         } while (!SUCCESS_STATUS.equals(status));
     }
 
-    private String getDsspResult() throws IOException {
-        HttpGet request = new HttpGet(format(DSSP_RESULT_URL, resultId));
+    private String getDsspResult(boolean isFileNeeded) throws IOException {
+        HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_RESULT_URL : DSSP_RESULT_URL_ID, resultId));
         HttpResponse response = httpClient.execute(request);
         String jsonString = EntityUtils.toString(response.getEntity());
         JSONObject json = new JSONObject(jsonString);

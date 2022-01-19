@@ -39,11 +39,17 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     boolean isTerminatedChain;
 
     @Override
-    public List<String> filterDssp(List<String> dsspContext, String chainContext) {
+    public List<String> filterDssp(List<String> dsspContext, String chainContext, boolean isFileNeeded) {
         dsspContent = new ArrayList<>();
-        dsspContext.stream()
-                .filter(dsspString -> dsspString.indexOf(format(DSSP_CHAIN_MATCHING, chainContext)) > 0)
-                .forEach(this::addSpacesToString);
+        if (!isFileNeeded){
+            dsspContext.stream()
+                    .filter(dsspString -> isTargetChain(dsspString, chainContext))
+                    .forEach(this::addSpacesToString);
+        } else {
+            dsspContext.stream()
+                    .filter(dsspString -> dsspString.indexOf(format(DSSP_CHAIN_MATCHING, chainContext)) > 0)
+                    .forEach(this::addSpacesToString);
+        }
         return dsspContent;
     }
 
@@ -89,6 +95,11 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
         dsspContent.add(dsspString.substring(16, 17));
         dsspContent.add(dsspString.substring(13, 14));
         dsspContent.add(getDsspNumber(dsspString));
+    }
+
+    private boolean isTargetChain(String dsspString, String chainContext) {
+        return dsspString.length() > 18
+                && dsspString.substring(10, 13).equals(" " + chainContext + " ");
     }
 
     private boolean filterPdbStream(String pdbString, String chainContext) {
