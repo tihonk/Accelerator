@@ -13,7 +13,8 @@ public interface PentUNFOLDFacade {
                                  String chain,
                                  boolean include2d,
                                  boolean include3d,
-                                 boolean isFileNeeded) throws IOException;
+                                 boolean isFileNeeded,
+                                 boolean isCustomDsspNeeded) throws IOException;
 
     PentUNFOLDModel fill1dSequenceData(String sequence);
 }

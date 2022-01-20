@@ -1,6 +1,6 @@
 package com.accelerator.services.implementations;
 
-import com.accelerator.services.AlphaHelixService;
+import com.accelerator.services.HBoundService;
 import com.accelerator.services.DsspService;
 import com.accelerator.services.PentUNFOLDFilterService;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,13 @@ import java.util.TreeMap;
 @Service("dsspService")
 public class DsspServiceImpl implements DsspService {
 
-    private static final List<Double> ALFA_HELIX = Arrays.asList(3.0, 4.0, 5.0);
+    private static final List<Double> HELIX = Arrays.asList(3.0, 4.0, 5.0);
+    private static final List<Double> BRIDGE = Arrays.asList(6.0, 7.0);
 
     @Resource
     PentUNFOLDFilterService pentUNFOLDFilterService;
     @Resource
-    AlphaHelixService alphaHelixService;
+    HBoundService hBoundService;
 
     SortedMap<Double, Set<Double[]>> hBoundsDescription;
     SortedMap<Double, String> secondaryStructure;
@@ -33,19 +34,52 @@ public class DsspServiceImpl implements DsspService {
     @Override
     public List<String> getDsspContext(List<String> pdbFile, String chain) {
         SortedMap<Double, List<String[]>> pdbData = pentUNFOLDFilterService.filterPdbToDssp(pdbFile, chain);
-        alphaHelixDeterminate(pdbData);
+        helixDeterminate(pdbData);
+        bridgeDeterminate(pdbData);
         secondaryStructureDeterminate();
         prepareFinalDsspData(pdbData);
         return finalDsspData;
     }
 
-    private void alphaHelixDeterminate(SortedMap<Double, List<String[]>> pdbData) {
+    private void helixDeterminate(SortedMap<Double, List<String[]>> pdbData) {
         hBoundsDescription = new TreeMap<>();
         secondaryStructure = new TreeMap<>();
         finalDsspData = new ArrayList<>();
-//        alphaHelixDeterminateByTurn(pdbData, 3.0);
+        alphaHelixDeterminateByTurn(pdbData, 3.0);
         alphaHelixDeterminateByTurn(pdbData, 4.0);
-//        alphaHelixDeterminateByTurn(pdbData, 5.0);
+        alphaHelixDeterminateByTurn(pdbData, 5.0);
+    }
+
+    private void bridgeDeterminate(SortedMap<Double, List<String[]>> pdbData) {
+        List<Map.Entry<Double, List<String[]>>> aminoAcidResidues = new ArrayList<>(pdbData.entrySet());
+        for (int i = 1; i < aminoAcidResidues.size() - 4; i++) {
+            Double firstAminoAcidResidueKey = aminoAcidResidues.get(i).getKey();
+            Double preFirstAminoAcidResidueKey = aminoAcidResidues.get(i-1).getKey();
+            Double postFirstAminoAcidResidueKey = aminoAcidResidues.get(i+1).getKey();
+//            addNewHBoundRecord(firstAminoAcidResidueKey);
+            for (int j = i + 3; j < aminoAcidResidues.size() - 1; j++){
+                boolean isParallelBridge = false;
+                boolean isAntiParallelBridge = false;
+                Double secondAminoAcidResidueKey = aminoAcidResidues.get(j).getKey();
+                Double preSecondAminoAcidResidueKey = aminoAcidResidues.get(j-1).getKey();
+                Double postSecondAminoAcidResidueKey = aminoAcidResidues.get(j+1).getKey();
+                if(isBridgePossible(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey, postFirstAminoAcidResidueKey,
+                        secondAminoAcidResidueKey, preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey)) {
+                    isParallelBridge = isParallelBridge(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey,
+                            postFirstAminoAcidResidueKey, secondAminoAcidResidueKey,
+                            preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey, pdbData);
+                    if (!isParallelBridge) {
+                        isAntiParallelBridge = isAntiParallelBridge(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey,
+                                postFirstAminoAcidResidueKey, secondAminoAcidResidueKey,
+                                preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey, pdbData);
+                    }
+                    if(isAntiParallelBridge || isParallelBridge){
+                        updateHBoundsDescription(firstAminoAcidResidueKey, secondAminoAcidResidueKey,
+                                true, (isParallelBridge ? 6.0 : 7.0));
+                    }
+                }
+            }
+        }
     }
 
     private void alphaHelixDeterminateByTurn(SortedMap<Double, List<String[]>> pdbData, Double turn) {
@@ -55,11 +89,43 @@ public class DsspServiceImpl implements DsspService {
             addNewHBoundRecord(firstAminoAcidResidueKey);
             Double secondAminoAcidResidueKey = findSecondAminoAcidResidueKey(aminoAcidResidues, firstAminoAcidResidueKey, turn, i);
             if (secondAminoAcidResidueKey != null) {
-                boolean isHBoundExist = alphaHelixService.isHBoundExist(
+                boolean isHBoundExist = hBoundService.isHBoundExist(
                         pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey);
                 updateHBoundsDescription(firstAminoAcidResidueKey, secondAminoAcidResidueKey, isHBoundExist, turn);
             }
         }
+    }
+
+    private boolean isBridgePossible(Double firstAminoAcidResidueKey, Double preFirstAminoAcidResidueKey,
+                                     Double postFirstAminoAcidResidueKey, Double secondAminoAcidResidueKey,
+                                     Double preSecondAminoAcidResidueKey, Double postSecondAminoAcidResidueKey) {
+        return secondAminoAcidResidueKey - firstAminoAcidResidueKey > 3
+                && firstAminoAcidResidueKey - preFirstAminoAcidResidueKey <= 1
+                && postFirstAminoAcidResidueKey - firstAminoAcidResidueKey <= 1
+                && secondAminoAcidResidueKey - preSecondAminoAcidResidueKey <= 1
+                && secondAminoAcidResidueKey - preSecondAminoAcidResidueKey >= -1
+                && postSecondAminoAcidResidueKey - secondAminoAcidResidueKey <= 1
+                && postSecondAminoAcidResidueKey - secondAminoAcidResidueKey >= -1;
+    }
+
+    private boolean isParallelBridge(Double firstAminoAcidResidueKey, Double preFirstAminoAcidResidueKey,
+                                     Double postFirstAminoAcidResidueKey, Double secondAminoAcidResidueKey,
+                                     Double preSecondAminoAcidResidueKey, Double postSecondAminoAcidResidueKey,
+                                     SortedMap<Double, List<String[]>> pdbData) {
+        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey)
+                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey))
+                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey)
+                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey));
+    }
+
+    private boolean isAntiParallelBridge(Double firstAminoAcidResidueKey, Double preFirstAminoAcidResidueKey,
+                                         Double postFirstAminoAcidResidueKey, Double secondAminoAcidResidueKey,
+                                         Double preSecondAminoAcidResidueKey, Double postSecondAminoAcidResidueKey,
+                                         SortedMap<Double, List<String[]>> pdbData) {
+        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey)
+                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey)
+                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey)
+                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey)));
     }
 
     public Double findSecondAminoAcidResidueKey(List<Map.Entry<Double, List<String[]>>> aminoAcidResidues,
@@ -136,6 +202,7 @@ public class DsspServiceImpl implements DsspService {
     private void secondaryStructureDeterminate() {
         List<Map.Entry<Double, Set<Double[]>>> hBoundsDescriptionEntrySet = new ArrayList<>(hBoundsDescription.entrySet());
         Double firstAminoAcid = 0.0;
+        Double lastTurn = -1.0;
         for(int i = 0; i < hBoundsDescriptionEntrySet.size(); i++) {
             Map.Entry<Double, Set<Double[]>> hBoundConfig = hBoundsDescriptionEntrySet.get(i);
             firstAminoAcid = hBoundConfig.getKey();
@@ -143,7 +210,16 @@ public class DsspServiceImpl implements DsspService {
             FIRST_RELATIONS: for (Double[] relatedAminoAcid : relations) {
                 Double secondAminoAcid = relatedAminoAcid[0];
                 Double stepAminoAcid = relatedAminoAcid[1];
-                if (ALFA_HELIX.contains(stepAminoAcid)){
+                if (BRIDGE.contains(stepAminoAcid)){
+                    boolean isSingleBridge = isSingleBridge(hBoundsDescriptionEntrySet, i);
+                    if (isSingleBridge) {
+                        secondaryStructure.put(hBoundsDescriptionEntrySet.get(i).getKey(), "B");
+                    } else {
+                        secondaryStructure.put(hBoundsDescriptionEntrySet.get(i).getKey(), "E");
+                    }
+                    break;
+                }
+                if (HELIX.contains(stepAminoAcid)){
                     Set<Double> alfaHelix = new HashSet<>();
                     alfaHelix.add(firstAminoAcid);
                     alfaHelix.add(secondAminoAcid);
@@ -157,11 +233,24 @@ public class DsspServiceImpl implements DsspService {
                                     break;
                                 } else if (sub_relatedAminoAcid[1].equals(stepAminoAcid) && sub_firstAminoAcid < secondAminoAcid) {
                                     int j = i;
+                                    Double currentTurn = hBoundsDescriptionEntrySet.get(j).getKey();
+                                    boolean isFirst = currentTurn - lastTurn > 1;
                                     do {
-                                        secondaryStructure.put(hBoundsDescriptionEntrySet.get(j).getKey(), "H");
+                                        if(isFirst){
+                                            isFirst = false;
+                                            j++;
+                                            continue;
+                                        }
+                                        if(stepAminoAcid.equals(3.0)){
+                                            secondaryStructure.put(hBoundsDescriptionEntrySet.get(j).getKey(), "G");
+                                        } else if(stepAminoAcid.equals(4.0)) {
+                                            secondaryStructure.put(hBoundsDescriptionEntrySet.get(j).getKey(), "H");
+                                        } else if(stepAminoAcid.equals(5.0)) {
+                                            secondaryStructure.put(hBoundsDescriptionEntrySet.get(j).getKey(), "I");
+                                        }
                                         j++;
                                     } while (!hBoundsDescriptionEntrySet.get(j).getKey().equals(sub_secondAminoAcid));
-                                    break FIRST_RELATIONS;
+                                    lastTurn = hBoundsDescriptionEntrySet.get(j).getKey();
                                 }
                             }
                         }
@@ -169,5 +258,24 @@ public class DsspServiceImpl implements DsspService {
                 }
             }
         }
+    }
+
+    private boolean isSingleBridge(List<Map.Entry<Double, Set<Double[]>>> hBoundsDescriptionEntrySet, int i) {
+        Map.Entry<Double, Set<Double[]>> preHBoundConfig = hBoundsDescriptionEntrySet.get(i-1);
+        boolean isPreHBoundMissing = isBridgeMissing(preHBoundConfig);
+        Map.Entry<Double, Set<Double[]>> postHBoundConfig = hBoundsDescriptionEntrySet.get(i+1);
+        boolean isPostHBoundMissing = isBridgeMissing(postHBoundConfig);
+        return isPreHBoundMissing && isPostHBoundMissing;
+    }
+
+    private boolean isBridgeMissing(Map.Entry<Double, Set<Double[]>> hBoundConfig) {
+        Set<Double[]> preRelations = hBoundConfig.getValue();
+        for (Double[] relatedAminoAcid : preRelations) {
+            Double stepAminoAcid = relatedAminoAcid[1];
+            if (BRIDGE.contains(stepAminoAcid)){
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -62,6 +62,9 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
         resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile, isFileNeeded);
+        if (resultId == null){
+            return null;
+        }
         String dsspContext = getRequestGetDsspContext(isFileNeeded);
         httpClient.close();
         return convertToList(dsspContext);

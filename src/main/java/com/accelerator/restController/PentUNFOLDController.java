@@ -1,6 +1,7 @@
 package com.accelerator.restController;
 
 import com.accelerator.dto.PentUNFOLDModel;
+import com.accelerator.dto.PentUnfoldResponse;
 import com.accelerator.json.util.RestResponse;
 import com.accelerator.facades.PentUNFOLDFacade;
 import com.accelerator.facades.XlsxFillingFacade;
@@ -34,13 +35,18 @@ public class PentUNFOLDController {
     private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
     private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
+    private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
 
     @Resource
     PentUNFOLDFacade pentUNFOLDFacade;
     @Resource
     XlsxFillingFacade xlsxFillingFacade;
 
-    private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
+    // 1 - DSSP by file
+    // 2 - DSSP by id
+    // 3 - Secondary structure by custom logic
+    private Integer secondaryStructureResource;
+
 
     @GetMapping(value = "/pent-un-fold")
     public RestResponse getPentUnFOLDAlgorithm() {
@@ -50,18 +56,18 @@ public class PentUNFOLDController {
     @PostMapping(value = "/pent-un-fold",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
-                                          @RequestParam boolean include2d, @RequestParam boolean include3d,
-                                          @RequestParam ArrayList<String> picResult, @RequestParam String chain,
-                                          @RequestParam boolean isFileNeeded){
+    public PentUnfoldResponse postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
+                                                      @RequestParam boolean include2d, @RequestParam boolean include3d,
+                                                      @RequestParam ArrayList<String> picResult, @RequestParam String chain,
+                                                      @RequestParam boolean isFileNeeded, @RequestParam boolean isCustomDsspNeeded){
         String fileName = generateUniqueFileName(requireNonNull(pdbFile.getOriginalFilename()));
         try {
-            fillNecessaryFiles(include1d, include2d, include3d, isFileNeeded, picResult, chain, fileName, pdbFile);
+            fillNecessaryFiles(include1d, include2d, include3d, isFileNeeded, picResult, chain, fileName, pdbFile, isCustomDsspNeeded);
         } catch (Exception exception) {
             rootLogger.error(exception.getMessage());
             return null;
         }
-        return fileName;
+        return new PentUnfoldResponse(fileName, secondaryStructureResource);
     }
 
     @PostMapping(value = "/pent-un-fold/sequence",
@@ -111,9 +117,9 @@ public class PentUNFOLDController {
 
     private void fillNecessaryFiles(boolean include1d, boolean include2d, boolean include3d, boolean isFileNeeded,
                                     ArrayList<String> picResult, String chain, String fileName,
-                                    MultipartFile pdbFile) throws Exception {
+                                    MultipartFile pdbFile, boolean isCustomDsspNeeded) throws Exception {
         PentUNFOLDModel pentUNFOLDModel
-                = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, isFileNeeded);
+                = prepareModel(pdbFile, picResult, chain, include2d, include3d, isFileNeeded, isCustomDsspNeeded);
         if (include1d) {
             xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
         }
@@ -122,6 +128,47 @@ public class PentUNFOLDController {
         }
         if (include3d) {
             xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+        }
+    }
+
+    private PentUNFOLDModel prepareModel(MultipartFile pdbFile, ArrayList<String> picResult,
+                                         String chain, boolean include2d, boolean include3d,
+                                         boolean isFileNeeded, boolean isCustomDsspNeeded) throws IOException {
+        PentUNFOLDModel pentUNFOLDModel;
+        pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, isFileNeeded, isCustomDsspNeeded);
+        determinateSecondaryStructureResource(isFileNeeded, isCustomDsspNeeded);
+        if (pentUNFOLDModel == null && isFileNeeded) {
+            pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, false, false);
+            secondaryStructureResource = 2;
+            if (pentUNFOLDModel == null){
+                pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, false, true);
+                secondaryStructureResource = 3;
+            }
+        } else if (pentUNFOLDModel == null && !isCustomDsspNeeded){
+            pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, true, false);
+            secondaryStructureResource = 1;
+            if (pentUNFOLDModel == null){
+                pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, false, true);
+                secondaryStructureResource = 3;
+            }
+        } else if (pentUNFOLDModel == null) {
+            pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, true, false);
+            secondaryStructureResource = 1;
+            if (pentUNFOLDModel == null){
+                pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, false, false);
+                secondaryStructureResource = 2;
+            }
+        }
+        return pentUNFOLDModel;
+    }
+
+    private void determinateSecondaryStructureResource(boolean isFileNeeded, boolean isCustomDsspNeeded) {
+        if (isFileNeeded) {
+            secondaryStructureResource = 1;
+        } else if(!isCustomDsspNeeded) {
+            secondaryStructureResource = 2;
+        } else {
+            secondaryStructureResource = 3;
         }
     }
 }

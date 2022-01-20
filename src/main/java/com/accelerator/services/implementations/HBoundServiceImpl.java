@@ -1,6 +1,6 @@
 package com.accelerator.services.implementations;
 
-import com.accelerator.services.AlphaHelixService;
+import com.accelerator.services.HBoundService;
 import com.accelerator.services.DistanceService;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +11,8 @@ import java.util.SortedMap;
 import static java.lang.Double.parseDouble;
 import static java.lang.String.valueOf;
 
-@Service("alphaHelixService")
-public class AlphaHelixServiceImpl implements AlphaHelixService{
+@Service("hBoundService")
+public class HBoundServiceImpl implements HBoundService {
 
     private static final Double MIN_E_H_BOUND = -0.5;
     private static final Double N_H_DISTANCE = 1.01;
@@ -27,12 +27,12 @@ public class AlphaHelixServiceImpl implements AlphaHelixService{
     private Double leadingDistance;
 
     @Override
-    public boolean isHBoundExist(SortedMap<Double, List<String[]>> pdbData, Double firstAminoAcidResidueKey,
-                                 Double secondAminoAcidResidueKey, Double preSecondAminoAcidResidueKey) {
-        if (secondAminoAcidResidueKey - preSecondAminoAcidResidueKey <= 1) {
-            List<String[]> firstAminoAcidResidue = pdbData.get(firstAminoAcidResidueKey);
-            List<String[]> secondAminoAcidResidue = pdbData.get(secondAminoAcidResidueKey);
-            List<String[]> preSecondAminoAcidResidue = pdbData.get(preSecondAminoAcidResidueKey);
+    public boolean isHBoundExist(SortedMap<Double, List<String[]>> pdbData, Double co_residueKey,
+                                 Double nh_residueKey, Double pre_nh_ResidueKey) {
+        if (nh_residueKey - pre_nh_ResidueKey <= 1) {
+            List<String[]> firstAminoAcidResidue = pdbData.get(co_residueKey);
+            List<String[]> secondAminoAcidResidue = pdbData.get(nh_residueKey);
+            List<String[]> preSecondAminoAcidResidue = pdbData.get(pre_nh_ResidueKey);
 
             String[] first_C = findData(firstAminoAcidResidue, CARBON);
             String[] first_O = findData(firstAminoAcidResidue, OXYGEN);
