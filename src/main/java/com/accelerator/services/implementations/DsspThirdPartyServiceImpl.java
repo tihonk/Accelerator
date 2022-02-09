@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -36,9 +37,11 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String CONTENT_TYPE_PDB_FILE =  "chemical/x-pdb";
     private static final String PDB_CONTENT_FILE_PATH = "src/main/resources/pdbContext.txt";
     private static final String DSSP_FAILURE_MESSAGE = "Dssp server is not working properly. It is not possible to get a result.";
+    private static final String DSSP_NOT_ANSWER_MESSAGE = "Dssp server is working but there is no response.";
     private static final String LOCATION = "Location";
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String FAILURE_STATUS = "FAILURE";
+    private static final String PENDING_STATUS = "PENDING";
     private static final String STATUS_JSON_PARAM = "status";
     private static final String RESULT_JSON_PARAM = "result";
     private static final String RESNUM = "RESNUM";
@@ -48,6 +51,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final Integer REDIRECT_URL_LENGTH = 51;
     private static final Integer REDIRECT_URL_LENGTH_ID = 49;
     private static final Integer START_DSSP_CONTEXT = 77;
+    private static final Integer RESPONSE_WAITING = 10000; // 10 sec
 
     private static final String OUTPUT_TYPE_KAY = "output_type";
     private static final String OUTPUT_TYPE_VALUE = "dssp";
@@ -155,6 +159,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private void chekDsspResultStatus(boolean isFileNeeded) throws IOException {
         String status = "";
         HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_STATUS_URL : DSSP_STATUS_URL_ID, resultId));
+        Date startRequestDate = new Date();
         do {
             HttpResponse response = httpClient.execute(request);
             String jsonString = EntityUtils.toString(response.getEntity());
@@ -162,6 +167,11 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
             status = json.getString(STATUS_JSON_PARAM);
             if (FAILURE_STATUS.equals(status)) {
                 throw new RuntimeException(DSSP_FAILURE_MESSAGE);
+            } else if(PENDING_STATUS.equals(status)) {
+                Date currentDate = new Date();
+                if (currentDate.getTime() - startRequestDate.getTime() > RESPONSE_WAITING){
+                    throw new RuntimeException(DSSP_NOT_ANSWER_MESSAGE);
+                }
             }
         } while (!SUCCESS_STATUS.equals(status));
     }
