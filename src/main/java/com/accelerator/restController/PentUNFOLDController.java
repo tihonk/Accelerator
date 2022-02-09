@@ -35,6 +35,7 @@ public class PentUNFOLDController {
     private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
     private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
     private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
+    private static final String FILE_MANUAL_PATH = "src/main/resources/manual.pdf";
     private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
 
     @Resource
@@ -94,6 +95,11 @@ public class PentUNFOLDController {
     @GetMapping(value = "/pent-un-fold/1d/{id}")
     public ResponseEntity<InputStreamResource> download1dXlsxFile(@PathVariable("id") String fileId) throws IOException {
         return getXlsxFile(format(FILE_1D_PATH, fileId));
+    }
+
+    @GetMapping(value = "/pent-un-fold/manual")
+    public ResponseEntity<InputStreamResource> downloadXlsxFile() throws IOException {
+        return getXlsxFile(FILE_MANUAL_PATH);
     }
 
     private ResponseEntity<InputStreamResource> getXlsxFile(String filePath) throws FileNotFoundException {

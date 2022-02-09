@@ -27,7 +27,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     @Resource
     SubNumberConvertor subNumberConvertor;
 
-    private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}-?\\d+(.*)";
+    private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}-?\\d+(.*)\r?";
     private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
@@ -102,9 +102,9 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
                 && dsspString.substring(10, 13).equals(" " + chainContext + " ");
     }
 
-    private boolean filterPdbStream(String pdbString, String chainContext) {
+    private boolean filterPdbStream(String pdbString, String chain) {
         boolean isTermResidue = pdbString.startsWith("TER");
-        boolean isTargetChain = pdbString.matches(format(PDB_CHAIN_REGEX, chainContext));
+        boolean isTargetChain = pdbString.matches(format(PDB_CHAIN_REGEX, chain.equals("") ? " " : chain));
         if (isTermResidue && isTargetChain) {
             isTerminatedChain = true;
         }
@@ -121,7 +121,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     }
 
     private void addNumberAndAminoAcid(String pdbString) {
-        Pattern generalPattern = Pattern.compile("\\d+\\s*[A-Z]+\\s*([A-Z]{3}\\s\\w\\s*\\d+[A-Z]?\\s)");
+        Pattern generalPattern = Pattern.compile("\\d+\\s*[A-Z]+\\s*([A-Z]{3}\\s[\\w|\\s]\\s*\\d+[A-Z]?\\s)");
         Pattern numberPattern = Pattern.compile("(\\s*\\d+[A-Z]?\\s)");
         Matcher generalMatcher = generalPattern.matcher(pdbString);
         if(generalMatcher.find()) {
@@ -142,11 +142,11 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
 
     private void addNumberAndAminoAcidAndAtomAndCoordinates(String pdbString) {
         String[] atomData = new String[7];
-        Pattern generalPattern = Pattern.compile("\\d+\\s*\\S+\\s*[A-Z]?([A-Z]{3}\\s\\w\\s*-?\\d+[A-Z]?\\s+\\S+\\s+\\S+\\s+\\S+)");
-        Pattern atomPattern = Pattern.compile("\\d+\\s*(\\S+)\\s*[A-Z]?[A-Z]{3}\\s\\w\\s*-?\\d+[A-Z]?\\s+\\S+\\s+\\S+\\s+\\S+");
-        Pattern chainPattern = Pattern.compile("\\s*[A-Z]{3}\\s(\\w)\\s*-?\\d+[A-Z]?\\s+");
+        Pattern generalPattern = Pattern.compile("\\d+\\s*\\S+\\s*[A-Z]?([A-Z]{3}\\s[\\w|\\s]\\s*-?\\d+[A-Z]?\\s+\\S+\\s+\\S+\\s+\\S+)\r?");
+        Pattern atomPattern = Pattern.compile("\\d+\\s*(\\S+)\\s*[A-Z]?[A-Z]{3}\\s[\\w|\\s]\\s*-?\\d+[A-Z]?\\s+\\S+\\s+\\S+\\s+\\S+");
+        Pattern chainPattern = Pattern.compile("\\s*[A-Z]{3}\\s(\\w|\\s)\\s*-?\\d+[A-Z]?\\s+");
         Pattern numberPattern = Pattern.compile("(\\s*-?\\d+[A-Z]?\\s)");
-        Pattern coordinatesPattern = Pattern.compile("[A-Z]{3}\\s\\w\\s*-?\\d+[A-Z]?\\s+(\\S+\\s+\\S+\\s+\\S+)");
+        Pattern coordinatesPattern = Pattern.compile("[A-Z]{3}\\s[\\w|\\s]\\s*-?\\d+[A-Z]?\\s+(\\S+\\s+\\S+\\s+\\S+)");
         Matcher generalMatcher = generalPattern.matcher(pdbString);
         if(generalMatcher.find()) {
             String generalString = generalMatcher.group(1);
