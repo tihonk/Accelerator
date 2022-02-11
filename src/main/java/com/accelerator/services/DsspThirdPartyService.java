@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DsspThirdPartyService {
 
-    List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException;
+    List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException, InterruptedException;
 }
