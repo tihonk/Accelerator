@@ -47,7 +47,7 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
                     .forEach(this::addSpacesToString);
         } else {
             dsspContext.stream()
-                    .filter(dsspString -> dsspString.indexOf(format(DSSP_CHAIN_MATCHING, chainContext)) > 0)
+                    .filter(dsspString -> isTargetChain(dsspString, chainContext))
                     .forEach(this::addSpacesToString);
         }
         return dsspContent;

@@ -92,4 +92,17 @@
         </dependency>
     </dependencies>
 
+	<build>
+		<plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.1.0.RELEASE</version>
+                <configuration>
+                    <mainClass>com.accelerator.Accelerator</mainClass>
+                </configuration>
+            </plugin>
+		</plugins>
+	</build>
+
 </project>

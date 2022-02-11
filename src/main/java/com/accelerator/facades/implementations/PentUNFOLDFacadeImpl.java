@@ -48,7 +48,7 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
                 dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile, isFileNeeded) : new ArrayList<>();
             }
             return preparePentUNFOLDModel(dsspContext, pdbContext, picResult, chain, isFileNeeded, isCustomDsspNeeded);
-        } catch (RuntimeException e){
+        } catch (RuntimeException | InterruptedException e){
             rootLogger.error("Failed to fetch Secondary structure content by" +
                     (isFileNeeded && !isCustomDsspNeeded? "DSSP file" : "DSSP file name") +
                     (isCustomDsspNeeded ? "Custom second structure analyzer." : ""));

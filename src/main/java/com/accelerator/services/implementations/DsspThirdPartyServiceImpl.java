@@ -42,6 +42,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String FAILURE_STATUS = "FAILURE";
     private static final String PENDING_STATUS = "PENDING";
+    private static final String STARTED_STATUS = "STARTED";
     private static final String STATUS_JSON_PARAM = "status";
     private static final String RESULT_JSON_PARAM = "result";
     private static final String RESNUM = "RESNUM";
@@ -52,6 +53,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final Integer REDIRECT_URL_LENGTH_ID = 49;
     private static final Integer START_DSSP_CONTEXT = 77;
     private static final Integer RESPONSE_WAITING = 10000; // 10 sec
+    private static final Integer RESPONSE_WITH_FILE = 30000; // 10 sec
 
     private static final String OUTPUT_TYPE_KAY = "output_type";
     private static final String OUTPUT_TYPE_VALUE = "dssp";
@@ -62,7 +64,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String FILE_KAY = "file_";
 
     @Override
-    public List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException {
+    public List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException, InterruptedException {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
         resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile, isFileNeeded);
@@ -151,12 +153,12 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         return redirectedUrl.substring(isFileNeeded ? REDIRECT_URL_LENGTH : REDIRECT_URL_LENGTH_ID);
     }
 
-    private String getRequestGetDsspContext(boolean isFileNeeded) throws IOException {
+    private String getRequestGetDsspContext(boolean isFileNeeded) throws IOException, InterruptedException {
         chekDsspResultStatus(isFileNeeded);
         return getDsspResult(isFileNeeded);
     }
 
-    private void chekDsspResultStatus(boolean isFileNeeded) throws IOException {
+    private void chekDsspResultStatus(boolean isFileNeeded) throws IOException, InterruptedException {
         String status = "";
         HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_STATUS_URL : DSSP_STATUS_URL_ID, resultId));
         Date startRequestDate = new Date();
@@ -172,8 +174,15 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
                 if (currentDate.getTime() - startRequestDate.getTime() > RESPONSE_WAITING){
                     throw new RuntimeException(DSSP_NOT_ANSWER_MESSAGE);
                 }
+            } else if(STARTED_STATUS.equals(status)) {
+                Thread.sleep(3000);
+                Date currentDate = new Date();
+                if (currentDate.getTime() - startRequestDate.getTime() > RESPONSE_WITH_FILE){
+                    throw new RuntimeException(DSSP_NOT_ANSWER_MESSAGE);
+                }
             }
         } while (!SUCCESS_STATUS.equals(status));
+        Thread.sleep(500);
     }
 
     private String getDsspResult(boolean isFileNeeded) throws IOException {
