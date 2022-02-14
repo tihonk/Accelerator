@@ -6,7 +6,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class Accelerator extends SpringBootServletInitializer {
+class Accelerator extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(Accelerator.class, args);
