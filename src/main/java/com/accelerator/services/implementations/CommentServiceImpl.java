@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     public void prepareCommentAndSave(String fullName, String country, String comment, String value) {
         String newFullName = fullName.length() > 15 ? fullName.substring(0,15): fullName;
         String newCountry = country.length() > 15 ? country.substring(0,15): country;
-        String newComment = comment.length() > 15 ? comment.substring(0,90): comment;
+        String newComment = comment.length() > 100 ? comment.substring(0,100): comment;
         Comment preparedComment = prepareComment(newFullName, newCountry, newComment, value);
         commentRepository.save(preparedComment);
     }
