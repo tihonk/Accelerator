@@ -10,6 +10,7 @@ import java.util.SortedMap;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.String.valueOf;
+import static java.util.Objects.nonNull;
 
 @Service("hBoundService")
 public class HBoundServiceImpl implements HBoundService {
@@ -17,6 +18,7 @@ public class HBoundServiceImpl implements HBoundService {
     private static final Double MIN_E_H_BOUND = -0.5;
     private static final Double N_H_DISTANCE = 1.01;
     private static final String CARBON = "C";
+    private static final String CARBON_A = "CA";
     private static final String OXYGEN = "O";
     private static final String NITROGEN = "N";
     private static final String HYDROGEN = "H";
@@ -29,21 +31,37 @@ public class HBoundServiceImpl implements HBoundService {
     @Override
     public boolean isHBoundExist(SortedMap<Double, List<String[]>> pdbData, Double co_residueKey,
                                  Double nh_residueKey, Double pre_nh_ResidueKey) {
+        
         if (nh_residueKey - pre_nh_ResidueKey <= 1) {
             List<String[]> firstAminoAcidResidue = pdbData.get(co_residueKey);
             List<String[]> secondAminoAcidResidue = pdbData.get(nh_residueKey);
             List<String[]> preSecondAminoAcidResidue = pdbData.get(pre_nh_ResidueKey);
+            
+            if (isProline(firstAminoAcidResidue) || isProline(secondAminoAcidResidue)) {
+                return false;
+            }
 
             String[] first_C = findData(firstAminoAcidResidue, CARBON);
             String[] first_O = findData(firstAminoAcidResidue, OXYGEN);
-            String[] preSecond_C = findData(preSecondAminoAcidResidue, CARBON);
             String[] second_N = findData(secondAminoAcidResidue, NITROGEN);
-            String[] second_H = findHydrogenData(first_C, second_N, preSecond_C);
+            String[] second_H = findData(secondAminoAcidResidue, HYDROGEN);
 
-            Double interactionEnergy = countEnergy(first_C, first_O, second_N, second_H);
-            return interactionEnergy < MIN_E_H_BOUND;
+            if (second_H == null) {
+                String[] preSecond_C = findData(preSecondAminoAcidResidue, CARBON);
+                String[] second_C = findData(secondAminoAcidResidue, CARBON_A);
+                second_H = findHydrogenData(second_C, second_N, preSecond_C);
+            }
+
+            if (nonNull(first_C) && nonNull(first_O) && nonNull(second_N)) {
+                Double interactionEnergy = countEnergy(first_C, first_O, second_N, second_H);
+                return interactionEnergy < MIN_E_H_BOUND;
+            }
         }
         return false;
+    }
+
+    private boolean isProline(List<String[]> secondAminoAcidResidue) {
+        return secondAminoAcidResidue.get(0)[1].equals("P");
     }
 
     private String[] findData(List<String[]> firstAminoAcidResidue, String atom) {
@@ -55,11 +73,11 @@ public class HBoundServiceImpl implements HBoundService {
         return null;
     }
 
-    private String[] findHydrogenData(String[] first_C, String[] second_N, String[] preSecond_C) {
+    private String[] findHydrogenData(String[] second_C, String[] second_N, String[] preSecond_C) {
         Double[] a_coordinates = new Double[3];
-        a_coordinates[0]= getMean(first_C[4], preSecond_C[4]);
-        a_coordinates[1]= getMean(first_C[5], preSecond_C[5]);
-        a_coordinates[2]= getMean(first_C[6], preSecond_C[6]);
+        a_coordinates[0]= getMean(second_C[4], preSecond_C[4]);
+        a_coordinates[1]= getMean(second_C[5], preSecond_C[5]);
+        a_coordinates[2]= getMean(second_C[6], preSecond_C[6]);
 
         Double[] n_coordinates = getAtomCoordinates(second_N);
         String[] second_H = new String[7];
@@ -87,7 +105,7 @@ public class HBoundServiceImpl implements HBoundService {
         Double o_h_distance = distanceService.countDistance(o_coordinates, h_coordinates);
         Double c_n_distance = distanceService.countDistance(c_coordinates, n_coordinates);
 
-        Double energy = 0.42 * 0.2 * ((1/o_n_distance) + (1/c_h_distance) - (1/o_h_distance) - (1/c_n_distance)) * -332;
+        Double energy = 0.42 * 0.2 * ((1/o_n_distance) + (1/c_h_distance) - (1/o_h_distance) - (1/c_n_distance)) * 332;
 
         return energy;
     }

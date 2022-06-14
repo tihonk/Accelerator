@@ -1,19 +1,22 @@
 package com.accelerator.services.implementations;
 
-import com.accelerator.services.HBoundService;
-import com.accelerator.services.DsspService;
-import com.accelerator.services.PentUNFOLDFilterService;
-import org.springframework.stereotype.Service;
+import static java.util.Objects.nonNull;
 
-import javax.annotation.Resource;
+import com.accelerator.services.BendService;
+import com.accelerator.services.DsspService;
+import com.accelerator.services.HBoundService;
+import com.accelerator.services.PentUNFOLDFilterService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Service;
 
 @Service("dsspService")
 public class DsspServiceImpl implements DsspService {
@@ -25,6 +28,8 @@ public class DsspServiceImpl implements DsspService {
     PentUNFOLDFilterService pentUNFOLDFilterService;
     @Resource
     HBoundService hBoundService;
+    @Resource
+    BendService bendService;
 
     SortedMap<Double, Set<Double[]>> hBoundsDescription;
     SortedMap<Double, String> secondaryStructure;
@@ -37,6 +42,7 @@ public class DsspServiceImpl implements DsspService {
         helixDeterminate(pdbData);
         bridgeDeterminate(pdbData);
         secondaryStructureDeterminate();
+        bendDeterminate(pdbData);
         prepareFinalDsspData(pdbData);
         return finalDsspData;
     }
@@ -80,6 +86,63 @@ public class DsspServiceImpl implements DsspService {
                 }
             }
         }
+    }
+
+    private void bendDeterminate(SortedMap<Double, List<String[]>> pdbData) {
+        List<Map.Entry<Double, List<String[]>>> aminoAcidResidues = new ArrayList<>(pdbData.entrySet());
+        for (int i = 0; i < aminoAcidResidues.size(); i++) {
+            Double aminoAcidResidueKey = aminoAcidResidues.get(i).getKey();
+            Double preAminoAcidResidueKey = getAminoAcidResidueKey(i, -3, aminoAcidResidues);
+            Double postAminoAcidResidueKey = getAminoAcidResidueKey(i, 3, aminoAcidResidues);
+            if (nonNull(preAminoAcidResidueKey) && nonNull(postAminoAcidResidueKey)){
+                boolean isBend = bendService.isBend(pdbData, preAminoAcidResidueKey, aminoAcidResidueKey, postAminoAcidResidueKey);
+                if (isBend) {
+                    fillBend(aminoAcidResidues, i, aminoAcidResidueKey);
+                }
+            }
+        }
+    }
+
+    private void fillBend(List<Entry<Double, List<String[]>>> aminoAcidResidues, int index, Double aminoAcidResidueKey) {
+
+        Double preOneAminoAcidResidueKey = getAminoAcidResidueKey(index, -1, aminoAcidResidues);
+        Double preTwoAminoAcidResidueKey = getAminoAcidResidueKey(index, -2, aminoAcidResidues);
+        Double postOneAminoAcidResidueKey = getAminoAcidResidueKey(index, 1, aminoAcidResidues);
+        Double postTwoAminoAcidResidueKey = getAminoAcidResidueKey(index, 2, aminoAcidResidues);
+        if (!secondaryStructure.get(preTwoAminoAcidResidueKey).equals("H")
+            && secondaryStructure.get(preOneAminoAcidResidueKey).equals("H")
+            && secondaryStructure.get(postOneAminoAcidResidueKey).equals("H")
+            && secondaryStructure.get(postTwoAminoAcidResidueKey).equals("H")) {
+                secondaryStructure.put(aminoAcidResidueKey, "H");
+                secondaryStructure.put(preOneAminoAcidResidueKey, "");
+        } else {
+            secondaryStructure.put(aminoAcidResidueKey, "Bend");
+        }
+    }
+
+    private Double getAminoAcidResidueKey(int currentNumber, int step, List<Entry<Double, List<String[]>>> aminoAcidResidues) {
+        int targetNumber = currentNumber + step;
+        if (targetNumber > aminoAcidResidues.size() - 1 || targetNumber < 0) {
+            return null;
+        }
+        if (step < 0) {
+            for (int i = 1; i <= -step; i++){
+                Double currentKey = aminoAcidResidues.get(currentNumber).getKey();
+                Double targetKey = aminoAcidResidues.get(currentNumber - i).getKey();
+                if (currentKey - targetKey >  -step - 1 || i == -step) {
+                    return targetKey;
+                }
+            }
+        } else if (step > 0) {
+            for (int i = 1; i <= step; i++){
+                Double currentKey= aminoAcidResidues.get(currentNumber).getKey();
+                Double targetKey = aminoAcidResidues.get(currentNumber + i).getKey();
+                if (targetKey - currentKey >= step || i == step) {
+                    return targetKey;
+                }
+            }
+        }
+        return null;
     }
 
     private void alphaHelixDeterminateByTurn(SortedMap<Double, List<String[]>> pdbData, Double turn) {

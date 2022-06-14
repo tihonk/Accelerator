@@ -151,7 +151,7 @@ public class PentUNFOLDController {
                 secondaryStructureResource = 3;
             }
         } else if (pentUNFOLDModel == null && !isCustomDsspNeeded){
-            pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, true, false);
+//            pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, true, false);
             secondaryStructureResource = 1;
             if (pentUNFOLDModel == null){
                 pentUNFOLDModel = pentUNFOLDFacade.fillXlsxData(pdbFile, picResult, chain, include2d, include3d, false, true);

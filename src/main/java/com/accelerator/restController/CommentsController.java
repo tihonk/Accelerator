@@ -1,9 +1,7 @@
 package com.accelerator.restController;
 
 import com.accelerator.dto.Comment;
-import com.accelerator.repo.CommentRepository;
 import com.accelerator.services.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
