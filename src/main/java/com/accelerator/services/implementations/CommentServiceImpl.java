@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    public static final Integer MAX_COMMENTS_SIZE = 5;
+    public static final Integer MAX_COMMENTS_SIZE = 6;
 
     @Resource
     CommentRepository commentRepository;
@@ -32,20 +32,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void prepareCommentAndSave(String fullName, String country, String comment, String value) {
+    public void prepareCommentAndSave(String fullName, String country, String content, String rating) {
         String newFullName = fullName.length() > 15 ? fullName.substring(0,15): fullName;
         String newCountry = country.length() > 15 ? country.substring(0,15): country;
-        String newComment = comment.length() > 100 ? comment.substring(0,100): comment;
-        Comment preparedComment = prepareComment(newFullName, newCountry, newComment, value);
+        String newContent= content.length() > 100 ? content.substring(0,100): content;
+        Comment preparedComment = prepareComment(newFullName, newCountry, newContent, rating);
         commentRepository.save(preparedComment);
     }
 
     private Comment prepareComment(String fullName, String selectedCountry, String comment, String value) {
         Comment newComment = new Comment();
         newComment.setFullName(fullName);
-        newComment.setSelectedCountry(selectedCountry);
-        newComment.setComment(comment);
-        newComment.setValue(value);
+        newComment.setCountry(selectedCountry);
+        newComment.setContent(comment);
+        newComment.setRating(value);
         return newComment;
     }
 }
