@@ -8,5 +8,5 @@ public interface CommentService {
 
     List<Comment> findAlComments() throws InterruptedException;
 
-    void prepareCommentAndSave(String fullName, String country, String comment, String value);
+    void prepareCommentAndSave(String fullName, String country, String content, String rating);
 }
