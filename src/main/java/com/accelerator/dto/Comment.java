@@ -13,9 +13,9 @@ public class Comment {
     private Integer id;
 
     private String fullName;
-    private String selectedCountry;
-    private String comment;
-    private String value;
+    private String country;
+    private String content;
+    private String rating;
 
     public Integer getId() {
         return id;
@@ -33,27 +33,27 @@ public class Comment {
         this.fullName = fullName;
     }
 
-    public String getSelectedCountry() {
-        return selectedCountry;
+    public String getCountry() {
+        return country;
     }
 
-    public void setSelectedCountry(String selectedCountry) {
-        this.selectedCountry = selectedCountry;
+    public void setCountry(String selectedCountry) {
+        this.country = selectedCountry;
     }
 
-    public String getComment() {
-        return comment;
+    public String getContent() {
+        return content;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setContent(String comment) {
+        this.content = comment;
     }
 
-    public String getValue() {
-        return value;
+    public String getRating() {
+        return rating;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setRating(String value) {
+        this.rating = value;
     }
 }

@@ -116,7 +116,7 @@ public class DsspServiceImpl implements DsspService {
                 secondaryStructure.put(aminoAcidResidueKey, "H");
                 secondaryStructure.put(preOneAminoAcidResidueKey, "");
         } else {
-            secondaryStructure.put(aminoAcidResidueKey, "Bend");
+            secondaryStructure.put(aminoAcidResidueKey, "S");
         }
     }
 

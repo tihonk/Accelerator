@@ -22,9 +22,9 @@ public class CommentsController {
     @PostMapping(value = "/comments",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String postComment(@RequestParam String fullName, @RequestParam String selectedCountry,
-                                           @RequestParam String comment, @RequestParam String value){
-        commentService.prepareCommentAndSave(fullName, selectedCountry, comment, value);
+    public String postComment(@RequestParam String fullName, @RequestParam String country,
+                              @RequestParam String content, @RequestParam String rating){
+        commentService.prepareCommentAndSave(fullName, country, content, rating);
         return "Done";
     }
 
