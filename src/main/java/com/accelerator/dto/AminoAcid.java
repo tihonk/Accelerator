@@ -7,6 +7,8 @@ public class AminoAcid {
     private Long aminoAcidResiduePDBNumber;
     private String aminoAcidAtom;
     private Double nearestAtomDistance;
+    private Double hBoundEnergy;
+    private Double hoDistance;
 
     public int getId() {
         return id;
@@ -46,5 +48,21 @@ public class AminoAcid {
 
     public void setNearestAtomDistance(Double nearestAtomDistance) {
         this.nearestAtomDistance = nearestAtomDistance;
+    }
+
+    public Double gethBoundEnergy() {
+        return hBoundEnergy;
+    }
+
+    public void sethBoundEnergy(Double hBoundEnergy) {
+        this.hBoundEnergy = hBoundEnergy;
+    }
+
+    public Double getHoDistance() {
+        return hoDistance;
+    }
+
+    public void setHoDistance(Double hoDistance) {
+        this.hoDistance = hoDistance;
     }
 }
