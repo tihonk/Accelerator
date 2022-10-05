@@ -1,6 +1,8 @@
 package com.accelerator.services.implementations;
 
 import com.accelerator.services.DsspThirdPartyService;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,8 +51,6 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String CSRF_TOKEN_FIND_VALUE =  "id=\"csrf_token\"";
     private static final Integer CSRF_TOKEN_START_INDEX = 55;
     private static final Integer REDIRECT_STATUS = 302;
-    private static final Integer REDIRECT_URL_LENGTH = 51;
-    private static final Integer REDIRECT_URL_LENGTH_ID = 49;
     private static final Integer START_DSSP_CONTEXT = 77;
     private static final Integer RESPONSE_WAITING = 10000; // 10 sec
     private static final Integer RESPONSE_WITH_FILE = 30000; // 10 sec
@@ -95,7 +95,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         HttpPost request = new HttpPost(DSSP_SERVER_URL);
         HttpResponse response = httpClient.execute(preparePostRequest(request, csrfToken, pdbFile, isFileNeeded));
         if (REDIRECT_STATUS == response.getStatusLine().getStatusCode()) {
-            return getRedirectedResultId(response, isFileNeeded);
+            return getRedirectedResultId(response);
         }
         return null;
     }
@@ -148,10 +148,16 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         return file;
     }
 
-    private String getRedirectedResultId(HttpResponse response, boolean isFileNeeded) {
+    private String getRedirectedResultId(HttpResponse response) {
         HeaderElement[] headerLocationElements = response.getFirstHeader(LOCATION).getElements();
         String redirectedUrl = Arrays.stream(headerLocationElements).findFirst().get().getName();
-        return redirectedUrl.substring(isFileNeeded ? REDIRECT_URL_LENGTH : REDIRECT_URL_LENGTH_ID);
+        Pattern pattern = Pattern.compile("/[^/]*$");
+        Matcher matcher = pattern.matcher(redirectedUrl);
+        if (matcher.find())
+        {
+           return matcher.group(0).substring(1);
+        }
+        return null;
     }
 
     private String getRequestGetDsspContext(boolean isFileNeeded) throws IOException, InterruptedException {
