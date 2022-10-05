@@ -67,7 +67,6 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     public List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException, InterruptedException {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
-        System.out.println("Csrf: " + csrfToken);
         resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile, isFileNeeded);
         System.out.println("resultId: " + resultId);
         if (resultId == null){
@@ -152,7 +151,6 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private String getRedirectedResultId(HttpResponse response, boolean isFileNeeded) {
         HeaderElement[] headerLocationElements = response.getFirstHeader(LOCATION).getElements();
         String redirectedUrl = Arrays.stream(headerLocationElements).findFirst().get().getName();
-        System.out.println("redirectedUrl: " +  redirectedUrl);
         return redirectedUrl.substring(isFileNeeded ? REDIRECT_URL_LENGTH : REDIRECT_URL_LENGTH_ID);
     }
 
@@ -168,6 +166,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         do {
             HttpResponse response = httpClient.execute(request);
             String jsonString = EntityUtils.toString(response.getEntity());
+            System.out.println("Response: " + jsonString);
             JSONObject json = new JSONObject(jsonString);
             status = json.getString(STATUS_JSON_PARAM);
             System.out.println("status: " + status);
