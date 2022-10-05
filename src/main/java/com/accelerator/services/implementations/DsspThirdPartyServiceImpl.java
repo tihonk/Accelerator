@@ -67,7 +67,9 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     public List<String> getDsspContext(MultipartFile pdbFile, boolean isFileNeeded) throws IOException, InterruptedException {
         httpClient = HttpClients.createDefault();
         String csrfToken = getRequestGetCsrfToken();
+        System.out.println("Csrf: " + csrfToken);
         resultId = postRequestGetDsspContextUrl(csrfToken, pdbFile, isFileNeeded);
+        System.out.println("resultId: " + resultId);
         if (resultId == null){
             return null;
         }
@@ -150,6 +152,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private String getRedirectedResultId(HttpResponse response, boolean isFileNeeded) {
         HeaderElement[] headerLocationElements = response.getFirstHeader(LOCATION).getElements();
         String redirectedUrl = Arrays.stream(headerLocationElements).findFirst().get().getName();
+        System.out.println("redirectedUrl: " +  redirectedUrl);
         return redirectedUrl.substring(isFileNeeded ? REDIRECT_URL_LENGTH : REDIRECT_URL_LENGTH_ID);
     }
 
@@ -167,6 +170,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
             String jsonString = EntityUtils.toString(response.getEntity());
             JSONObject json = new JSONObject(jsonString);
             status = json.getString(STATUS_JSON_PARAM);
+            System.out.println("status: " + status);
             if (FAILURE_STATUS.equals(status)) {
                 throw new RuntimeException(DSSP_FAILURE_MESSAGE);
             } else if(PENDING_STATUS.equals(status)) {
@@ -182,15 +186,18 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
                 }
             }
         } while (!SUCCESS_STATUS.equals(status));
+        System.out.println("Last status: " + status);
         Thread.sleep(500);
     }
 
     private String getDsspResult(boolean isFileNeeded) throws IOException {
         HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_RESULT_URL : DSSP_RESULT_URL_ID, resultId));
+        System.out.println("New request: " + request);
         HttpResponse response = httpClient.execute(request);
         String jsonString = EntityUtils.toString(response.getEntity());
         JSONObject json = new JSONObject(jsonString);
         String fullResult = json.getString(RESULT_JSON_PARAM);
+        System.out.println("Result updated");
         return getResultWithoutHeader(fullResult);
     }
 
