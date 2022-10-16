@@ -170,7 +170,6 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         HttpGet request = new HttpGet(format(isFileNeeded ? DSSP_STATUS_URL : DSSP_STATUS_URL_ID, resultId));
         Date startRequestDate = new Date();
         System.out.printf("Request: " + (isFileNeeded ? DSSP_STATUS_URL : DSSP_STATUS_URL_ID) + "%n", resultId);
-        Thread.sleep(500);
         do {
             HttpResponse response = httpClient.execute(request);
             String jsonString = EntityUtils.toString(response.getEntity());
@@ -193,7 +192,6 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
                 }
             }
         } while (!SUCCESS_STATUS.equals(status));
-        System.out.println("Last status: " + status);
         Thread.sleep(500);
     }
 
