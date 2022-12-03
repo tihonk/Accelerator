@@ -126,14 +126,16 @@ public class PentUNFOLDController {
                                     MultipartFile pdbFile, boolean isCustomDsspNeeded) throws Exception {
         PentUNFOLDModel pentUNFOLDModel
                 = prepareModel(pdbFile, picResult, chain, include2d, include3d, isFileNeeded, isCustomDsspNeeded);
-        if (include1d) {
-            xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
-        }
-        if (include2d) {
-            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
-        }
-        if (include3d) {
-            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+        synchronized (this) {
+            if (include1d) {
+                xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
+            }
+            if (include2d) {
+                xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+            }
+            if (include3d) {
+                xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
+            }
         }
     }
 
