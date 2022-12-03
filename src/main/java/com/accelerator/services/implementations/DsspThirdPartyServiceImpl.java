@@ -173,10 +173,8 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
         do {
             HttpResponse response = httpClient.execute(request);
             String jsonString = EntityUtils.toString(response.getEntity());
-            System.out.println("Response: " + jsonString);
             JSONObject json = new JSONObject(jsonString);
             status = json.getString(STATUS_JSON_PARAM);
-            System.out.println("status: " + status);
             if (FAILURE_STATUS.equals(status)) {
                 throw new RuntimeException(DSSP_FAILURE_MESSAGE);
             } else if(PENDING_STATUS.equals(status)) {
