@@ -60,25 +60,43 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     @Override
     public void fill1DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "1D", MOTHER_FILE_1D_PATH);
-        fillAminoAcidSequence(pentUNFOLDModel.getSequence(), fileName);
-        fileProcessingService.removeFile(format(FILE_1D_PATH, fileName));
+        try {
+            fillAminoAcidSequence(pentUNFOLDModel.getSequence(), fileName);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new NoSuchFieldException("File is incorrect");
+        } finally {
+            fileProcessingService.removeFile(format(FILE_1D_PATH, fileName));
+        }
     }
 
     @Override
     public void fill2DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "2D", MOTHER_FILE_2D_PATH);
-        fillPdb(pentUNFOLDModel, fileName, FILE_2D_PATH);
-        fillDssp(pentUNFOLDModel, fileName, FILE_2D_PATH);
-        fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
+        try {
+            fillPdb(pentUNFOLDModel, fileName, FILE_2D_PATH);
+            fillDssp(pentUNFOLDModel, fileName, FILE_2D_PATH);
+        } catch (Exception e) {
+            System.err.println("Failed to fill file: " + fileName);
+            throw new NoSuchFieldException("File is incorrect");
+        } finally {
+            fileProcessingService.removeFile(format(FILE_2D_PATH, fileName));
+        }
     }
 
     @Override
     public void fill3DFile(PentUNFOLDModel pentUNFOLDModel, String fileName) throws Exception {
         fileProcessingService.copyFile(fileName + "3D", MOTHER_FILE_3D_PATH);
-        fillPdb(pentUNFOLDModel, fileName, FILE_3D_PATH);
-        fillDssp(pentUNFOLDModel, fileName, FILE_3D_PATH);
-        fillPic(pentUNFOLDModel.getPic(), 4, format(FILE_3D_PATH, fileName));
-        fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
+        try {
+            fillPdb(pentUNFOLDModel, fileName, FILE_3D_PATH);
+            fillDssp(pentUNFOLDModel, fileName, FILE_3D_PATH);
+            fillPic(pentUNFOLDModel.getPic(), 4, format(FILE_3D_PATH, fileName));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new NoSuchFieldException("File is incorrect");
+        } finally {
+            fileProcessingService.removeFile(format(FILE_3D_PATH, fileName));
+        }
     }
 
     private void fillAminoAcidSequence(String aminoAcidSequence, String fileName) throws Exception {

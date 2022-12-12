@@ -21,9 +21,11 @@ public class FileProcessingServiceImpl implements FileProcessingService {
 
     @Override
     public void copyFile(String newFileName, String path) throws IOException {
-        Path motherFile = Paths.get(path);
-        Path copiedFile = Paths.get(format(NEW_FILE_PATH, newFileName, getExtension(path)));
-        Files.copy(motherFile, copiedFile, StandardCopyOption.REPLACE_EXISTING);
+        synchronized (this) {
+            Path motherFile = Paths.get(path);
+            Path copiedFile = Paths.get(format(NEW_FILE_PATH, newFileName, getExtension(path)));
+            Files.copy(motherFile, copiedFile, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     @Override

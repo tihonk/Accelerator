@@ -64,9 +64,13 @@ public class PentUNFOLDController {
         String fileName = generateUniqueFileName(requireNonNull(pdbFile.getOriginalFilename()));
         try {
             fillNecessaryFiles(include1d, include2d, include3d, isFileNeeded, picResult, chain, fileName, pdbFile, isCustomDsspNeeded);
+        } catch (NoSuchFieldException exception) {
+            return new PentUnfoldResponse(fileName, null);
         } catch (Exception exception) {
             rootLogger.error(exception.getMessage());
             return null;
+        } finally {
+            rootLogger.warn("The request came from a user with IP: " + ip);
         }
         return new PentUnfoldResponse(fileName, secondaryStructureResource);
     }
@@ -126,16 +130,14 @@ public class PentUNFOLDController {
                                     MultipartFile pdbFile, boolean isCustomDsspNeeded) throws Exception {
         PentUNFOLDModel pentUNFOLDModel
                 = prepareModel(pdbFile, picResult, chain, include2d, include3d, isFileNeeded, isCustomDsspNeeded);
-        synchronized (this) {
-            if (include1d) {
-                xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
-            }
-            if (include2d) {
-                xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
-            }
-            if (include3d) {
-                xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
-            }
+        if (include1d) {
+            xlsxFillingFacade.fill1DFile(pentUNFOLDModel, fileName);
+        }
+        if (include2d) {
+            xlsxFillingFacade.fill2DFile(pentUNFOLDModel, fileName);
+        }
+        if (include3d) {
+            xlsxFillingFacade.fill3DFile(pentUNFOLDModel, fileName);
         }
     }
 
