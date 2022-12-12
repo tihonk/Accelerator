@@ -60,7 +60,8 @@ public class PentUNFOLDController {
     public PentUnfoldResponse postPentUnFOLDAlgorithm(@RequestParam MultipartFile pdbFile, @RequestParam boolean include1d,
                                                       @RequestParam boolean include2d, @RequestParam boolean include3d,
                                                       @RequestParam ArrayList<String> picResult, @RequestParam String chain,
-                                                      @RequestParam boolean isFileNeeded, @RequestParam boolean isCustomDsspNeeded){
+                                                      @RequestParam boolean isFileNeeded, @RequestParam boolean isCustomDsspNeeded,
+                                                      @RequestParam String ip){
         String fileName = generateUniqueFileName(requireNonNull(pdbFile.getOriginalFilename()));
         try {
             fillNecessaryFiles(include1d, include2d, include3d, isFileNeeded, picResult, chain, fileName, pdbFile, isCustomDsspNeeded);
