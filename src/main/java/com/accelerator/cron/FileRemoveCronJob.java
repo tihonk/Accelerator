@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileRemoveCronJob {
 
-    @Scheduled(cron = "0 * * * * *", zone = "Europe/London")
+    @Scheduled(cron = "0 0 0,12 * * *", zone = "Europe/London")
     public void removeUserFiles() throws IOException {
         FileUtils.cleanDirectory(new File("src/main/resources/user-files"));
         System.out.println("__________________________ Files removed _____________________________");
