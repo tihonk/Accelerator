@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-class Accelerator extends SpringBootServletInitializer {
+public class Accelerator extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(Accelerator.class, args);

@@ -11,7 +11,7 @@ public class FileRemoveCronJob {
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/London")
     public void removeUserFiles() throws IOException {
-        FileUtils.cleanDirectory(new File("src/main/resources/user-files"));
+        FileUtils.cleanDirectory(new File("classes/user-files"));
         System.out.println("__________________________ Files removed _____________________________");
     }
 }
