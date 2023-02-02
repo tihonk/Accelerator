@@ -24,13 +24,13 @@ public class CommentsController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public String postComment(@RequestParam String fullName, @RequestParam String country,
                               @RequestParam String content, @RequestParam String rating){
-        commentService.prepareCommentAndSave(fullName, country, content, rating);
+//        commentService.prepareCommentAndSave(fullName, country, content, rating);
         return "Done";
     }
 
-    @GetMapping(value = "/comments")
-    public List<Comment> getComments() throws InterruptedException {
-        List<Comment> comments = commentService.findAlComments();
-        return comments;
-    }
+//    @GetMapping(value = "/comments")
+//    public List<Comment> getComments() throws InterruptedException {
+//        List<Comment> comments = commentService.findAlComments();
+//        return comments;
+//    }
 }
