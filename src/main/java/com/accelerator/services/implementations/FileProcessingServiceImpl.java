@@ -16,7 +16,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 @Service("fileProcessingService")
 public class FileProcessingServiceImpl implements FileProcessingService {
 
-    private static final String NEW_FILE_PATH = "classes/user-files/%s.%s";
+    private static final String NEW_FILE_PATH = "src/main/resources/user-files/%s.%s";
     private static final Integer MINUTES_TO_REMOVE = 2;
 
     @Override

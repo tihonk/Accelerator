@@ -32,10 +32,10 @@ import static org.springframework.http.HttpStatus.OK;
 public class PentUNFOLDController {
 
     private static final Logger rootLogger = LogManager.getRootLogger();
-    private static final String FILE_1D_PATH = "classes/user-files/%s1D.xlsx";
-    private static final String FILE_2D_PATH = "classes/user-files/%s2D.xlsx";
-    private static final String FILE_3D_PATH = "classes/user-files/%s3D.xlsx";
-    private static final String FILE_MANUAL_PATH = "classes/manual.pdf";
+    private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
+    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
+    private static final String FILE_MANUAL_PATH = "src/main/resources/manual.pdf";
     private static final String  OK_MESSAGE = "Pent UNFOLD Algorithm is working.";
 
     @Resource

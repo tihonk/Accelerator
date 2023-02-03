@@ -37,7 +37,7 @@ public class DsspThirdPartyServiceImpl implements DsspThirdPartyService {
     private static final String DSSP_STATUS_URL_ID =  "https://www3.cmbi.umcn.nl/xssp/api/status/pdb_id/dssp/%s/";
     private static final String DSSP_RESULT_URL_ID =  "https://www3.cmbi.umcn.nl/xssp/api/result/pdb_id/dssp/%s/";
     private static final String CONTENT_TYPE_PDB_FILE =  "chemical/x-pdb";
-    private static final String PDB_CONTENT_FILE_PATH = "classes/pdbContext.txt";
+    private static final String PDB_CONTENT_FILE_PATH = "src/main/resources/pdbContext.txt";
     private static final String DSSP_FAILURE_MESSAGE = "Dssp server is not working properly. It is not possible to get a result.";
     private static final String DSSP_NOT_ANSWER_MESSAGE = "Dssp server is working but there is no response.";
     private static final String LOCATION = "Location";

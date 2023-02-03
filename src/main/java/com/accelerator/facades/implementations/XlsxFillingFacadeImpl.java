@@ -36,12 +36,12 @@ public class XlsxFillingFacadeImpl implements XlsxFillingFacade {
     @Resource
     FileProcessingService fileProcessingService;
 
-    private static final String FILE_1D_PATH = "classes/user-files/%s1D.xlsx";
-    private static final String FILE_2D_PATH = "classes/user-files/%s2D.xlsx";
-    private static final String FILE_3D_PATH = "classes/user-files/%s3D.xlsx";
-    private static final String MOTHER_FILE_1D_PATH = "classes/PentUNFOLD1D.xlsx";
-    private static final String MOTHER_FILE_2D_PATH = "classes/PentUNFOLD2D.xlsx";
-    private static final String MOTHER_FILE_3D_PATH = "classes/PentUNFOLD3D.xlsx";
+    private static final String FILE_1D_PATH = "src/main/resources/user-files/%s1D.xlsx";
+    private static final String FILE_2D_PATH = "src/main/resources/user-files/%s2D.xlsx";
+    private static final String FILE_3D_PATH = "src/main/resources/user-files/%s3D.xlsx";
+    private static final String MOTHER_FILE_1D_PATH = "src/main/resources/PentUNFOLD1D.xlsx";
+    private static final String MOTHER_FILE_2D_PATH = "src/main/resources/PentUNFOLD2D.xlsx";
+    private static final String MOTHER_FILE_3D_PATH = "src/main/resources/PentUNFOLD3D.xlsx";
     private static final String ROW_ELEMENT = "row";
     private static final String VALUE_ELEMENT = "v";
     private static final String CELL_ELEMENT = "c";
