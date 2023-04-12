@@ -1,7 +1,6 @@
 package com.accelerator.dto;
 
 import java.util.List;
-import java.util.Map;
 
 public class HydrogenAccuracy {
 
@@ -10,14 +9,28 @@ public class HydrogenAccuracy {
     private String previousAminoAcid;
     private String nextAminoAcid;
     private String hydrogenBoundAminoAcids;
-    private String realXCoordinate;
-    private String realYCoordinate;
-    private String realZCoordinate;
-    private String predictedXCoordinate;
-    private String predictedYCoordinate;
-    private String predictedZCoordinate;
+    private Double realXCoordinate;
+    private Double realYCoordinate;
+    private Double realZCoordinate;
+
+    private Double caXCoordinate;
+    private Double caYCoordinate;
+    private Double caZCoordinate;
+
+    private Double cxCoordinate;
+    private Double cyCoordinate;
+    private Double czCoordinate;
+
+    private Double predictedXCoordinate;
+    private Double predictedYCoordinate;
+    private Double predictedZCoordinate;
+
+    private Double powerXCoordinate;
+    private Double powerYCoordinate;
+    private Double powerZCoordinate;
     private Double distanceToReal;
     private Double nhDistance;
+    private Double generalPower;
     private List<AminoAcid> hBoundAminoAcids;
     private List<Atom> nearestAtoms;
 
@@ -35,54 +48,6 @@ public class HydrogenAccuracy {
 
     public void setAminoAcid(String aminoAcid) {
         this.aminoAcid = aminoAcid;
-    }
-
-    public String getRealXCoordinate() {
-        return realXCoordinate;
-    }
-
-    public void setRealXCoordinate(String realXCoordinate) {
-        this.realXCoordinate = realXCoordinate;
-    }
-
-    public String getRealYCoordinate() {
-        return realYCoordinate;
-    }
-
-    public void setRealYCoordinate(String realYCoordinate) {
-        this.realYCoordinate = realYCoordinate;
-    }
-
-    public String getRealZCoordinate() {
-        return realZCoordinate;
-    }
-
-    public void setRealZCoordinate(String realZCoordinate) {
-        this.realZCoordinate = realZCoordinate;
-    }
-
-    public String getPredictedXCoordinate() {
-        return predictedXCoordinate;
-    }
-
-    public void setPredictedXCoordinate(String predictedXCoordinate) {
-        this.predictedXCoordinate = predictedXCoordinate;
-    }
-
-    public String getPredictedYCoordinate() {
-        return predictedYCoordinate;
-    }
-
-    public void setPredictedYCoordinate(String predictedYCoordinate) {
-        this.predictedYCoordinate = predictedYCoordinate;
-    }
-
-    public String getPredictedZCoordinate() {
-        return predictedZCoordinate;
-    }
-
-    public void setPredictedZCoordinate(String predictedZCoordinate) {
-        this.predictedZCoordinate = predictedZCoordinate;
     }
 
     public String getPreviousAminoAcid() {
@@ -139,5 +104,133 @@ public class HydrogenAccuracy {
 
     public void setNearestAtoms(List<Atom> nearestAtoms) {
         this.nearestAtoms = nearestAtoms;
+    }
+
+    public Double getGeneralPower() {
+        return generalPower;
+    }
+
+    public void setGeneralPower(Double generalPower) {
+        this.generalPower = generalPower;
+    }
+
+    public Double getRealXCoordinate() {
+        return realXCoordinate;
+    }
+
+    public void setRealXCoordinate(Double realXCoordinate) {
+        this.realXCoordinate = realXCoordinate;
+    }
+
+    public Double getRealYCoordinate() {
+        return realYCoordinate;
+    }
+
+    public void setRealYCoordinate(Double realYCoordinate) {
+        this.realYCoordinate = realYCoordinate;
+    }
+
+    public Double getRealZCoordinate() {
+        return realZCoordinate;
+    }
+
+    public void setRealZCoordinate(Double realZCoordinate) {
+        this.realZCoordinate = realZCoordinate;
+    }
+
+    public Double getCaXCoordinate() {
+        return caXCoordinate;
+    }
+
+    public void setCaXCoordinate(Double caXCoordinate) {
+        this.caXCoordinate = caXCoordinate;
+    }
+
+    public Double getCaYCoordinate() {
+        return caYCoordinate;
+    }
+
+    public void setCaYCoordinate(Double caYCoordinate) {
+        this.caYCoordinate = caYCoordinate;
+    }
+
+    public Double getCaZCoordinate() {
+        return caZCoordinate;
+    }
+
+    public void setCaZCoordinate(Double caZCoordinate) {
+        this.caZCoordinate = caZCoordinate;
+    }
+
+    public Double getCxCoordinate() {
+        return cxCoordinate;
+    }
+
+    public void setCxCoordinate(Double cxCoordinate) {
+        this.cxCoordinate = cxCoordinate;
+    }
+
+    public Double getCyCoordinate() {
+        return cyCoordinate;
+    }
+
+    public void setCyCoordinate(Double cyCoordinate) {
+        this.cyCoordinate = cyCoordinate;
+    }
+
+    public Double getCzCoordinate() {
+        return czCoordinate;
+    }
+
+    public void setCzCoordinate(Double czCoordinate) {
+        this.czCoordinate = czCoordinate;
+    }
+
+    public Double getPowerXCoordinate() {
+        return powerXCoordinate;
+    }
+
+    public void setPowerXCoordinate(Double powerXCoordinate) {
+        this.powerXCoordinate = powerXCoordinate;
+    }
+
+    public Double getPowerYCoordinate() {
+        return powerYCoordinate;
+    }
+
+    public void setPowerYCoordinate(Double powerYCoordinate) {
+        this.powerYCoordinate = powerYCoordinate;
+    }
+
+    public Double getPowerZCoordinate() {
+        return powerZCoordinate;
+    }
+
+    public void setPowerZCoordinate(Double powerZCoordinate) {
+        this.powerZCoordinate = powerZCoordinate;
+    }
+
+    public Double getPredictedXCoordinate() {
+        return predictedXCoordinate;
+    }
+
+    public void setPredictedXCoordinate(Double predictedXCoordinate) {
+        this.predictedXCoordinate = predictedXCoordinate;
+    }
+
+    public Double getPredictedYCoordinate() {
+        return predictedYCoordinate;
+    }
+
+    public void setPredictedYCoordinate(Double predictedYCoordinate) {
+        this.predictedYCoordinate = predictedYCoordinate;
+    }
+
+    public Double getPredictedZCoordinate() {
+        return predictedZCoordinate;
+    }
+
+    public void setPredictedZCoordinate(Double predictedZCoordinate) {
+        this.predictedZCoordinate = predictedZCoordinate;
     }
 }

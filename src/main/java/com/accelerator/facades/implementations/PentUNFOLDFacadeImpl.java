@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -43,7 +44,11 @@ public class PentUNFOLDFacadeImpl implements PentUNFOLDFacade {
             List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
             List<String> dsspContext;
             if(isCustomDsspNeeded) {
-                dsspContext = include2d || include3d ? dsspService.getDsspContext(pdbContext, chain) : null;
+                try {
+                    dsspContext = include2d || include3d ? dsspService.getDsspContext(pdbContext, chain, true) : null;
+                } catch (Exception e) {
+                    dsspContext = dsspService.getDsspContext(pdbContext, chain, false);
+                }
             } else {
                 dsspContext = include2d || include3d ? dsspThirdPartyService.getDsspContext(pdbFile, isFileNeeded) : new ArrayList<>();
             }

@@ -25,9 +25,9 @@ public class Ussa {
 
     @PostMapping(value = "/ussa", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<String> calculateHydrogenAccuracy(@RequestParam MultipartFile pdbFile,
-                                                  @RequestParam String chain) throws JsonParseException, IOException {
+                                                  @RequestParam String chain,  @RequestParam Boolean ai) throws JsonParseException, IOException {
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
-        List<String> response = dsspService.getDsspContext(pdbContext, chain);
+        List<String> response = dsspService.getDsspContext(pdbContext, chain, ai);
         return response;
     }
 }

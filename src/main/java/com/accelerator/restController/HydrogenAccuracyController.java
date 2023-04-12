@@ -28,11 +28,11 @@ public class HydrogenAccuracyController {
     HydrogenAccuracyService hydrogenAccuracyService;
 
     @PostMapping(value = "/hydrogen-accuracy", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HydrogenAccuracyResponse calculateHydrogenAccuracy(@RequestParam MultipartFile pdbFile, @RequestParam String chain) throws JsonParseException, IOException {
+    public HydrogenAccuracyResponse calculateHydrogenAccuracy(@RequestParam MultipartFile pdbFile, @RequestParam String chain,  @RequestParam Boolean ai) throws JsonParseException, IOException {
 
         List<String> pdbContext = pdbContextService.getPdbContext(pdbFile);
         SortedMap<Double, List<String[]>> pdbData = pentUNFOLDFilterService.filterPdbToDssp(pdbContext, chain);
-        HydrogenAccuracyResponse response = hydrogenAccuracyService.calculateHydrogenAccuracyService(pdbData);
+        HydrogenAccuracyResponse response = hydrogenAccuracyService.calculateHydrogenAccuracyService(pdbData, ai);
 
         return response;
     }

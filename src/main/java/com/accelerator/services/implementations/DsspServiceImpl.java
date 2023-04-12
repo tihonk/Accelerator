@@ -2,10 +2,9 @@ package com.accelerator.services.implementations;
 
 import static java.util.Objects.nonNull;
 
-import com.accelerator.services.BendService;
-import com.accelerator.services.DsspService;
-import com.accelerator.services.HBoundService;
-import com.accelerator.services.PentUNFOLDFilterService;
+import com.accelerator.dto.HydrogenAccuracy;
+import com.accelerator.services.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,6 +29,8 @@ public class DsspServiceImpl implements DsspService {
     HBoundService hBoundService;
     @Resource
     BendService bendService;
+    @Resource
+    HydrogenAccuracyService hydrogenAccuracyService;
 
     SortedMap<Double, Set<Double[]>> hBoundsDescription;
     SortedMap<Double, String> secondaryStructure;
@@ -37,26 +38,27 @@ public class DsspServiceImpl implements DsspService {
     Double preSecondAminoAcidResidueKey;
 
     @Override
-    public List<String> getDsspContext(List<String> pdbFile, String chain) {
+    public List<String> getDsspContext(List<String> pdbFile, String chain, Boolean ai) {
         SortedMap<Double, List<String[]>> pdbData = pentUNFOLDFilterService.filterPdbToDssp(pdbFile, chain);
-        helixDeterminate(pdbData);
-        bridgeDeterminate(pdbData);
+        List<HydrogenAccuracy> findHBounds = hydrogenAccuracyService.findHBounds(pdbData, ai);
+        helixDeterminate(pdbData, findHBounds);
+        bridgeDeterminate(pdbData, findHBounds);
         secondaryStructureDeterminate();
         bendDeterminate(pdbData);
         prepareFinalDsspData(pdbData);
         return finalDsspData;
     }
 
-    private void helixDeterminate(SortedMap<Double, List<String[]>> pdbData) {
+    private void helixDeterminate(SortedMap<Double, List<String[]>> pdbData, List<HydrogenAccuracy> findHBounds) {
         hBoundsDescription = new TreeMap<>();
         secondaryStructure = new TreeMap<>();
         finalDsspData = new ArrayList<>();
-        alphaHelixDeterminateByTurn(pdbData, 3.0);
-        alphaHelixDeterminateByTurn(pdbData, 4.0);
-        alphaHelixDeterminateByTurn(pdbData, 5.0);
+        alphaHelixDeterminateByTurn(pdbData, 3.0, findHBounds);
+        alphaHelixDeterminateByTurn(pdbData, 4.0, findHBounds);
+        alphaHelixDeterminateByTurn(pdbData, 5.0, findHBounds);
     }
 
-    private void bridgeDeterminate(SortedMap<Double, List<String[]>> pdbData) {
+    private void bridgeDeterminate(SortedMap<Double, List<String[]>> pdbData, List<HydrogenAccuracy> findHBounds) {
         List<Map.Entry<Double, List<String[]>>> aminoAcidResidues = new ArrayList<>(pdbData.entrySet());
         for (int i = 1; i < aminoAcidResidues.size() - 4; i++) {
             Double firstAminoAcidResidueKey = aminoAcidResidues.get(i).getKey();
@@ -71,13 +73,18 @@ public class DsspServiceImpl implements DsspService {
                 Double postSecondAminoAcidResidueKey = aminoAcidResidues.get(j+1).getKey();
                 if(isBridgePossible(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey, postFirstAminoAcidResidueKey,
                         secondAminoAcidResidueKey, preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey)) {
+                    String[] H_fst = hCoordByAI(firstAminoAcidResidueKey, findHBounds);
+                    String[] H_sec = hCoordByAI(secondAminoAcidResidueKey, findHBounds);
+                    String[] H_pst_fst = hCoordByAI(postFirstAminoAcidResidueKey, findHBounds);
+                    String[] H_pst_sec = hCoordByAI(postSecondAminoAcidResidueKey, findHBounds);
+
                     isParallelBridge = isParallelBridge(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey,
-                            postFirstAminoAcidResidueKey, secondAminoAcidResidueKey,
-                            preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey, pdbData);
+                            postFirstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey,
+                            postSecondAminoAcidResidueKey, pdbData, H_sec, H_pst_fst, H_pst_sec, H_fst);
                     if (!isParallelBridge) {
                         isAntiParallelBridge = isAntiParallelBridge(firstAminoAcidResidueKey, preFirstAminoAcidResidueKey,
-                                postFirstAminoAcidResidueKey, secondAminoAcidResidueKey,
-                                preSecondAminoAcidResidueKey, postSecondAminoAcidResidueKey, pdbData);
+                                postFirstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey,
+                                postSecondAminoAcidResidueKey, pdbData, H_pst_sec, H_pst_fst, H_sec, H_fst);
                     }
                     if(isAntiParallelBridge || isParallelBridge){
                         updateHBoundsDescription(firstAminoAcidResidueKey, secondAminoAcidResidueKey,
@@ -145,7 +152,7 @@ public class DsspServiceImpl implements DsspService {
         return null;
     }
 
-    private void alphaHelixDeterminateByTurn(SortedMap<Double, List<String[]>> pdbData, Double turn) {
+    private void alphaHelixDeterminateByTurn(SortedMap<Double, List<String[]>> pdbData, Double turn, List<HydrogenAccuracy> findHBounds) {
         List<Map.Entry<Double, List<String[]>>> aminoAcidResidues = new ArrayList<>(pdbData.entrySet());
         for (int i = 0; i < aminoAcidResidues.size(); i++) {
             Double firstAminoAcidResidueKey = aminoAcidResidues.get(i).getKey();
@@ -153,9 +160,22 @@ public class DsspServiceImpl implements DsspService {
             Double secondAminoAcidResidueKey = findSecondAminoAcidResidueKey(aminoAcidResidues, firstAminoAcidResidueKey, turn, i);
             if (secondAminoAcidResidueKey != null) {
                 boolean isHBoundExist = hBoundService.isHBoundExist(
-                        pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey);
+                        pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey,
+                        preSecondAminoAcidResidueKey, hCoordByAI(secondAminoAcidResidueKey, findHBounds));
                 updateHBoundsDescription(firstAminoAcidResidueKey, secondAminoAcidResidueKey, isHBoundExist, turn);
             }
+        }
+    }
+
+    private String[] hCoordByAI(Double key, List<HydrogenAccuracy> description) {
+        HydrogenAccuracy target = description.stream().filter(t -> t.getAminoAcidNumber().equals(key.toString())).findFirst().get();
+        if (target.getPredictedXCoordinate() == null) {
+            return null;
+        } else {
+            return new String[]{"H", "", "", "",
+                    target.getPredictedXCoordinate().toString(),
+                    target.getPredictedYCoordinate().toString(),
+                    target.getPredictedZCoordinate().toString()};
         }
     }
 
@@ -174,21 +194,25 @@ public class DsspServiceImpl implements DsspService {
     private boolean isParallelBridge(Double firstAminoAcidResidueKey, Double preFirstAminoAcidResidueKey,
                                      Double postFirstAminoAcidResidueKey, Double secondAminoAcidResidueKey,
                                      Double preSecondAminoAcidResidueKey, Double postSecondAminoAcidResidueKey,
-                                     SortedMap<Double, List<String[]>> pdbData) {
-        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey)
-                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey))
-                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey)
-                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey));
+                                     SortedMap<Double, List<String[]>> pdbData,
+                                     String[] H1_coordinates, String[] H2_coordinates,
+                                     String[] H3_coordinates, String[] H4_coordinates) {
+        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey, H1_coordinates)
+                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey, H2_coordinates))
+                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey, H3_coordinates)
+                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey, H4_coordinates));
     }
 
     private boolean isAntiParallelBridge(Double firstAminoAcidResidueKey, Double preFirstAminoAcidResidueKey,
                                          Double postFirstAminoAcidResidueKey, Double secondAminoAcidResidueKey,
                                          Double preSecondAminoAcidResidueKey, Double postSecondAminoAcidResidueKey,
-                                         SortedMap<Double, List<String[]>> pdbData) {
-        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey)
-                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey)
-                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey)
-                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey)));
+                                         SortedMap<Double, List<String[]>> pdbData,
+                                         String[] H1_coordinates, String[] H2_coordinates,
+                                         String[] H3_coordinates, String[] H4_coordinates) {
+        return (hBoundService.isHBoundExist(pdbData, preFirstAminoAcidResidueKey, postSecondAminoAcidResidueKey, secondAminoAcidResidueKey, H1_coordinates)
+                && hBoundService.isHBoundExist(pdbData, preSecondAminoAcidResidueKey, postFirstAminoAcidResidueKey, firstAminoAcidResidueKey, H2_coordinates)
+                || (hBoundService.isHBoundExist(pdbData, firstAminoAcidResidueKey, secondAminoAcidResidueKey, preSecondAminoAcidResidueKey, H3_coordinates)
+                && hBoundService.isHBoundExist(pdbData, secondAminoAcidResidueKey, firstAminoAcidResidueKey, preFirstAminoAcidResidueKey, H4_coordinates)));
     }
 
     public Double findSecondAminoAcidResidueKey(List<Map.Entry<Double, List<String[]>>> aminoAcidResidues,

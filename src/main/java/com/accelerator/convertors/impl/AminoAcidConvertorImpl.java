@@ -51,4 +51,53 @@ public class AminoAcidConvertorImpl implements AminoAcidConvertor {
         }
         return null;
     }
+
+    @Override
+    public String convertShortToDigit(String shortName) {
+        if (shortName == null) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        }
+        if(shortName.equalsIgnoreCase("A")) {
+            return "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("I")) {
+            return "0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("L")) {
+            return "0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("M")) {
+            return "0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("V")) {
+            return "0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("F")) {
+            return "0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("W")) {
+            return "0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("Y")) {
+            return "0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("N")) {
+            return "0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("C")) {
+            return "0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("Q")) {
+            return "0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("S")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("T")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("D")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("E")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("R")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0";
+        } else if(shortName.equalsIgnoreCase("H")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0";
+        } else if(shortName.equalsIgnoreCase("K")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0";
+        } else if(shortName.equalsIgnoreCase("G")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0";
+        } else if(shortName.equalsIgnoreCase("P")) {
+            return "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+        }
+        return null;
+    }
 }

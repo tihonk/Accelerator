@@ -3,12 +3,16 @@ package com.accelerator.services.implementations;
 import com.accelerator.dto.AminoAcid;
 import com.accelerator.dto.Atom;
 import com.accelerator.dto.HydrogenAccuracy;
-import com.accelerator.services.HBoundService;
-import com.accelerator.services.DistanceService;
+import com.accelerator.dto.RotationParams;
+import com.accelerator.services.*;
+
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Map.Entry;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,6 +20,7 @@ import java.util.List;
 import java.util.SortedMap;
 
 import static java.lang.Double.parseDouble;
+import static java.lang.Math.pow;
 import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
 
@@ -33,6 +38,15 @@ public class HBoundServiceImpl implements HBoundService {
     @Resource
     private DistanceService distanceService;
 
+    @Resource
+    HydrogenAIService hydrogenAIService;
+
+    @Resource
+    private RotationService rotationService;
+
+    @Resource
+    private HydrogenAccuracyService hydrogenAccuracyService;
+
     private Double leadingDistance;
 
     private Double o_h_distance;
@@ -40,13 +54,13 @@ public class HBoundServiceImpl implements HBoundService {
 
     @Override
     public boolean isHBoundExist(SortedMap<Double, List<String[]>> pdbData, Double co_residueKey,
-                                 Double nh_residueKey, Double pre_nh_ResidueKey) {
+                                 Double nh_residueKey, Double pre_nh_ResidueKey, String[] h_coordinates) {
 
-        return isHBoundExistDouble(pdbData, co_residueKey, nh_residueKey, pre_nh_ResidueKey) < MIN_E_H_BOUND;
+        return isHBoundExistDouble(pdbData, co_residueKey, nh_residueKey, pre_nh_ResidueKey, h_coordinates) < MIN_E_H_BOUND;
     }
 
     public Double isHBoundExistDouble(SortedMap<Double, List<String[]>> pdbData, Double co_residueKey,
-                                       Double nh_residueKey, Double pre_nh_ResidueKey) {
+                                      Double nh_residueKey, Double pre_nh_ResidueKey, String[] h_coordinates) {
         
         if (nh_residueKey - pre_nh_ResidueKey <= 1) {
             List<String[]> firstAminoAcidResidue = pdbData.get(co_residueKey);
@@ -63,9 +77,13 @@ public class HBoundServiceImpl implements HBoundService {
             String[] second_H = findData(secondAminoAcidResidue, HYDROGEN);
 
             if (second_H == null) {
-                String[] preSecond_C = findData(preSecondAminoAcidResidue, CARBON);
-                String[] second_C = findData(secondAminoAcidResidue, CARBON_A);
-                second_H = findHydrogenData(second_C, second_N, preSecond_C);
+                if (h_coordinates != null) {
+                    second_H = h_coordinates;
+                } else {
+                    String[] preSecond_C = findData(preSecondAminoAcidResidue, CARBON);
+                    String[] second_C = findData(secondAminoAcidResidue, CARBON_A);
+                    second_H = findHydrogenData(second_C, second_N, preSecond_C);
+                }
             }
 
             if (nonNull(first_C) && nonNull(first_O) && nonNull(second_N)) {
@@ -76,65 +94,180 @@ public class HBoundServiceImpl implements HBoundService {
     }
 
     @Override
-    public void findHCoordinates(HydrogenAccuracy hydrogenAccuracy, List<Entry<Double, List<String[]>>> aminoAcidResidues,
-                                 SortedMap<Double, List<String[]>> pdbData, int index) {
+    public RotationParams findHCoordinates(HydrogenAccuracy hydrogenAccuracy, List<Entry<Double, List<String[]>>> aminoAcidResidues,
+                                           SortedMap<Double, List<String[]>> pdbData, int index, Boolean ai) {
         Double firstAminoAcidResidueKey = aminoAcidResidues.get(index).getKey();
         List<String[]> firstAminoAcidResidue = pdbData.get(firstAminoAcidResidueKey);
         String[] data_H = findData(firstAminoAcidResidue, HYDROGEN);
+        String[] data_N = findData(firstAminoAcidResidue, NITROGEN);
+        String[] data_CA = findData(firstAminoAcidResidue, CARBON_A);
+        String[] data_C = null;
+
+        if (index > 0) {
+            Double preFirstAminoAcidResidueKey = aminoAcidResidues.get(index-1).getKey();
+            if (firstAminoAcidResidueKey == preFirstAminoAcidResidueKey + 1.0) {
+                List<String[]> preFirstAminoAcidResidue = pdbData.get(preFirstAminoAcidResidueKey);
+                data_C = findData(preFirstAminoAcidResidue, CARBON);
+            }
+        }
 
         hydrogenAccuracy.setAminoAcid(firstAminoAcidResidue.get(0)[1]);
         hydrogenAccuracy.setAminoAcidNumber(firstAminoAcidResidueKey.toString());
 
-        Double[] real_H = fillRealHCoordinates(hydrogenAccuracy, data_H);
-        Double[] predicted_H = fillPredictedCoordinates(hydrogenAccuracy, aminoAcidResidues, pdbData, real_H, firstAminoAcidResidue, firstAminoAcidResidueKey, index);
-        fillAccuracyDistance(hydrogenAccuracy, real_H, predicted_H);
+        Double[] absolute_H;
+        if (data_H != null) {
+            absolute_H = fillRealHCoordinates(hydrogenAccuracy, data_H);
+        } else {
+            absolute_H = fillPredictedCoordinates(hydrogenAccuracy, aminoAcidResidues, pdbData, new Double[]{0.0, 0.0, 0.0}, firstAminoAcidResidue, firstAminoAcidResidueKey, index);
+        }
+        Double[] predicted_H = fillPredictedCoordinates(hydrogenAccuracy, aminoAcidResidues, pdbData, absolute_H, firstAminoAcidResidue, firstAminoAcidResidueKey, index);
 
-        fillAllNearestAtoms(hydrogenAccuracy, real_H, pdbData);
+        fillAccuracyDistance(hydrogenAccuracy, absolute_H, predicted_H);
+        fillAllNearestAtoms(hydrogenAccuracy, absolute_H, pdbData);
         fillNextAminoAcid(hydrogenAccuracy, aminoAcidResidues, index, pdbData, firstAminoAcidResidueKey);
+
+
+
+        if (ai) {
+            final RotationParams rotationParams = rotationService.computeRotationParams(data_N, data_CA, data_C);
+
+            final Double[] cosines = rotationParams.getCosines();
+            final Boolean[] clockwiseRotations = rotationParams.getClockwiseRotations();
+
+            // Нормализованое положение углерода относительно азота, из предыдцщей АК.
+            Double[] real_C = calculateNRelatedCoordinates(data_C, data_N);
+            Double[] rotated_C = rotationService.fullRotateAtom(real_C, cosines, clockwiseRotations);
+
+            // Нормализованое положение углерода относительно азота, с которым он связан в данной АК.
+            Double[] real_CA = calculateNRelatedCoordinates(data_CA, data_N);
+            Double[] rotated_CA = rotationService.fullRotateAtom(real_CA, cosines, clockwiseRotations);
+
+            // Нормализованое положение водорода относительно азота.
+            Double[] real_H = calculateNRelatedCoordinates(data_H, data_N);
+            Double[] rotated_H = rotationService.fullRotateAtom(real_H, cosines, clockwiseRotations);
+
+            // Power calculations
+            Double[] power = calculatePower();
+            Double[] rotatedPower = rotationService.fullRotateAtom(power, cosines, clockwiseRotations);
+
+            fillHydrogenAccuracy(hydrogenAccuracy, rotated_H, rotated_C, rotated_CA, rotatedPower);
+            absolute_H = fillRealHCoordinates(hydrogenAccuracy, data_H);
+            fillAccuracyDistance(hydrogenAccuracy, absolute_H, predicted_H);
+            return rotationParams;
+        }
+        return null;
     }
 
-    private void fillAllNearestAtoms(HydrogenAccuracy hydrogenAccuracy, Double[] real_h, SortedMap<Double, List<String[]>> pdbData) {
+    private Double[] calculatePower() {
+        Double[] power = new Double[3];
+        power[0] = nearestAtoms.stream().map(Atom::getX_power).reduce(0.0, Double::sum);
+        power[1] = nearestAtoms.stream().map(Atom::getY_power).reduce(0.0, Double::sum);
+        power[2] = nearestAtoms.stream().map(Atom::getZ_power).reduce(0.0, Double::sum);
+        return power;
+    }
+
+    private Double[] calculateNRelatedCoordinates(String[] initialAtom, String[] N_atom) {
+        Double[] atom = {0.0, 0.0, 0.0};
+        if (initialAtom != null) {
+            atom[0] = round(parseDouble(initialAtom[4]) - parseDouble(N_atom[4]) , 4);
+            atom[1] = round(parseDouble(initialAtom[5]) - parseDouble(N_atom[5]), 4);
+            atom[2] = round(parseDouble(initialAtom[6]) - parseDouble(N_atom[6]), 4);
+        }
+        return atom;
+    }
+
+    private void fillAllNearestAtoms(HydrogenAccuracy hydrogenAccuracy, Double[] predicted_h, SortedMap<Double, List<String[]>> pdbData) {
         nearestAtoms = new ArrayList<>();
-        pdbData.values().forEach(aminoAcid -> findNearestAtoms(real_h, aminoAcid));
+        pdbData.values().forEach(aminoAcid -> findNearestAtoms(predicted_h, aminoAcid, parseDouble(hydrogenAccuracy.getAminoAcidNumber())));
         hydrogenAccuracy.setNearestAtoms(nearestAtoms);
     }
 
-    private void findNearestAtoms(Double[] h_coordinates, List<String[]> aminoAcid) {
+    private void findNearestAtoms(Double[] h_coordinates, List<String[]> aminoAcid, double currentNumber) {
         aminoAcid.forEach(ac_data -> {
             if (h_coordinates != null) {
                 Double[] atom_coordinates = { parseDouble(ac_data[4]), parseDouble(ac_data[5]), parseDouble(ac_data[6]) };
                 Double distance = distanceService.countDistance(h_coordinates, atom_coordinates);
-                addAtomToNearestAtoms(distance, ac_data);
+                addAtomToNearestAtoms(distance, ac_data, h_coordinates, currentNumber);
             }
         });
     }
 
-    private void addAtomToNearestAtoms(Double distance, String[] ac_data) {
-        if (distance < 5.0) {
+    private void addAtomToNearestAtoms(Double distance, String[] ac_data, Double[] h_coordinates, Double currentNumber) {
+        if (distance < 5.0
+            && ac_data[0].charAt(0) != 'H'
+            && !(ac_data[0].equals("N") && parseDouble(ac_data[3]) == currentNumber)
+            && !(ac_data[0].equals("CA") && parseDouble(ac_data[3]) == currentNumber)
+            && !(ac_data[0].equals("C") && parseDouble(ac_data[3]) == currentNumber - 1.0)
+        ) {
             Atom nearestAtom = new Atom();
+            Double coulombsLawPower = computeCoulombsLaw(round(distance, 4), ac_data[0]);
+            nearestAtom.setPower(coulombsLawPower);
             nearestAtom.setDistance(round(distance, 4));
             nearestAtom.setAtom_name(ac_data[0]);
             nearestAtom.setAC_name(ac_data[1]);
             nearestAtom.setAC_number(parseDouble(ac_data[3]));
-            nearestAtom.setX_coordinate(ac_data[4]);
-            nearestAtom.setY_coordinate(ac_data[5]);
-            nearestAtom.setZ_coordinate(ac_data[6]);
+
+            Double xBias = round(h_coordinates[0] - parseDouble(ac_data[4]),4);
+            Double yBias = round(h_coordinates[1] - parseDouble(ac_data[5]),4);
+            Double zBias = round(h_coordinates[2] - parseDouble(ac_data[6]),4);
+            nearestAtom.setX_coordinate(String.valueOf(xBias));
+            nearestAtom.setY_coordinate(String.valueOf(yBias));
+            nearestAtom.setZ_coordinate(String.valueOf(zBias));
+
+            Double generalBias = computeGeneralBias(xBias, yBias, zBias);
+            nearestAtom.setX_power(computeCoordinatePower(xBias, generalBias, coulombsLawPower));
+            nearestAtom.setY_power(computeCoordinatePower(yBias, generalBias, coulombsLawPower));
+            nearestAtom.setZ_power(computeCoordinatePower(zBias, generalBias, coulombsLawPower));
             nearestAtoms.add(nearestAtom);
         }
+    }
+
+    private Double computeCoordinatePower(Double coordinateBias, Double generalBias, Double сoulombsLawPower) {
+        Double powerPart = coordinateBias / generalBias;
+        return round(powerPart * сoulombsLawPower, 4);
+    }
+
+    private Double computeGeneralBias(Double xBias, Double yBias, Double zBias) {
+        double biasValue = 0.0;
+        biasValue += xBias > 0 ? xBias : (xBias * (-1));
+        biasValue += yBias > 0 ? yBias : (yBias * (-1));
+        biasValue += zBias > 0 ? zBias : (zBias * (-1));
+        return biasValue;
+    }
+
+    private Double computeCoulombsLaw(double distance, String ac_atom){
+        Integer charge = getCharge(ac_atom);
+        return round((8.99 * charge) / (distance * distance), 4);
+    }
+
+    private Integer getCharge(String ac_atom) {
+        if (ac_atom.charAt(0) == 'C') {
+            return 6;
+        } else if (ac_atom.charAt(0) == 'N') {
+            return 7;
+        } else if (ac_atom.charAt(0) == 'O') {
+            return 8;
+        }
+        return 0;
     }
 
     @Override
     public void findAccuracyHBound(HydrogenAccuracy hydrogenAccuracy, SortedMap<Double, List<String[]>> pdbData, Double co_residueKey,
                                    Double nh_residueKey, Double pre_nh_residueKey, List<AminoAcid> hBoundAminoAcids) {
 
-        Double energy = isHBoundExistDouble(pdbData, co_residueKey, nh_residueKey, pre_nh_residueKey);
-        if (o_h_distance < 5.0) {
+        Double energy = isHBoundExistDouble(pdbData, co_residueKey, nh_residueKey, pre_nh_residueKey, null);
+        if (o_h_distance != null && o_h_distance < 5.0) {
             AminoAcid ac = new AminoAcid();
             List<String[]> aminoAcidResidue = pdbData.get(co_residueKey);
             ac.sethBoundEnergy(round(energy, 4));
             ac.setAminoAcidResiduePDBNumber(Long.valueOf(aminoAcidResidue.get(0)[3]));
             ac.setAminoAcidName(aminoAcidResidue.get(0)[1]);
             ac.setHoDistance(round(o_h_distance, 3));
+            if ("O".equals(aminoAcidResidue.get(3)[0])) {
+                ac.setCoordinateOX(parseDouble(aminoAcidResidue.get(3)[4]));
+                ac.setCoordinateOY(parseDouble(aminoAcidResidue.get(3)[5]));
+                ac.setCoordinateOZ(parseDouble(aminoAcidResidue.get(3)[6]));
+            }
             hBoundAminoAcids.add(ac);
         }
         String hb = hydrogenAccuracy.getHydrogenBoundAminoAcids();
@@ -146,7 +279,10 @@ public class HBoundServiceImpl implements HBoundService {
     }
 
     private boolean isProline(List<String[]> secondAminoAcidResidue) {
-        return secondAminoAcidResidue.get(0)[1].equals("P");
+        if (secondAminoAcidResidue.get(0) != null) {
+            return secondAminoAcidResidue.get(0)[1].equals("P");
+        }
+        return false;
     }
 
     private String[] findData(List<String[]> firstAminoAcidResidue, String atom) {
@@ -165,6 +301,9 @@ public class HBoundServiceImpl implements HBoundService {
         a_coordinates[2]= getMean(second_C[6], preSecond_C[6]);
 
         Double[] n_coordinates = getAtomCoordinates(second_N);
+        Double[] c_coordinates = getAtomCoordinates(second_C);
+        Double[] pre_c_coordinates = getAtomCoordinates(preSecond_C);
+
         String[] second_H = new String[7];
         second_H[0] = HYDROGEN;
         second_H[1] = second_N[1];
@@ -214,13 +353,13 @@ public class HBoundServiceImpl implements HBoundService {
 
     private Double[] fillRealHCoordinates(HydrogenAccuracy hydrogenAccuracy, String[] data_H) {
         if(data_H != null) {
-            hydrogenAccuracy.setRealXCoordinate(data_H[4]);
-            hydrogenAccuracy.setRealYCoordinate(data_H[5]);
-            hydrogenAccuracy.setRealZCoordinate(data_H[6]);
             Double[] real_H = new Double[3];
             real_H[0] = parseDouble(data_H[4]);
             real_H[1] = parseDouble(data_H[5]);
             real_H[2] = parseDouble(data_H[6]);
+            hydrogenAccuracy.setRealXCoordinate(real_H[0]);
+            hydrogenAccuracy.setRealYCoordinate(real_H[1]);
+            hydrogenAccuracy.setRealZCoordinate(real_H[2]);
             return real_H;
         }
         return null;
@@ -239,15 +378,15 @@ public class HBoundServiceImpl implements HBoundService {
                 String[] first_C = findData(firstAminoAcidResidue, CARBON_A);
                 String[] first_N = findData(firstAminoAcidResidue, NITROGEN);
                 String[] data_H = findHydrogenData(first_C, first_N, preFirst_C);
-                hydrogenAccuracy.setPredictedXCoordinate(new DecimalFormat("#0.000").format(parseDouble(data_H[4])));
-                hydrogenAccuracy.setPredictedYCoordinate(new DecimalFormat("#0.000").format(parseDouble(data_H[5])));
-                hydrogenAccuracy.setPredictedZCoordinate(new DecimalFormat("#0.000").format(parseDouble(data_H[6])));
+                hydrogenAccuracy.setPredictedXCoordinate(round(parseDouble(data_H[4]), 4));
+                hydrogenAccuracy.setPredictedYCoordinate(round(parseDouble(data_H[5]), 4));
+                hydrogenAccuracy.setPredictedZCoordinate(round(parseDouble(data_H[6]), 4));
                 Double[] predicted_H = new Double[3];
                 predicted_H[0] = parseDouble(data_H[4]);
                 predicted_H[1] = parseDouble(data_H[5]);
                 predicted_H[2] = parseDouble(data_H[6]);
 
-                fillNHDistance(hydrogenAccuracy, real_H, first_N);
+                fillNHDistance(hydrogenAccuracy, predicted_H, first_N);
 
                 return predicted_H;
             }
@@ -299,10 +438,40 @@ public class HBoundServiceImpl implements HBoundService {
         }
     }
 
+    private void fillHydrogenAccuracy(HydrogenAccuracy hydrogenAccuracy,
+                                      Double[] hydrogen, Double[] carbon,
+                                      Double[] carbonA, Double[] power) {
+        hydrogenAccuracy.setRealXCoordinate(round(hydrogen[0], 4));
+        hydrogenAccuracy.setRealYCoordinate(round(hydrogen[1], 4));
+        hydrogenAccuracy.setRealZCoordinate(round(hydrogen[2], 4));
+
+        hydrogenAccuracy.setCxCoordinate(round(carbon[0], 4));
+        hydrogenAccuracy.setCyCoordinate(round(carbon[1], 4));
+        hydrogenAccuracy.setCzCoordinate(round(carbon[2], 4));
+
+        hydrogenAccuracy.setCaXCoordinate(round(carbonA[0], 4));
+        hydrogenAccuracy.setCaYCoordinate(round(carbonA[1], 4));
+        hydrogenAccuracy.setCaZCoordinate(round(carbonA[2], 4));
+
+        hydrogenAccuracy.setPowerXCoordinate(round(power[0], 4));
+        hydrogenAccuracy.setPowerYCoordinate(round(power[1], 4));
+        hydrogenAccuracy.setPowerZCoordinate(round(power[2], 4));
+
+        hydrogenAccuracy.setGeneralPower(round(
+                (power[0] > 0 ? power[0] : -power[0]) +
+                        (power[1]> 0 ? power[1] : -power[1]) +
+                        (power[2] > 0 ? power[2] : -power[2]), 4));
+        hydrogenAccuracy.setGeneralPower(round(
+                (power[0] > 0 ? power[0] : -power[0]) +
+                        (power[1]> 0 ? power[1] : -power[1]) +
+                        (power[2] > 0 ? power[2] : -power[2]), 4));
+    }
+
+
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
-        long factor = (long) Math.pow(10, places);
+        long factor = (long) pow(10, places);
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;

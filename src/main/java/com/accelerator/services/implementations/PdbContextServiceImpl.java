@@ -16,7 +16,7 @@ public class PdbContextServiceImpl implements PdbContextService {
     @Override
     public List<String> getPdbContext(MultipartFile pdbFile) throws IOException {
         String content = new String(pdbFile.getBytes(), StandardCharsets.UTF_8);
-        int pdbContextStartIndex = content.indexOf("ATOM      ");
+        int pdbContextStartIndex = content.indexOf("ATOM     ");
         String atomContent = content.substring(pdbContextStartIndex);
         return convertToList(atomContent);
     }

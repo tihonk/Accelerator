@@ -10,6 +10,10 @@ public class AminoAcid {
     private Double hBoundEnergy;
     private Double hoDistance;
 
+    private Double coordinateOX;
+    private Double coordinateOY;
+    private Double coordinateOZ;
+
     public int getId() {
         return id;
     }
@@ -64,5 +68,29 @@ public class AminoAcid {
 
     public void setHoDistance(Double hoDistance) {
         this.hoDistance = hoDistance;
+    }
+
+    public Double getCoordinateOX() {
+        return coordinateOX;
+    }
+
+    public void setCoordinateOX(Double coordinateOX) {
+        this.coordinateOX = coordinateOX;
+    }
+
+    public Double getCoordinateOY() {
+        return coordinateOY;
+    }
+
+    public void setCoordinateOY(Double coordinateOY) {
+        this.coordinateOY = coordinateOY;
+    }
+
+    public Double getCoordinateOZ() {
+        return coordinateOZ;
+    }
+
+    public void setCoordinateOZ(Double coordinateOZ) {
+        this.coordinateOZ = coordinateOZ;
     }
 }

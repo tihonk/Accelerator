@@ -28,7 +28,6 @@ public class PentUNFOLDFilterServiceImpl implements PentUNFOLDFilterService {
     SubNumberConvertor subNumberConvertor;
 
     private static final String PDB_CHAIN_REGEX = "(ATOM(.*)|HETATM(.*)|TER(.*))[A-Z]{3}\\s%s\\s{0,3}-?\\d+(.*)\r?";
-    private static final String DSSP_CHAIN_MATCHING = "         %s         ";
     private static final String DSSP_START_NUMBERS_MATCHING = "\\d{%s}\\s(.*)";
     private static final int MAX_DSSP_NEEDED_SPACES = 4;
     private static final String AMINO_ACIDS = "[^GLYSEQDNFAKRHCVPWIMT]";
