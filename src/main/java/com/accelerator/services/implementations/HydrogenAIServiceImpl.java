@@ -15,7 +15,7 @@ import java.net.URL;
 public class HydrogenAIServiceImpl implements HydrogenAIService {
     @Override
     public String[] sendPOST(String result) throws IOException {
-        URL obj = new URL("http://localhost:9002");
+        URL obj = new URL("http://localhost:9102");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("body", result);
