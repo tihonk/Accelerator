@@ -101,33 +101,6 @@ public class HydrogenAccuracyServiceImpl implements HydrogenAccuracyService {
         return hydrogenAccuracies;
     }
 
-    private Double getPreAminoAcidResidueKey(SortedMap<Double, List<String[]>> pdbData, int index) {
-        return null;
-    }
-
-    public Double findSecondAminoAcidResidueKey(List<Map.Entry<Double, List<String[]>>> aminoAcidResidues,
-                                                Double firstAminoAcidResidueKey, Double turn, int index) {
-        preSecondAminoAcidResidueKey = null;
-        int aminoAcidResiduesSize = aminoAcidResidues.size();
-        for (int i = 1, loopTime = 1; i <= turn; i++, loopTime++){
-            int secondIndex = index + loopTime;
-            boolean isExistRecord = aminoAcidResiduesSize > secondIndex;
-            Double secondAminoAcidResidueKey = isExistRecord ? aminoAcidResidues.get(secondIndex).getKey() : null;
-            if (secondAminoAcidResidueKey != null) {
-                if (secondAminoAcidResidueKey > firstAminoAcidResidueKey + turn) {
-                    break;
-                } else if(secondAminoAcidResidueKey - i > firstAminoAcidResidueKey) {
-                    i = (int) (secondAminoAcidResidueKey - firstAminoAcidResidueKey);
-                }
-                if (secondAminoAcidResidueKey == firstAminoAcidResidueKey + turn || i == turn) {
-                    preSecondAminoAcidResidueKey = aminoAcidResidues.get(secondIndex-1).getKey();
-                    return secondAminoAcidResidueKey;
-                }
-            } else break;
-        }
-        return null;
-    }
-
     private Double getAverageNHDistance(List<HydrogenAccuracy> relatedAminoAcids) {
         Double [] countDistance = {0.0, 0.0};
         relatedAminoAcids.stream()
