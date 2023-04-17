@@ -27,7 +27,6 @@ public class HydrogenAIServiceImpl implements HydrogenAIService {
         os.close();
 
         int responseCode = con.getResponseCode();
-        System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) { //success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));

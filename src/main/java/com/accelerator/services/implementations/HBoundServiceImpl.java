@@ -263,10 +263,12 @@ public class HBoundServiceImpl implements HBoundService {
             ac.setAminoAcidResiduePDBNumber(Long.valueOf(aminoAcidResidue.get(0)[3]));
             ac.setAminoAcidName(aminoAcidResidue.get(0)[1]);
             ac.setHoDistance(round(o_h_distance, 3));
-            if ("O".equals(aminoAcidResidue.get(3)[0])) {
-                ac.setCoordinateOX(parseDouble(aminoAcidResidue.get(3)[4]));
-                ac.setCoordinateOY(parseDouble(aminoAcidResidue.get(3)[5]));
-                ac.setCoordinateOZ(parseDouble(aminoAcidResidue.get(3)[6]));
+            for (String[] element : aminoAcidResidue) {
+                if ("O".equals(element[0])) {
+                    ac.setCoordinateOX(parseDouble(element[4]));
+                    ac.setCoordinateOY(parseDouble(element[5]));
+                    ac.setCoordinateOZ(parseDouble(element[6]));
+                }
             }
             hBoundAminoAcids.add(ac);
         }
